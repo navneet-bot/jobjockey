@@ -1,0 +1,214 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--bg);
+  --color-foreground: var(--text-main);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: #000000;
+
+  --color-secondary: var(--bg-secondary);
+  --color-secondary-foreground: var(--text-dim);
+
+  --color-border: var(--glass-border);
+  --color-input: var(--glass-border);
+  --color-ring: var(--primary);
+
+  --color-card: var(--glass-bg);
+  --color-card-foreground: var(--text-main);
+
+  --color-muted: var(--glass-bg);
+  --color-muted-foreground: var(--text-dim);
+
+  --color-accent: var(--primary-light);
+  --color-accent-foreground: #ffffff;
+
+  --font-sans: var(--font-manrope);
+  --font-display: var(--font-outfit);
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+}
+
+:root {
+  --primary: #FFFFFF;
+  --primary-light: rgba(255, 255, 255, 0.85);
+  --primary-dark: rgba(255, 255, 255, 0.65);
+  --primary-glow: rgba(255, 255, 255, 0.25);
+
+  --bg-main-light: #F9FAFB;
+
+  /* Light mode mesh */
+  --mesh-light-1: rgba(0, 0, 0, 0.25);
+  --mesh-light-2: rgba(0, 0, 0, 0.35);
+  --mesh-light-3: rgba(0, 0, 0, 0.20);
+
+  /* Dark mode mesh (existing) */
+  --mesh-dark-1: rgba(255, 255, 255, 0.15);
+  --mesh-dark-2: rgba(255, 255, 255, 0.10);
+  --mesh-dark-3: rgba(255, 255, 255, 0.08);
+
+  --text-primary-light: #111827;
+  --text-secondary-light: #4B5563;
+
+  --card-light: rgba(255, 255, 255, 0.65);
+  --border-light: rgba(0, 0, 0, 0.08);
+
+  --glass-bg: var(--card-light);
+  --glass-border: var(--border-light);
+
+  --bg: var(--bg-main-light);
+  --bg-secondary: #FFFFFF;
+
+  --text-main: var(--text-primary-light);
+  --text-dim: var(--text-secondary-light);
+  --text-primary: var(--text-primary-light);
+  --text-secondary: var(--text-secondary-light);
+  --bg-main: var(--bg-main-light);
+
+  --mesh-1: var(--mesh-light-1);
+  --mesh-2: var(--mesh-light-2);
+  --mesh-3: var(--mesh-light-3);
+}
+
+.light {
+  --mesh-1: var(--mesh-light-1);
+  --mesh-2: var(--mesh-light-2);
+  --mesh-3: var(--mesh-light-3);
+}
+
+.dark {
+  --bg-main: #0A0F1F;
+  --text-primary: #FFFFFF;
+  --text-secondary: #C7D0E8;
+
+  --glass-bg: rgba(255, 255, 255, 0.06);
+  --glass-border: rgba(255, 255, 255, 0.08);
+
+  --bg: var(--bg-main);
+  --bg-secondary: #111726;
+
+  --text-main: var(--text-primary);
+  --text-dim: var(--text-secondary);
+
+  --mesh-1: var(--mesh-dark-1);
+  --mesh-2: var(--mesh-dark-2);
+  --mesh-3: var(--mesh-dark-3);
+}
+
+/* Base tailwind elements */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    @apply transition-colors duration-300 ease-in-out;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased min-h-screen relative overflow-x-hidden;
+  }
+
+  @media (min-width: 768px) {}
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-[var(--glass-bg)] border border-[var(--glass-border)] backdrop-blur-xl text-foreground;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+  }
+
+  .text-gradient {
+    @apply text-foreground dark:bg-gradient-to-r dark:from-[var(--primary-light)] dark:to-[var(--primary)] dark:bg-clip-text dark:text-transparent;
+  }
+
+  .bg-gradient-primary {
+    @apply bg-[#111827] dark:bg-gradient-to-r dark:from-[var(--primary-light)] dark:to-[var(--primary)];
+  }
+}
+
+@keyframes blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+.animate-blob {
+  animation: blob 10s ease-in-out infinite alternate;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+.animate-marquee {
+  animation: marquee 18s linear infinite;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-20px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+/* Override Clerk's default modal placement to ensure center alignment */
+.cl-modalBackdrop {
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.cl-rootBox {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.cl-modalContent {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
