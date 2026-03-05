@@ -19,7 +19,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
                 <AdminSidebar />
 
                 {/* Admin Content Area */}
-                <section className="flex-1 w-full animate-in fade-in zoom-in-95 duration-500">
+                <section className="flex-1 w-full min-w-0 animate-in fade-in zoom-in-95 duration-500">
                     {children}
                 </section>
             </main>

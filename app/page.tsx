@@ -108,7 +108,7 @@ export default function Home() {
               <div className="relative z-10 w-full h-full flex items-center justify-center">
                 <LottieAnimation
                   animationPath="https://assets10.lottiefiles.com/packages/lf20_96bovdur.json"
-                  className="w-full max-w-sm"
+                  className="w-full max-w-sm grayscale"
                 />
               </div>
             </GlassCard>

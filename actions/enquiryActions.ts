@@ -77,3 +77,25 @@ export async function updateEnquiryStatus(id: string, status: "approved" | "reje
         return { success: false, error: err.message };
     }
 }
+
+export async function deleteCompanyAction(id: string) {
+    try {
+        const { userId } = await auth();
+        if (!userId) return { success: false, error: "Unauthorized" };
+
+        const client = await clerkClient();
+        const user = await client.users.getUser(userId);
+
+        if (user.publicMetadata?.role !== "admin") {
+            return { success: false, error: "Unauthorized: Admin access required" };
+        }
+
+        await db.delete(companyEnquiriesTable)
+            .where(eq(companyEnquiriesTable.id, id));
+
+        revalidatePath("/admin/companies");
+        return { success: true };
+    } catch (err: any) {
+        return { success: false, error: err.message };
+    }
+}
