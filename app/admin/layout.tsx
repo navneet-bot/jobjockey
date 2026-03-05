@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
     const user = await currentUser();
-    if (!user || user.publicMetadata?.role !== "admin") {
+    if (!user || user?.publicMetadata?.role !== "admin") {
         redirect("/");
     }
 
