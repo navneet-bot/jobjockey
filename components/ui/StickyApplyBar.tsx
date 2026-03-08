@@ -18,11 +18,12 @@ import {
 
 interface StickyApplyBarProps {
     jobId: string;
+    category: "job" | "internship";
     salary?: string | null;
     initialResumeUrl?: string | null;
 }
 
-export function StickyApplyBar({ jobId, salary, initialResumeUrl }: StickyApplyBarProps) {
+export function StickyApplyBar({ jobId, category, salary, initialResumeUrl }: StickyApplyBarProps) {
     const [resumeUrl, setResumeUrl] = useState<string | null>(initialResumeUrl || null);
     const [isApplying, setIsApplying] = useState(false);
     const [isUploadingResume, setIsUploadingResume] = useState(false);
@@ -34,7 +35,7 @@ export function StickyApplyBar({ jobId, salary, initialResumeUrl }: StickyApplyB
             return;
         }
         setIsApplying(true);
-        const res = await applyForJob(jobId, resumeUrl);
+        const res = await applyForJob(jobId, category, resumeUrl);
         setIsApplying(false);
 
         if (res.success) {

@@ -4,7 +4,7 @@ import { GradientButton } from "@/components/ui/GradientButton";
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import { db } from "@/lib/db";
-import { jobsTable } from "@/lib/schema";
+import { jobsTable, internshipsTable } from "@/lib/schema";
 import { desc } from "drizzle-orm";
 import { AdminJobTable } from "@/components/features/admin/AdminJobTable";
 
@@ -12,8 +12,17 @@ export default async function AdminJobsPage() {
     const { userId } = await auth();
     if (!userId) return null; // Secure
 
-    // For Admin specifically we pull all jobs.
-    const jobs = await db.select().from(jobsTable).orderBy(desc(jobsTable.postedAt));
+    // For Admin specifically we pull all jobs and internships.
+    const [jobs, internships] = await Promise.all([
+        db.select().from(jobsTable).orderBy(desc(jobsTable.postedAt)),
+        db.select().from(internshipsTable).orderBy(desc(internshipsTable.postedAt))
+    ]);
+
+    // Combine and add category for the table
+    const combined = [
+        ...jobs.map(j => ({ ...j, category: "job" as const })),
+        ...internships.map(i => ({ ...i, category: "internship" as const }))
+    ].sort((a, b) => new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime());
 
     return (
         <div className="flex flex-col gap-10">
@@ -28,7 +37,7 @@ export default async function AdminJobsPage() {
                 </Link>
             </div>
 
-            <AdminJobTable jobs={jobs} />
+            <AdminJobTable jobs={combined} />
         </div>
     );
 }

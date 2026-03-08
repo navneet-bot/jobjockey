@@ -10,15 +10,20 @@ import { Button } from "@/components/ui/button";
 import { getBusinessDashboardStats } from "@/actions/dashboardActions";
 import { getCompanyProfile, updateCompanyProfile, CompanyProfileData } from "@/actions/userActions";
 import { getMyJobs } from "@/actions/jobActions";
-import { Job } from "@/lib/schema";
+import { getMyInternships } from "@/actions/internshipActions";
+import { getCompanyApplications, updateApplicationStatus } from "@/actions/applicationActions";
+import { Job, Internship } from "@/lib/schema";
 import { toast } from "sonner";
 import JobCard from "@/components/features/job/JobCard";
+import { GraduationCap, User, Mail, Phone, Calendar, ArrowRight, Check, X, Clock } from "lucide-react";
 
 export default function BusinessDashboardPage() {
     const [activeTab, setActiveTab] = useState("overview");
     const [stats, setStats] = useState({ activeJobs: 0, totalApplications: 0, shortlisted: 0 });
-    const [jobs, setJobs] = useState<Job[]>([]);
+    const [jobs, setJobs] = useState<any[]>([]);
+    const [applications, setApplications] = useState<any[]>([]);
     const [loadingJobs, setLoadingJobs] = useState(true);
+    const [loadingApps, setLoadingApps] = useState(true);
     const [profile, setProfile] = useState<CompanyProfileData>({ 
         companyName: "", 
         industry: "", 
@@ -54,13 +59,27 @@ export default function BusinessDashboardPage() {
     useEffect(() => {
         let mounted = true;
         const loadData = async () => {
-            const data = await getBusinessDashboardStats();
-            const profileData = await getCompanyProfile();
-            const jobData = await getMyJobs();
+            const [statsData, profileData, jobData, internshipData, appsData] = await Promise.all([
+                getBusinessDashboardStats(),
+                getCompanyProfile(),
+                getMyJobs(),
+                getMyInternships(),
+                getCompanyApplications()
+            ]);
+
             if (mounted) {
-                setStats(data);
-                setJobs(jobData as Job[]);
+                setStats(statsData);
+                
+                const combined = [
+                    ...jobData.map(j => ({ ...j, category: 'job' as const })),
+                    ...internshipData.map(i => ({ ...i, category: 'internship' as const }))
+                ];
+                setJobs(combined);
                 setLoadingJobs(false);
+
+                setApplications(appsData);
+                setLoadingApps(false);
+
                 if (profileData) {
                     setProfile({
                         companyName: profileData.companyName || "",
@@ -80,6 +99,17 @@ export default function BusinessDashboardPage() {
         loadData();
         return () => { mounted = false; };
     }, []);
+
+    const handleUpdateStatus = async (appId: string, status: "shortlisted" | "pending" | "interview" | "selected" | "rejected") => {
+        const res = await updateApplicationStatus(appId, status);
+        if (res.success) {
+            toast.success(`Status updated to ${status}`);
+            const updatedApps = await getCompanyApplications();
+            setApplications(updatedApps);
+        } else {
+            toast.error(res.error || "Failed to update status");
+        }
+    };
 
     const handleSaveProfile = async () => {
         setIsSaving(true);
@@ -199,11 +229,115 @@ export default function BusinessDashboardPage() {
 
                 {activeTab === "applications" && (
                     <GlassCard className="p-8">
-                        <h3 className="text-xl font-bold text-[var(--text-main)] mb-6">Recent Applications</h3>
-                        <div className="text-center py-20 border border-dashed border-[var(--glass-border)] rounded-xl">
-                            <FileText className="w-10 h-10 mx-auto text-[var(--text-dim)] mb-4 opacity-50" />
-                            <p className="text-[var(--text-dim)]">No applications received yet.</p>
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-xl font-bold text-[var(--text-main)]">Applications ({applications.length})</h3>
+                            <div className="flex gap-2 text-xs">
+                                <span className="flex items-center gap-1 text-green-500 font-medium"><Check className="w-3 h-3"/> Approved</span>
+                                <span className="flex items-center gap-1 text-blue-500 font-medium"><ArrowRight className="w-3 h-3"/> Interview</span>
+                            </div>
                         </div>
+                        
+                        {loadingApps ? (
+                            <div className="text-center py-20 border border-dashed border-[var(--glass-border)] rounded-xl">
+                                <p className="text-[var(--text-dim)]">Loading applications...</p>
+                            </div>
+                        ) : applications.length > 0 ? (
+                            <div className="flex flex-col gap-4">
+                                {applications.map((app) => {
+                                    const isInternship = !!app.internship;
+                                    const jobOrInternship = app.job || app.internship;
+                                    
+                                    return (
+                                        <div key={app.application.id} className="p-5 rounded-2xl bg-[var(--glass-bg)] border border-[var(--glass-border)] flex flex-col md:flex-row gap-6 hover:border-[var(--primary)]/30 transition-all">
+                                            <div className="flex-1 flex flex-col gap-4">
+                                                <div className="flex justify-between items-start">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-10 h-10 rounded-full bg-[var(--primary)]/10 flex items-center justify-center border border-[var(--primary)]/20">
+                                                            <User className="w-5 h-5 text-[var(--primary)]" />
+                                                        </div>
+                                                        <div>
+                                                            <h4 className="font-bold text-[var(--text-main)]">{app.profile.name}</h4>
+                                                            <p className="text-xs text-[var(--text-dim)] flex items-center gap-3">
+                                                                <span className="flex items-center gap-1"><Mail className="w-3 h-3"/> {app.profile.email}</span>
+                                                                <span className="flex items-center gap-1"><Phone className="w-3 h-3"/> {app.profile.phone}</span>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <div className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
+                                                        app.application.status === 'selected' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
+                                                        app.application.status === 'rejected' ? 'bg-red-500/10 text-red-500 border-red-500/20' :
+                                                        app.application.status === 'interview' ? 'bg-blue-500/10 text-blue-500 border-blue-500/20' :
+                                                        app.application.status === 'shortlisted' ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20' :
+                                                        'bg-black/5 dark:bg-white/5 text-[var(--text-dim)] border-black/10 dark:border-white/10'
+                                                    }`}>
+                                                        {app.application.status}
+                                                    </div>
+                                                </div>
+                                                
+                                                <div className="p-3 rounded-xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5 flex flex-col gap-1">
+                                                    <p className="text-xs text-[var(--text-dim)] uppercase tracking-widest font-bold">Applying for</p>
+                                                    <div className="flex items-center gap-2">
+                                                        {isInternship ? <GraduationCap className="w-4 h-4 text-[var(--primary)]"/> : <Briefcase className="w-4 h-4 text-[var(--primary)]"/>}
+                                                        <span className="font-semibold text-sm text-[var(--text-main)]">{jobOrInternship.title}</span>
+                                                        <span className="px-2 py-0.5 rounded text-[9px] font-bold bg-[var(--glass-bg)] border border-[var(--glass-border)] text-[var(--text-dim)] uppercase">
+                                                            {isInternship ? "Internship" : "Job"}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex md:flex-col justify-end gap-2 md:w-48">
+                                                {app.application.status !== 'selected' && app.application.status !== 'rejected' && (
+                                                    <>
+                                                        <Button 
+                                                            onClick={() => handleUpdateStatus(app.application.id, 'shortlisted')}
+                                                            variant="outline" size="sm" className="rounded-full w-full justify-start gap-2 border-yellow-500/30 text-yellow-500 hover:bg-yellow-500/10"
+                                                        >
+                                                            <Clock className="w-3 h-3"/> Shortlist
+                                                        </Button>
+                                                        <Button 
+                                                            onClick={() => handleUpdateStatus(app.application.id, 'interview')}
+                                                            variant="outline" size="sm" className="rounded-full w-full justify-start gap-2 border-blue-500/30 text-blue-500 hover:bg-blue-500/10"
+                                                        >
+                                                            <ArrowRight className="w-3 h-3"/> Interview
+                                                        </Button>
+                                                        <div className="flex gap-2">
+                                                            <Button 
+                                                                onClick={() => handleUpdateStatus(app.application.id, 'selected')}
+                                                                className="rounded-full flex-1 bg-green-500 hover:bg-green-600 text-white" size="sm"
+                                                            >
+                                                                <Check className="w-4 h-4"/>
+                                                            </Button>
+                                                            <Button 
+                                                                onClick={() => handleUpdateStatus(app.application.id, 'rejected')}
+                                                                variant="outline" className="rounded-full flex-1 border-red-500/30 text-red-500 hover:bg-red-500/10" size="sm"
+                                                            >
+                                                                <X className="w-4 h-4"/>
+                                                            </Button>
+                                                        </div>
+                                                    </>
+                                                )}
+                                                {app.application.status === 'selected' && (
+                                                    <div className="text-center p-2 rounded-xl bg-green-500/10 border border-green-500/20 text-green-500 text-xs font-bold">
+                                                        CANDIDATE SELECTED
+                                                    </div>
+                                                )}
+                                                {app.application.status === 'rejected' && (
+                                                    <div className="text-center p-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-bold">
+                                                        APPLICATION REJECTED
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        ) : (
+                            <div className="text-center py-20 border border-dashed border-[var(--glass-border)] rounded-xl">
+                                <FileText className="w-10 h-10 mx-auto text-[var(--text-dim)] mb-4 opacity-50" />
+                                <p className="text-[var(--text-dim)]">No applications received yet.</p>
+                            </div>
+                        )}
                     </GlassCard>
                 )}
 

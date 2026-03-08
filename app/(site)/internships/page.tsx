@@ -6,8 +6,8 @@ import { GraduationCap } from "lucide-react";
 export const dynamic = "force-dynamic";
 
 export default async function InternshipsPage() {
-    const internships = await getInternships();
-    const approvedInternships = internships.filter(i => i.isApproved);
+    const allInternships = await getInternships();
+    const internships = allInternships.filter(i => i.isApproved);
 
     return (
         <div className="flex flex-col gap-10 pb-20">
@@ -22,7 +22,7 @@ export default async function InternshipsPage() {
                 }
             />
 
-            <JobFeed initialJobs={approvedInternships} />
+            <JobFeed initialJobs={internships} />
         </div>
     );
 }

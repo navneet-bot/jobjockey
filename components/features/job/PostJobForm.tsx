@@ -156,37 +156,39 @@ export default function PostJobForm({ jobId, initialData }: PostJobFormProps) {
           <div className="flex p-1 bg-black/5 dark:bg-white/5 rounded-full border border-black/10 dark:border-white/10 w-max mx-auto mb-4">
             <button
               type="button"
+              disabled={isEditMode}
               onClick={() => {
                 setCurrentCategory("job");
                 form.setValue("jobCategory", "job");
-                form.setValue("jobType", "Full-time");
               }}
               className={cn(
-                "flex items-center gap-2 px-8 py-3 rounded-full transition-all font-bold text-sm",
-                watchedCategory === "job"
-                  ? "bg-white dark:bg-white text-black shadow-lg scale-105"
-                  : "text-[var(--text-dim)] hover:text-[var(--text-main)]"
+                "flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold transition-all",
+                currentCategory === "job"
+                  ? "bg-[#111827] text-white dark:bg-white dark:text-black shadow-lg"
+                  : "text-[var(--text-dim)] hover:text-[var(--text-main)]",
+                isEditMode && currentCategory !== "job" && "opacity-50 cursor-not-allowed"
               )}
             >
               <Briefcase className="w-4 h-4" />
-              Job Posting
+              Job
             </button>
             <button
               type="button"
+              disabled={isEditMode}
               onClick={() => {
                 setCurrentCategory("internship");
                 form.setValue("jobCategory", "internship");
-                form.setValue("jobType", "Full-time");
               }}
               className={cn(
-                "flex items-center gap-2 px-8 py-3 rounded-full transition-all font-bold text-sm",
-                watchedCategory === "internship"
-                  ? "bg-white dark:bg-white text-black shadow-lg scale-105"
-                  : "text-[var(--text-dim)] hover:text-[var(--text-main)]"
+                "flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold transition-all",
+                currentCategory === "internship"
+                  ? "bg-[#111827] text-white dark:bg-white dark:text-black shadow-lg"
+                  : "text-[var(--text-dim)] hover:text-[var(--text-main)]",
+                isEditMode && currentCategory !== "internship" && "opacity-50 cursor-not-allowed"
               )}
             >
               <GraduationCap className="w-4 h-4" />
-              Internship Posting
+              Internship
             </button>
           </div>
 

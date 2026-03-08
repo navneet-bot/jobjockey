@@ -2,19 +2,20 @@
 
 import { GradientHeader } from "@/components/ui/GradientHeader";
 import { GlassCard } from "@/components/ui/GlassCard";
-import { Briefcase, BookOpen, User, Star, TrendingUp, CheckCircle, ExternalLink, FileText, ClipboardList } from "lucide-react";
+import { Briefcase, BookOpen, User, Star, TrendingUp, CheckCircle, ExternalLink, FileText, ClipboardList, GraduationCap } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { getUserProfile } from "@/actions/userActions";
 import { getJobs } from "@/actions/jobActions";
+import { getInternships } from "@/actions/internshipActions";
 import { getMyApplications } from "@/actions/applicationActions";
-import { UserProfile, Job, Application } from "@/lib/schema";
+import { UserProfile, Job, Application, Internship } from "@/lib/schema";
 
 export default function TalentDashboardPage() {
     const [activeTab, setActiveTab] = useState("opportunities");
     const [profile, setProfile] = useState<UserProfile | null>(null);
-    const [jobs, setJobs] = useState<Job[]>([]);
+    const [jobs, setJobs] = useState<any[]>([]);
     const [applications, setApplications] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [jobsLoading, setJobsLoading] = useState(true);
@@ -30,13 +31,27 @@ export default function TalentDashboardPage() {
             setLoading(false);
         });
 
-        getJobs().then((data) => {
-            setJobs(data as Job[]);
-            setJobsLoading(false);
-        }).catch(err => {
-            console.error(err);
-            setJobsLoading(false);
-        });
+        const fetchOpportunities = async () => {
+            try {
+                const [allJobs, allInternships] = await Promise.all([
+                    getJobs(),
+                    getInternships()
+                ]);
+                
+                const combined = [
+                    ...allJobs.map(j => ({ ...j, jobCategory: 'job' as const })),
+                    ...allInternships.map(i => ({ ...i, jobCategory: 'internship' as const }))
+                ];
+                
+                setJobs(combined);
+                setJobsLoading(false);
+            } catch (err) {
+                console.error(err);
+                setJobsLoading(false);
+            }
+        };
+
+        fetchOpportunities();
 
         getMyApplications().then((data) => {
             setApplications(data);
@@ -107,7 +122,7 @@ export default function TalentDashboardPage() {
                                 <div className="col-span-full py-10 text-center text-[var(--text-dim)]">No {jobFilter}s available at the moment.</div>
                             ) : (
                                 jobs.filter(j => j.jobCategory === jobFilter).map((job) => (
-                                    <Link href={`/jobs/${job.id}`} key={job.id}>
+                                    <Link href={job.jobCategory === 'internship' ? `/internships/${job.id}` : `/jobs/${job.id}`} key={job.id}>
                                         <GlassCard className="p-6 flex flex-col h-full gap-4 group hover:border-[var(--primary)]/40 transition-all cursor-pointer">
                                             <div className="flex justify-between items-start">
                                                 <div className="w-12 h-12 rounded-xl bg-[var(--glass-bg)] border border-[var(--glass-border)] flex items-center justify-center shrink-0">
@@ -152,43 +167,58 @@ export default function TalentDashboardPage() {
                                     <Button onClick={() => setActiveTab("opportunities")} className="rounded-full bg-[#111827] text-white dark:bg-white dark:text-black hover:bg-[#111827]/90 dark:hover:bg-white/90">Browse Opportunities</Button>
                                 </GlassCard>
                             ) : (
-                                applications.map((app) => (
-                                    <GlassCard key={app.application.id} className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:border-[var(--primary)]/30 transition-all">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 rounded-xl bg-[var(--glass-bg)] border border-[var(--glass-border)] flex items-center justify-center shrink-0">
-                                                <Briefcase className="w-6 h-6 text-[var(--text-main)]" />
-                                            </div>
-                                            <div className="flex flex-col">
-                                                <h4 className="font-bold text-[var(--text-main)]">{app.job?.title || "Unknown Position"}</h4>
-                                                <span className="text-sm text-[var(--text-dim)]">{app.job?.company || "Unknown Company"}</span>
-                                            </div>
-                                        </div>
+                                 applications.map((app) => {
+                                    const jobOrInternship = app.job || app.internship;
+                                    const isInternship = !!app.internship;
+                                    const detailHref = isInternship ? `/internships/${jobOrInternship?.id}` : `/jobs/${jobOrInternship?.id}`;
 
-                                        <div className="flex flex-wrap items-center gap-4 md:gap-10">
-                                            <div className="flex flex-col">
-                                                <span className="text-[10px] uppercase tracking-wider text-[var(--text-dim)] font-bold">Applied On</span>
-                                                <span className="text-sm text-[var(--text-main)]">{new Date(app.application.appliedAt).toLocaleDateString()}</span>
-                                            </div>
-
-                                            <div className="flex flex-col">
-                                                <span className="text-[10px] uppercase tracking-wider text-[var(--text-dim)] font-bold">Status</span>
-                                                <span className={`text-sm font-bold px-3 py-1 rounded-full border ${
-                                                    app.application.status === 'selected' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
-                                                    app.application.status === 'rejected' ? 'bg-red-500/10 text-red-500 border-red-500/20' :
-                                                    app.application.status === 'interview' ? 'bg-blue-500/10 text-blue-500 border-blue-500/20' :
-                                                    app.application.status === 'shortlisted' ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20' :
-                                                    'bg-[var(--glass-bg)] text-[var(--text-dim)] border-[var(--glass-border)]'
-                                                }`}>
-                                                    {app.application.status.charAt(0).toUpperCase() + app.application.status.slice(1)}
-                                                </span>
+                                    return (
+                                        <GlassCard key={app.application.id} className="p-5 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:border-[var(--primary)]/30 transition-all">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-12 h-12 rounded-xl bg-[var(--glass-bg)] border border-[var(--glass-border)] flex items-center justify-center shrink-0">
+                                                    {isInternship ? (
+                                                        <GraduationCap className="w-6 h-6 text-[var(--text-main)]" />
+                                                    ) : (
+                                                        <Briefcase className="w-6 h-6 text-[var(--text-main)]" />
+                                                    )}
+                                                </div>
+                                                <div className="flex flex-col">
+                                                    <h4 className="font-bold text-[var(--text-main)]">{jobOrInternship?.title || "Unknown Position"}</h4>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-sm text-[var(--text-dim)]">{jobOrInternship?.company || "Unknown Company"}</span>
+                                                        <span className="px-2 py-0.5 rounded-full text-[10px] uppercase font-bold bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-[var(--text-dim)]">
+                                                            {isInternship ? "Internship" : "Job"}
+                                                        </span>
+                                                    </div>
+                                                </div>
                                             </div>
 
-                                            <Link href={`/jobs/${app.job?.id}`}>
-                                                <Button variant="outline" size="sm" className="rounded-full">View Job</Button>
-                                            </Link>
-                                        </div>
-                                    </GlassCard>
-                                ))
+                                            <div className="flex flex-wrap items-center gap-4 md:gap-10">
+                                                <div className="flex flex-col">
+                                                    <span className="text-[10px] uppercase tracking-wider text-[var(--text-dim)] font-bold">Applied On</span>
+                                                    <span className="text-sm text-[var(--text-main)]">{new Date(app.application.appliedAt).toLocaleDateString()}</span>
+                                                </div>
+
+                                                <div className="flex flex-col">
+                                                    <span className="text-[10px] uppercase tracking-wider text-[var(--text-dim)] font-bold">Status</span>
+                                                    <span className={`text-sm font-bold px-3 py-1 rounded-full border ${
+                                                        app.application.status === 'selected' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
+                                                        app.application.status === 'rejected' ? 'bg-red-500/10 text-red-500 border-red-500/20' :
+                                                        app.application.status === 'interview' ? 'bg-blue-500/10 text-blue-500 border-blue-500/20' :
+                                                        app.application.status === 'shortlisted' ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20' :
+                                                        'bg-[var(--glass-bg)] text-[var(--text-dim)] border-[var(--glass-border)]'
+                                                    }`}>
+                                                        {app.application.status.charAt(0).toUpperCase() + app.application.status.slice(1)}
+                                                    </span>
+                                                </div>
+
+                                                <Link href={detailHref}>
+                                                    <Button variant="outline" size="sm" className="rounded-full">View Details</Button>
+                                                </Link>
+                                            </div>
+                                        </GlassCard>
+                                    );
+                                })
                             )}
                         </div>
                     </div>

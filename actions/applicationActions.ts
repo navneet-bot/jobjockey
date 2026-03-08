@@ -227,14 +227,18 @@ export async function updateApplicationStatus(id: string, status: "pending" | "s
         // Fetch current application to verify transition
         const [app] = await db.select({
             status: applicationsTable.status,
-            postedBy: jobsTable.postedBy
+            postedBy: jobsTable.postedBy,
+            internshipPostedBy: internshipsTable.postedBy
         })
             .from(applicationsTable)
             .leftJoin(jobsTable, eq(applicationsTable.jobId, jobsTable.id))
+            .leftJoin(internshipsTable, eq(applicationsTable.internshipId, internshipsTable.id))
             .where(eq(applicationsTable.id, id))
             .limit(1);
 
         if (!app) return { success: false, error: "Application not found" };
+
+        const postedBy = app.postedBy || app.internshipPostedBy;
 
         // Security Rules:
         // 1. Admin can change any status to shortlisted or rejected
@@ -248,7 +252,7 @@ export async function updateApplicationStatus(id: string, status: "pending" | "s
             await db.update(applicationsTable).set({ status }).where(eq(applicationsTable.id, id));
         } else if (role === "company") {
             // Company logic
-            if (app.postedBy !== userId) return { success: false, error: "Unauthorized to update this application" };
+            if (postedBy !== userId) return { success: false, error: "Unauthorized to update this application" };
 
             // Company cannot process candidates still in "pending" status (must be shortlisted by Admin)
             if (app.status === "pending") return { success: false, error: "You can only process candidates shortlisted by the Admin." };

@@ -24,11 +24,11 @@ export function JobFeed({ initialJobs }: { initialJobs: (Job | Internship)[] }) 
         let filtered = [...initialJobs];
 
         if (currentJobType !== "all") {
-            filtered = filtered.filter(j => 'jobType' in j && j.jobType === currentJobType);
+            filtered = filtered.filter(j => 'jobType' in j && (j as Job).jobType === currentJobType);
         }
 
         if (currentExperience !== "all") {
-            filtered = filtered.filter(j => 'experienceLevel' in j && j.experienceLevel === currentExperience);
+            filtered = filtered.filter(j => 'experienceLevel' in j && (j as Job).experienceLevel === currentExperience);
         }
 
         if (currentSearch) {
@@ -56,40 +56,56 @@ export function JobFeed({ initialJobs }: { initialJobs: (Job | Internship)[] }) 
         });
     };
 
+    // Determine if we should show job-specific filters
+    const hasJobs = initialJobs.some(j => 'jobType' in j);
+
     return (
         <>
             <div className="w-full max-w-3xl mx-auto">
                 <GlassSearchBar 
-                    placeholder="Search job titles or companies..." 
+                    placeholder="Search titles or companies..." 
                     onSearch={(query) => updateFilters("q", query)}
                 />
             </div>
 
             <div className="flex flex-col md:flex-row gap-8 mt-4">
                 <aside className="w-full md:w-64 shrink-0 flex flex-col gap-6">
-                    <SidebarFilter
-                        title="Job Type"
-                        options={[
-                            { label: "All Types", value: "all" },
-                            { label: "Full-time", value: "Full-time" },
-                            { label: "Part-time", value: "Part-time" },
-                            { label: "Contract", value: "Contract" },
-                        ]}
-                        selectedValue={currentJobType}
-                        onChange={(val) => updateFilters("type", val)}
-                    />
-                    <SidebarFilter
-                        title="Experience"
-                        options={[
-                            { label: "Any Experience", value: "all" },
-                            { label: "Entry Level", value: "Entry Level" },
-                            { label: "Mid-Level", value: "Mid-Level" },
-                            { label: "Senior", value: "Senior" },
-                            { label: "Manager", value: "Manager" },
-                        ]}
-                        selectedValue={currentExperience}
-                        onChange={(val) => updateFilters("exp", val)}
-                    />
+                    {hasJobs && (
+                        <>
+                            <SidebarFilter
+                                title="Job Type"
+                                options={[
+                                    { label: "All Types", value: "all" },
+                                    { label: "Full-time", value: "Full-time" },
+                                    { label: "Part-time", value: "Part-time" },
+                                    { label: "Contract", value: "Contract" },
+                                ]}
+                                selectedValue={currentJobType}
+                                onChange={(val) => updateFilters("type", val)}
+                            />
+                            <SidebarFilter
+                                title="Experience"
+                                options={[
+                                    { label: "Any Experience", value: "all" },
+                                    { label: "Entry Level", value: "Entry Level" },
+                                    { label: "Mid-Level", value: "Mid-Level" },
+                                    { label: "Senior", value: "Senior" },
+                                    { label: "Manager", value: "Manager" },
+                                ]}
+                                selectedValue={currentExperience}
+                                onChange={(val) => updateFilters("exp", val)}
+                            />
+                        </>
+                    )}
+                    
+                    {!hasJobs && (
+                        <div className="glass-panel p-6 rounded-2xl border border-[var(--glass-border)] bg-[var(--glass-bg)]">
+                            <h3 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wider">Note</h3>
+                            <p className="text-xs text-muted-foreground leading-relaxed">
+                                You are viewing internships. Job-specific filters (like Experience Level) are skipped for this category.
+                            </p>
+                        </div>
+                    )}
                 </aside>
 
                 <section className={`flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6 transition-opacity duration-300 ${isPending ? 'opacity-50' : 'opacity-100'}`}>

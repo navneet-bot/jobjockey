@@ -11,11 +11,9 @@ import { userProfilesTable, companyEnquiriesTable } from "@/lib/schema";
 type JobFormData = {
   title: string;
   jobType: "Full-time" | "Part-time" | "Contract";
-  jobCategory: "job" | "internship" | "training";
   location: string;
   experienceLevel: "Entry Level" | "Mid-Level" | "Senior" | "Manager";
   salary?: string;
-  duration?: string;
   department?: string;
   workMode?: string;
   responsibilities?: string;
@@ -35,15 +33,6 @@ type JobFormData = {
   joiningDate?: string;
   perksAndBenefits?: string;
   specialInstructions?: string;
-  whatWillLearn?: string;
-  projectsAndTasks?: string;
-  educationLevel?: string;
-  eligibleCourses?: string;
-  mentorshipProvided?: boolean;
-  trainingProvided?: boolean;
-  certificateProvided?: boolean;
-  letterOfRecProvided?: boolean;
-  ppoPossibility?: boolean;
   selectionProcess?: string;
   description: string;
   applicationUrl: string;

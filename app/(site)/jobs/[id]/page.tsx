@@ -1,5 +1,4 @@
 import { getSingleJob } from "@/actions/jobActions";
-import { getSingleInternship } from "@/actions/internshipActions";
 import { getUserProfile } from "@/actions/userActions";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GradientHeader } from "@/components/ui/GradientHeader";
@@ -8,7 +7,6 @@ import { MapPin, Briefcase, GraduationCap, Building2, Calendar, Currency, Clock,
 import { formatDistanceToNow } from "date-fns";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
-import { Internship, Job } from "@/lib/schema";
 
 interface JobPageProps {
     params: Promise<{ id: string }>;
@@ -16,35 +14,25 @@ interface JobPageProps {
 
 export async function generateMetadata({ params }: JobPageProps): Promise<Metadata> {
     return {
-        title: "JobJockey - Opportunity Details",
+        title: "JobJockey - Job Details",
     };
 }
 
 export default async function JobPage({ params }: JobPageProps) {
     const { id } = await params;
-    
-    let job: Job | Internship | null = await getSingleJob(id);
-    let isInternship = false;
-    
-    if (!job) {
-        job = await getSingleInternship(id);
-        isInternship = !!job;
-    }
-    
+    const job = await getSingleJob(id);
     const profile = await getUserProfile();
 
     if (!job) {
         return notFound();
     }
 
-    const category = isInternship ? "internship" : "job";
-
     return (
         <div className="flex flex-col gap-8 pb-32">
             <GradientHeader
                 title={job.title}
                 subtitle={`At ${job.company}`}
-                badge={job.jobCategory.toUpperCase()}
+                badge="JOB"
             />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-4 relative">
@@ -73,14 +61,8 @@ export default async function JobPage({ params }: JobPageProps) {
                             </div>
                             <div className="flex items-center gap-2">
                                 <Clock className="w-4 h-4 text-[#111827] dark:text-[var(--primary)]" />
-                                {job.workMode}
+                                {job.workMode || "On-site"}
                             </div>
-                            {job.duration && (
-                                <div className="flex items-center gap-2">
-                                    <Clock className="w-4 h-4 text-[#111827] dark:text-[var(--primary)]" />
-                                    {job.duration}
-                                </div>
-                            )}
                             {job.joiningDate && (
                                 <div className="flex items-center gap-2">
                                     <Calendar className="w-4 h-4 text-[#111827] dark:text-[var(--primary)]" />
@@ -107,9 +89,9 @@ export default async function JobPage({ params }: JobPageProps) {
                     <GlassCard className="prose dark:prose-invert max-w-none">
                         <div className="flex items-center gap-2 mb-4 text-[#111827] dark:text-white">
                             <Info className="w-6 h-6 text-[var(--primary)]" />
-                            <h3 className="text-2xl font-bold m-0">{job.jobCategory === 'internship' ? 'Internship Overview' : 'Job Description'}</h3>
+                            <h3 className="text-2xl font-bold m-0">Job Description</h3>
                         </div>
-                        <div className="whitespace-pre-wrap text-muted-foreground leading-relaxed">
+                        <div className="whitespace-pre-wrap text-muted-foreground leading-relaxed text-base">
                             {job.description}
                         </div>
                     </GlassCard>
@@ -125,30 +107,6 @@ export default async function JobPage({ params }: JobPageProps) {
                                 {job.responsibilities}
                             </div>
                         </GlassCard>
-                    )}
-
-                    {/* Internship Specifics */}
-                    {job.jobCategory === 'internship' && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {job.whatWillLearn && (
-                                <GlassCard className="flex flex-col gap-4">
-                                    <div className="flex items-center gap-2 text-[#111827] dark:text-white">
-                                        <GraduationCap className="w-5 h-5 text-[var(--primary)]" />
-                                        <h4 className="font-bold">What You Will Learn</h4>
-                                    </div>
-                                    <p className="text-sm text-muted-foreground leading-relaxed">{job.whatWillLearn}</p>
-                                </GlassCard>
-                            )}
-                            {job.projectsAndTasks && (
-                                <GlassCard className="flex flex-col gap-4">
-                                    <div className="flex items-center gap-2 text-[#111827] dark:text-white">
-                                        <Briefcase className="w-5 h-5 text-[var(--primary)]" />
-                                        <h4 className="font-bold">Projects & Tasks</h4>
-                                    </div>
-                                    <p className="text-sm text-muted-foreground leading-relaxed">{job.projectsAndTasks}</p>
-                                </GlassCard>
-                            )}
-                        </div>
                     )}
 
                     {/* Skills & Requirements */}
@@ -236,7 +194,7 @@ export default async function JobPage({ params }: JobPageProps) {
                             <div className="space-y-3">
                                 <div className="flex justify-between text-sm">
                                     <span className="text-muted-foreground">Type:</span>
-                                    <span className="font-medium text-[var(--text-main)]">{job.compensationType || (job.jobCategory === 'internship' ? 'Stipend' : 'Salary')}</span>
+                                    <span className="font-medium text-[var(--text-main)]">{job.compensationType || 'Salary'}</span>
                                 </div>
                                 <div className="p-3 rounded-xl bg-[var(--primary)]/10 border border-[var(--primary)]/20 text-center">
                                     <span className="text-lg font-bold text-[var(--text-main)]">{job.salary || "Negotiable"}</span>
@@ -277,29 +235,9 @@ export default async function JobPage({ params }: JobPageProps) {
                                 <Star className="w-6 h-6 text-[var(--primary)]" />
                                 <h3 className="text-xl font-bold">Perks & Benefits</h3>
                             </div>
-                            {job.jobCategory === 'internship' ? (
-                                <div className="grid grid-cols-1 gap-2">
-                                    {[
-                                        { label: "Certificate", value: job.certificateProvided },
-                                        { label: "Letter of Recommendation", value: job.letterOfRecProvided },
-                                        { label: "PPO Opportunity", value: job.ppoPossibility },
-                                        { label: "Mentorship", value: job.mentorshipProvided },
-                                        { label: "Training", value: job.trainingProvided },
-                                    ].map((item, i) => item.value && (
-                                        <div key={i} className="flex items-center gap-2 text-sm text-[var(--text-main)]">
-                                            <CheckCircle2 className="w-4 h-4 text-green-500" />
-                                            {item.label}
-                                        </div>
-                                    ))}
-                                    {!job.certificateProvided && !job.letterOfRecProvided && !job.ppoPossibility && (
-                                        <p className="text-sm text-muted-foreground italic">Standard industry perks apply.</p>
-                                    )}
-                                </div>
-                            ) : (
-                                <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">
-                                    {job.perksAndBenefits || "Competitive compensation, growth opportunities, and a vibrant work culture."}
-                                </p>
-                            )}
+                            <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                                {job.perksAndBenefits || "Competitive compensation, growth opportunities, and a vibrant work culture."}
+                            </p>
                         </GlassCard>
                     </div>
 
@@ -315,7 +253,7 @@ export default async function JobPage({ params }: JobPageProps) {
                 </section>
             </div>
 
-            <StickyApplyBar jobId={job.id} salary={job.salary} initialResumeUrl={profile?.resumeUrl} />
+            <StickyApplyBar jobId={job.id} category="job" salary={job.salary} initialResumeUrl={profile?.resumeUrl} />
         </div>
     );
 }
