@@ -20,8 +20,8 @@ export default async function AdminJobsPage() {
 
     // Combine and add category for the table
     const combined = [
-        ...jobs.map(j => ({ ...j, category: "job" as const })),
-        ...internships.map(i => ({ ...i, category: "internship" as const }))
+        ...jobs.map(j => ({ ...j, jobCategory: "job" as const })),
+        ...internships.map(i => ({ ...i, jobCategory: "internship" as const }))
     ].sort((a, b) => new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime());
 
     return (

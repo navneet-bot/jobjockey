@@ -7,8 +7,7 @@ import { GlassSearchBar } from "@/components/ui/GlassSearchBar";
 export const dynamic = "force-dynamic";
 
 export default async function TrainingPage() {
-    const allJobs = await getJobs();
-    const trainings = allJobs.filter(j => j.jobCategory === "training" && j.isApproved);
+    const trainings: any[] = []; // Training category to be implemented/separated
 
     return (
         <div className="flex flex-col gap-10 pb-20">

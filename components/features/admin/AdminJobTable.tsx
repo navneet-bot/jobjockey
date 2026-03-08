@@ -25,7 +25,7 @@ export function AdminJobTable({ jobs }: { jobs: any[] }) {
                             <tr><td colSpan={6} className="px-6 py-10 text-center text-muted-foreground">No jobs posted yet.</td></tr>
                         ) : (
                             jobs.map((job) => {
-                                const isInternship = job.category === "internship";
+                                const isInternship = job.jobCategory === "internship";
                                 const detailHref = isInternship ? `/internships/${job.id}` : `/jobs/${job.id}`;
                                 const editHref = isInternship ? `/business/post-job?internshipId=${job.id}` : `/business/post-job?jobId=${job.id}`;
                                 
@@ -40,7 +40,7 @@ export function AdminJobTable({ jobs }: { jobs: any[] }) {
                                         <td className="px-6 py-4 text-muted-foreground">{job.company}</td>
                                         <td className="px-6 py-4">
                                             <span className="px-2.5 py-1 rounded-full text-xs font-medium border border-black/5 dark:border-white/10 bg-black/5 dark:bg-white/10 text-[var(--text-main)] dark:text-[var(--primary)] capitalize">
-                                                {job.category}
+                                                {job.jobCategory}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-muted-foreground">{job.location}</td>

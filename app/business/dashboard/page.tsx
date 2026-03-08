@@ -71,8 +71,8 @@ export default function BusinessDashboardPage() {
                 setStats(statsData);
                 
                 const combined = [
-                    ...jobData.map(j => ({ ...j, category: 'job' as const })),
-                    ...internshipData.map(i => ({ ...i, category: 'internship' as const }))
+                    ...jobData.map(j => ({ ...j, jobCategory: 'job' as const })),
+                    ...internshipData.map(i => ({ ...i, jobCategory: 'internship' as const }))
                 ];
                 setJobs(combined);
                 setLoadingJobs(false);
