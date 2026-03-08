@@ -38,12 +38,8 @@ export default function RootLayout({
             defaultTheme="dark"
             enableSystem={false}
           >
-            {/* Global Animated Background */}
-            <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none bg-[var(--bg-main)] transition-colors duration-500">
-              <div className="mesh-blob-1 bg-[var(--mesh-1)] blur-[120px] rounded-full w-[500px] h-[500px] top-[10%] left-[20%] absolute animate-blob"></div>
-              <div className="mesh-blob-2 bg-[var(--mesh-2)] blur-[160px] rounded-full w-[600px] h-[600px] top-[40%] right-[10%] absolute animate-blob animation-delay-2000"></div>
-              <div className="mesh-blob-3 bg-[var(--mesh-3)] blur-[200px] rounded-full w-[700px] h-[700px] bottom-[5%] left-[50%] absolute animate-blob animation-delay-4000"></div>
-            </div>
+            {/* Global Background */}
+            <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none bg-[var(--bg-main)] transition-colors duration-500" />
 
             <Header />
 

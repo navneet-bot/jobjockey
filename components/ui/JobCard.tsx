@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Job } from "@/lib/schema";
 import { GlassCard } from "./GlassCard";
 import { formatDistanceToNow } from "date-fns";
-import { MapPin, Briefcase, GraduationCap, Building2 } from "lucide-react";
+import { MapPin, Briefcase, GraduationCap, Building2, Clock } from "lucide-react";
 import Link from "next/link";
 import { GradientButton } from "./GradientButton";
 import SectionReveal from "./SectionReveal";
@@ -55,7 +55,14 @@ export function JobCard({ job }: { job: Job }) {
 
                 {job.salary && (
                     <div className="text-sm font-medium text-[#111827] dark:text-foreground mt-1">
-                        {job.salary}
+                        {isInternship ? `Stipend: ${job.salary}` : job.salary}
+                    </div>
+                )}
+
+                {isInternship && job.duration && (
+                    <div className="flex items-center gap-1.5 text-xs text-[#111827]/60 dark:text-muted-foreground mt-1">
+                        <Clock className="w-3.5 h-3.5 text-[var(--primary)]" />
+                        Duration: {job.duration}
                     </div>
                 )}
 

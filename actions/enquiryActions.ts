@@ -1,6 +1,6 @@
 "use server";
 import { db } from "@/lib/db";
-import { companyEnquiriesTable } from "@/lib/schema";
+import { companyEnquiriesTable, companiesTable } from "@/lib/schema";
 import { companyEnquirySchema, CompanyEnquiryFormValues } from "@/lib/validators";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { eq, desc } from "drizzle-orm";
@@ -26,7 +26,7 @@ export async function submitCompanyEnquiry(data: CompanyEnquiryFormValues) {
             await db.insert(companyEnquiriesTable).values({ ...validation.data, userId });
         }
 
-        revalidatePath("/enquiry");
+        revalidatePath("/business/enquiry");
         revalidatePath("/admin/companies");
         return { success: true };
     } catch (err: any) {
@@ -68,6 +68,27 @@ export async function updateEnquiryStatus(id: string, status: "approved" | "reje
                         role: "company"
                     }
                 });
+
+                // Check if company profile already exists
+                const [existingCompany] = await db
+                    .select()
+                    .from(companiesTable)
+                    .where(eq(companiesTable.userId, targetUserId))
+                    .limit(1);
+
+                if (!existingCompany) {
+                    await db.insert(companiesTable).values({
+                        userId: targetUserId,
+                        companyName: updated.companyName,
+                        industry: updated.industry,
+                        companyWebsite: updated.companyUrl,
+                        isVerified: true
+                    });
+                } else {
+                    await db.update(companiesTable)
+                        .set({ isVerified: true })
+                        .where(eq(companiesTable.userId, targetUserId));
+                }
             }
         }
 

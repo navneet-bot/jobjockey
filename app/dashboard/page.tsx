@@ -4,12 +4,41 @@ import { GradientButton } from "@/components/ui/GradientButton";
 import Link from "next/link";
 import { User, FileText, Search } from "lucide-react";
 import { Metadata } from "next";
+import { redirect } from "next/navigation";
+import { auth } from "@clerk/nextjs/server";
+import { db } from "@/lib/db";
+import { userProfilesTable, companiesTable } from "@/lib/schema";
+import { eq } from "drizzle-orm";
 
 export const metadata: Metadata = {
   title: "JobJockey - User Dashboard",
 };
 
-export default function UserDashboardPage() {
+export default async function UserDashboardPage() {
+  const { userId } = await auth();
+  
+  if (userId) {
+    const [talentProfile] = await db
+      .select()
+      .from(userProfilesTable)
+      .where(eq(userProfilesTable.userId, userId))
+      .limit(1);
+
+    if (talentProfile) {
+      redirect("/talent/dashboard");
+    }
+
+    const [businessProfile] = await db
+      .select()
+      .from(companiesTable)
+      .where(eq(companiesTable.userId, userId))
+      .limit(1);
+
+    if (businessProfile) {
+      redirect("/business/dashboard");
+    }
+  }
+
   return (
     <div className="flex flex-col gap-10 max-w-5xl mx-auto pt-10 px-4 md:px-0 pb-20">
       <GradientHeader
@@ -25,7 +54,7 @@ export default function UserDashboardPage() {
           </div>
           <h3 className="text-xl font-bold text-white">Candidate Profile</h3>
           <p className="text-muted-foreground text-sm">Update your details, upload your latest resume, and make yourself stand out to employers.</p>
-          <Link href="/profile" className="mt-4 w-full">
+          <Link href="/talent/create-profile" className="mt-4 w-full">
             <GradientButton className="w-full">Edit Profile</GradientButton>
           </Link>
         </GlassCard>

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Sparkles, ArrowRight } from "lucide-react";
+import { Sparkles, Building2, Briefcase } from "lucide-react";
 import Link from "next/link";
 
 export function PreFooterCTA() {
@@ -69,26 +69,27 @@ export function PreFooterCTA() {
                         </div>
 
                         <div className="flex flex-col gap-4">
-                            <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold leading-[1.1] text-[var(--text-main)] tracking-tight">
-                                Ready to hire trained talent or start your <span className="text-[#111827] dark:text-[var(--primary)] inline-block">remote career?</span>
+                            <h2 className="text-4xl md:text-5xl lg:text-5xl font-display font-bold leading-[1.2] text-[var(--text-main)] tracking-tight">
+                                Ready to Build Your Team <span className="text-[#111827] dark:text-[var(--primary)] inline-block">or Grow Your Career?</span>
                             </h2>
-                            <p className="text-lg text-[var(--text-dim)] leading-relaxed max-w-xl font-body">
-                                Contact Job Jockey today.
+                            <p className="text-lg text-[var(--text-dim)] leading-relaxed max-w-xl font-body mt-2">
+                                Whether you're a business looking for talent or a professional exploring new opportunities, Job Jockey helps you take the next step.
                             </p>
                         </div>
 
                         {/* CTA Buttons */}
-                        <div className="flex flex-col sm:flex-row items-center gap-4 pt-4">
-                            <Link href="/jobs" className="w-full sm:w-auto">
+                        <div className="flex flex-col sm:flex-row items-center gap-4 pt-4 mt-2">
+                            <Link href="/enquiry" className="w-full sm:w-auto">
                                 <button className="w-full sm:w-auto px-8 py-4 rounded-full bg-[#111827] text-white dark:bg-white dark:text-black font-bold text-lg hover:scale-105 hover:shadow-lg dark:hover:shadow-[0_0_30px_var(--primary-glow)] border border-black/10 dark:border-white/10 transition-all flex items-center justify-center gap-2 group">
-                                    Get Started Now
-                                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                    <Building2 className="w-5 h-5 group-hover:-rotate-12 transition-transform" />
+                                    Submit Hiring Enquiry
                                 </button>
                             </Link>
 
-                            <Link href="/companies" className="w-full sm:w-auto">
-                                <button className="w-full sm:w-auto px-8 py-4 rounded-full bg-[var(--glass-bg)] border border-[#9ca3af] dark:border-[var(--glass-border)] text-[var(--text-main)] font-medium text-lg hover:bg-[var(--glass-bg)] hover:border-black/20 dark:hover:border-white/20 transition-all backdrop-blur-md">
-                                    View Opportunities
+                            <Link href="/jobs" className="w-full sm:w-auto">
+                                <button className="w-full sm:w-auto px-8 py-4 rounded-full bg-[var(--glass-bg)] border border-[#9ca3af] dark:border-[var(--glass-border)] text-[var(--text-main)] font-medium text-lg hover:bg-[var(--glass-bg)] hover:border-black/20 dark:hover:border-[var(--primary)]/50 transition-all backdrop-blur-md flex items-center justify-center gap-2 group">
+                                    <Briefcase className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+                                    Explore Jobs
                                 </button>
                             </Link>
                         </div>

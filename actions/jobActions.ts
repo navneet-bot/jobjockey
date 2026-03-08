@@ -10,11 +10,41 @@ import { userProfilesTable, companyEnquiriesTable } from "@/lib/schema";
 
 type JobFormData = {
   title: string;
-  jobType: "Full-time" | "Part-time" | "Contract" | "Internship";
+  jobType: "Full-time" | "Part-time" | "Contract";
   jobCategory: "job" | "internship" | "training";
   location: string;
   experienceLevel: "Entry Level" | "Mid-Level" | "Senior" | "Manager";
   salary?: string;
+  duration?: string;
+  department?: string;
+  workMode?: string;
+  responsibilities?: string;
+  requiredSkills?: string;
+  preferredSkills?: string;
+  minExperience?: string;
+  maxExperience?: string;
+  industryExperience?: string;
+  compensationType?: string;
+  minEducation?: string;
+  certifications?: string;
+  toolsAndTechnologies?: string;
+  interviewRounds?: string;
+  interviewMode?: string;
+  deadline?: string;
+  openPositions?: string;
+  joiningDate?: string;
+  perksAndBenefits?: string;
+  specialInstructions?: string;
+  whatWillLearn?: string;
+  projectsAndTasks?: string;
+  educationLevel?: string;
+  eligibleCourses?: string;
+  mentorshipProvided?: boolean;
+  trainingProvided?: boolean;
+  certificateProvided?: boolean;
+  letterOfRecProvided?: boolean;
+  ppoPossibility?: boolean;
+  selectionProcess?: string;
   description: string;
   applicationUrl: string;
 };
@@ -160,6 +190,36 @@ export async function updateJob(id: string, jobData: JobFormData) {
         location: validation.data.location,
         experienceLevel: validation.data.experienceLevel,
         salary: validation.data.salary,
+        duration: validation.data.duration,
+        department: validation.data.department,
+        workMode: validation.data.workMode,
+        responsibilities: validation.data.responsibilities,
+        requiredSkills: validation.data.requiredSkills,
+        preferredSkills: validation.data.preferredSkills,
+        minExperience: validation.data.minExperience,
+        maxExperience: validation.data.maxExperience,
+        industryExperience: validation.data.industryExperience,
+        compensationType: validation.data.compensationType,
+        minEducation: validation.data.minEducation,
+        certifications: validation.data.certifications,
+        toolsAndTechnologies: validation.data.toolsAndTechnologies,
+        interviewRounds: validation.data.interviewRounds,
+        interviewMode: validation.data.interviewMode,
+        deadline: validation.data.deadline,
+        openPositions: validation.data.openPositions,
+        joiningDate: validation.data.joiningDate,
+        perksAndBenefits: validation.data.perksAndBenefits,
+        specialInstructions: validation.data.specialInstructions,
+        whatWillLearn: validation.data.whatWillLearn,
+        projectsAndTasks: validation.data.projectsAndTasks,
+        educationLevel: validation.data.educationLevel,
+        eligibleCourses: validation.data.eligibleCourses,
+        mentorshipProvided: validation.data.mentorshipProvided,
+        trainingProvided: validation.data.trainingProvided,
+        certificateProvided: validation.data.certificateProvided,
+        letterOfRecProvided: validation.data.letterOfRecProvided,
+        ppoPossibility: validation.data.ppoPossibility,
+        selectionProcess: validation.data.selectionProcess,
         description: validation.data.description,
         applicationUrl: validation.data.applicationUrl,
       })

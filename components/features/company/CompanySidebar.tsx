@@ -9,7 +9,7 @@ import { GlassCard } from "@/components/ui/GlassCard";
 const companyNav = [
     { text: "Overview", href: "/company", icon: LayoutDashboard },
     { text: "My Jobs", href: "/company/jobs", icon: Briefcase },
-    { text: "Post a Job", href: "/company/post-job", icon: PlusCircle },
+    { text: "Create a post", href: "/company/post-job", icon: PlusCircle },
     { text: "Applications", href: "/company/applications", icon: Users },
 ];
 

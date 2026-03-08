@@ -21,14 +21,35 @@ export default function Navbar() {
           className="text-sm font-medium text-foreground/70 transition-all duration-200 hover:text-primary relative group py-1"
           href={"/"}
         >
-          <span>Browse Jobs</span>
+          <span>HOME</span>
           <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
         </Link>
         <Link
           className="text-sm font-medium text-foreground/70 transition-all duration-200 hover:text-primary relative group py-1"
-          href={"/post-job"}
+          href={"/#services"}
         >
-          <span>Post A Job</span>
+          <span>SOLUTIONS</span>
+          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
+        </Link>
+        <Link
+          className="text-sm font-medium text-foreground/70 transition-all duration-200 hover:text-primary relative group py-1"
+          href={"/business/enquiry"}
+        >
+          <span>FOR BUSINESSES</span>
+          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
+        </Link>
+        <Link
+          className="text-sm font-medium text-foreground/70 transition-all duration-200 hover:text-primary relative group py-1"
+          href={"/talent/create-profile"}
+        >
+          <span>FOR TALENT</span>
+          <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
+        </Link>
+        <Link
+          className="text-sm font-medium text-foreground/70 transition-all duration-200 hover:text-primary relative group py-1"
+          href={"/#about"}
+        >
+          <span>ABOUT</span>
           <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
         </Link>
       </>
@@ -47,15 +68,39 @@ export default function Navbar() {
               className="text-sm font-medium transition-colors hover:text-primary"
               href={"/"}
             >
-              Browse Jobs
+              HOME
             </Link>
           </SheetClose>
           <SheetClose asChild>
             <Link
               className="text-sm font-medium transition-colors hover:text-primary"
-              href={"/post-job"}
+              href={"/#services"}
             >
-              Post A Job
+              SOLUTIONS
+            </Link>
+          </SheetClose>
+          <SheetClose asChild>
+            <Link
+              className="text-sm font-medium transition-colors hover:text-primary"
+              href={"/business/enquiry"}
+            >
+              FOR BUSINESSES
+            </Link>
+          </SheetClose>
+          <SheetClose asChild>
+            <Link
+              className="text-sm font-medium transition-colors hover:text-primary"
+              href={"/talent/create-profile"}
+            >
+              FOR TALENT
+            </Link>
+          </SheetClose>
+          <SheetClose asChild>
+            <Link
+              className="text-sm font-medium transition-colors hover:text-primary"
+              href={"/#about"}
+            >
+              ABOUT
             </Link>
           </SheetClose>
         </>

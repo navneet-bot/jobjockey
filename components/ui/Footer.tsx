@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Mail, MapPin, Phone, Facebook, Instagram, Linkedin } from "lucide-react";
+import { Mail, MapPin, Phone, Linkedin } from "lucide-react";
 import { InfoModal } from "./InfoModal";
 import { motion } from "framer-motion";
 import SectionReveal from "./SectionReveal";
@@ -93,11 +93,11 @@ export function Footer() {
                             Job Jockey helps companies hire trained candidates. We also help students and freshers learn practical skills and get remote jobs or internships.
                         </p>
                         <div className="flex items-center gap-4 text-white/40 mt-2">
-                            <Link href="#" className="hover:text-[var(--primary)] transition-colors">
-                                <Facebook className="w-5 h-5" />
+                            <Link href="https://x.com/navneet_ac55349" target="_blank" className="hover:text-[var(--primary)] transition-colors">
+                                <svg viewBox="0 0 24 24" aria-hidden="true" className="w-5 h-5 fill-current"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
                             </Link>
-                            <Link href="#" className="hover:text-[var(--primary)] transition-colors">
-                                <Instagram className="w-5 h-5" />
+                            <Link href="https://www.reddit.com/r/JobJockey/" target="_blank" className="hover:text-[var(--primary)] transition-colors">
+                                <svg viewBox="0 0 24 24" aria-hidden="true" className="w-5 h-5 fill-current"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.056 1.597.04.21.06.427.06.646 0 2.734-3.516 4.952-7.84 4.952-4.323 0-7.84-2.218-7.84-4.952 0-.22.021-.435.062-.646A1.757 1.757 0 0 1 3.514 11.75c0-.968.786-1.754 1.754-1.754.463 0 .882.18 1.189.479 1.18-.846 2.813-1.4 4.615-1.484l.956-4.488a.5.5 0 0 1 .595-.385l3.38.712c.197-.391.606-.646 1.057-.646zm-6.39 7.13c-.603 0-1.092.49-1.092 1.09s.49 1.093 1.091 1.093c.603 0 1.092-.49 1.092-1.093s-.49-1.091-1.092-1.091zm4.76 0c-.603 0-1.091.49-1.091 1.09s.488 1.093 1.091 1.093c.603 0 1.092-.49 1.092-1.093s-.489-1.091-1.092-1.091zm-4.76 3.974a.387.387 0 0 0-.287.654c.9.9 2.184 1.242 3.393 1.242 1.209 0 2.492-.341 3.393-1.242a.387.387 0 1 0-.547-.547c-.723.723-1.816 1.03-2.846 1.03-1.03 0-2.124-.307-2.847-1.03a.387.387 0 0 0-.259-.107z"></path></svg>
                             </Link>
                             <Link href="https://www.linkedin.com/company/111772347" target="_blank" className="hover:text-[var(--primary)] transition-colors">
                                 <Linkedin className="w-5 h-5" />
@@ -105,12 +105,13 @@ export function Footer() {
                         </div>
                     </div>
 
-                    {/* Column 2: Quick Links */}
                     <div className="flex flex-col gap-6">
                         <h4 className="text-white font-display font-semibold tracking-wide text-lg">Platform</h4>
                         <nav className="flex flex-col gap-3">
-                            <Link href="/jobs" className="text-sm text-white/60 hover:text-[var(--primary)] transition-all">Browse Jobs</Link>
-                            <Link href="/enquiry" className="text-sm text-white/60 hover:text-[var(--primary)] transition-all">Post a Job</Link>
+                            <Link href="/jobs" className="text-sm text-white/60 hover:text-[var(--primary)] transition-all">Jobs</Link>
+                            <Link href="/internships" className="text-sm text-white/60 hover:text-[var(--primary)] transition-all">Internships</Link>
+                            <Link href="/business/enquiry" className="text-sm text-white/60 hover:text-[var(--primary)] transition-all">For Businesses</Link>
+                            <Link href="/talent/create-profile" className="text-sm text-white/60 hover:text-[var(--primary)] transition-all">For Talent</Link>
                         </nav>
                     </div>
 
@@ -131,11 +132,17 @@ export function Footer() {
                         <ul className="flex flex-col gap-4 text-sm text-white/60">
                             <li className="flex items-start gap-3">
                                 <Mail className="w-5 h-5 text-[var(--primary)] shrink-0" />
-                                <a href="mailto:info@jobjockey.in" className="hover:text-[var(--primary)]">info@jobjockey.in</a>
+                                <div className="flex flex-col gap-1">
+                                    <a href="mailto:careers@jobjockey.in" className="hover:text-[var(--primary)]">careers@jobjockey.in</a>
+                                    <a href="mailto:info@jobjockey.in" className="hover:text-[var(--primary)]">info@jobjockey.in</a>
+                                </div>
                             </li>
                             <li className="flex items-start gap-3">
                                 <Phone className="w-5 h-5 text-[var(--primary)] shrink-0" />
-                                <a href="tel:+919970122357" className="hover:text-[var(--primary)]">+91-9970122357</a>
+                                <div className="flex flex-col gap-1">
+                                    <a href="tel:+919970122357" className="hover:text-[var(--primary)]">+91-9970122357</a>
+                                    <a href="tel:+918799458253" className="hover:text-[var(--primary)]">+91-8799458253</a>
+                                </div>
                             </li>
                             <li className="flex items-center gap-3">
                                 <MapPin className="w-5 h-5 text-[var(--primary)] shrink-0" />
