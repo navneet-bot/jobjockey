@@ -51,14 +51,6 @@ export default function JobDetailsHeader({ job }: JobDetailsHeaderProps) {
           </div>
         </div>
 
-        <div>
-          <Button asChild>
-            <Link href={job?.applicationUrl || ""}>
-              Apply Now
-              <ExternalLink className="h-4 w-4" />
-            </Link>
-          </Button>
-        </div>
       </div>
     </div>
   );

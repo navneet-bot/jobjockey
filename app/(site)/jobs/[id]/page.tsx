@@ -2,8 +2,9 @@ import { getSingleJob } from "@/actions/jobActions";
 import { getUserProfile } from "@/actions/userActions";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GradientHeader } from "@/components/ui/GradientHeader";
-import { StickyApplyBar } from "@/components/ui/StickyApplyBar";
+import { InlineApplyButton } from "@/components/features/job/InlineApplyButton";
 import { MapPin, Briefcase, GraduationCap, Building2, Calendar, Currency, Clock, Star, ListChecks, Wrench, GraduationCap as EducationIcon, Info, Users, CheckCircle2 } from "lucide-react";
+import { currentUser } from "@clerk/nextjs/server";
 import { formatDistanceToNow } from "date-fns";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
@@ -22,6 +23,9 @@ export default async function JobPage({ params }: JobPageProps) {
     const { id } = await params;
     const job = await getSingleJob(id);
     const profile = await getUserProfile();
+    const user = await currentUser();
+    const role = user?.publicMetadata?.role;
+    const isTalent = role === "talent";
 
     if (!job) {
         return notFound();
@@ -192,13 +196,12 @@ export default async function JobPage({ params }: JobPageProps) {
                                 <h3 className="text-xl font-bold">Compensation</h3>
                             </div>
                             <div className="space-y-3">
-                                <div className="flex justify-between text-sm">
-                                    <span className="text-muted-foreground">Type:</span>
-                                    <span className="font-medium text-[var(--text-main)]">{job.compensationType || 'Salary'}</span>
-                                </div>
-                                <div className="p-3 rounded-xl bg-[var(--primary)]/10 border border-[var(--primary)]/20 text-center">
-                                    <span className="text-lg font-bold text-[var(--text-main)]">{job.salary || "Negotiable"}</span>
-                                </div>
+                                <p className="text-sm text-muted-foreground">
+                                    <span className="font-semibold text-[var(--text-main)]">Amount:</span> {job.salary || "Negotiable"}
+                                </p>
+                                <p className="text-sm text-muted-foreground">
+                                    <span className="font-semibold text-[var(--text-main)]">Type:</span> {job.compensationType || 'Salary'}
+                                </p>
                             </div>
                         </GlassCard>
                     </div>
@@ -250,10 +253,19 @@ export default async function JobPage({ params }: JobPageProps) {
                             <p className="text-sm text-muted-foreground italic leading-relaxed">{job.specialInstructions}</p>
                         </GlassCard>
                     )}
+
+                    {/* Apply Button (Talent Only) */}
+                    {isTalent && (
+                        <div className="mt-8 flex justify-center md:justify-start">
+                            <InlineApplyButton 
+                                jobId={job.id} 
+                                category="job" 
+                                initialResumeUrl={profile?.resumeUrl} 
+                            />
+                        </div>
+                    )}
                 </section>
             </div>
-
-            <StickyApplyBar jobId={job.id} category="job" salary={job.salary} initialResumeUrl={profile?.resumeUrl} />
         </div>
     );
 }

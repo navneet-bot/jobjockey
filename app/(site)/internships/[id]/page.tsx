@@ -2,8 +2,9 @@ import { getSingleInternship } from "@/actions/internshipActions";
 import { getUserProfile } from "@/actions/userActions";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GradientHeader } from "@/components/ui/GradientHeader";
-import { StickyApplyBar } from "@/components/ui/StickyApplyBar";
+import { InlineApplyButton } from "@/components/features/job/InlineApplyButton";
 import { MapPin, Briefcase, GraduationCap, Building2, Calendar, Clock, Info, CheckCircle2, Star, Users } from "lucide-react";
+import { currentUser } from "@clerk/nextjs/server";
 import { formatDistanceToNow } from "date-fns";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
@@ -22,6 +23,9 @@ export default async function InternshipPage({ params }: InternshipPageProps) {
     const { id } = await params;
     const internship = await getSingleInternship(id);
     const profile = await getUserProfile();
+    const user = await currentUser();
+    const role = user?.publicMetadata?.role;
+    const isTalent = role === "talent";
 
     if (!internship) {
         return notFound();
@@ -158,9 +162,9 @@ export default async function InternshipPage({ params }: InternshipPageProps) {
                                 <h3 className="text-xl font-bold">Application Details</h3>
                             </div>
                             <div className="space-y-3">
-                                <div className="flex justify-between text-sm">
-                                    <span className="text-muted-foreground">Stipend:</span>
-                                    <span className="font-bold text-[var(--primary)]">{internship.stipend || "Unpaid"}</span>
+                                <div className="space-y-1">
+                                    <span className="text-muted-foreground block text-xs uppercase tracking-wider">Stipend:</span>
+                                    <span className="font-bold text-[var(--text-main)] text-lg">{internship.stipend || "Unpaid"}</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
                                     <span className="text-muted-foreground">Openings:</span>
@@ -173,10 +177,19 @@ export default async function InternshipPage({ params }: InternshipPageProps) {
                             </div>
                         </GlassCard>
                     </div>
+
+                    {/* Apply Button (Talent Only) */}
+                    {isTalent && (
+                        <div className="mt-8 flex justify-center md:justify-start">
+                            <InlineApplyButton 
+                                jobId={internship.id} 
+                                category="internship" 
+                                initialResumeUrl={profile?.resumeUrl} 
+                            />
+                        </div>
+                    )}
                 </section>
             </div>
-
-            <StickyApplyBar jobId={internship.id} category="internship" salary={internship.stipend} initialResumeUrl={profile?.resumeUrl} />
         </div>
     );
 }
