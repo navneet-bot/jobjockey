@@ -61,7 +61,8 @@ export function AdminCompanyTable({ statusFilter }: { statusFilter?: "pending" |
                         <thead className="bg-[var(--glass-bg)] border-b border-[var(--glass-border)] text-muted-foreground">
                             <tr>
                                 <th className="px-6 py-4 font-medium">Company Details</th>
-                                <th className="px-6 py-4 font-medium">Contact</th>
+                                <th className="px-6 py-4 font-medium">Contact Person</th>
+                                <th className="px-6 py-4 font-medium">Contact Details</th>
                                 <th className="px-6 py-4 font-medium">Size</th>
                                 <th className="px-6 py-4 font-medium">GST</th>
                                 <th className="px-6 py-4 font-medium text-center">Status</th>
@@ -84,6 +85,10 @@ export function AdminCompanyTable({ statusFilter }: { statusFilter?: "pending" |
                                                     {enq.companyUrl}
                                                 </a>
                                             )}
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <p className="font-medium text-[var(--text-main)]">{enq.contactPerson}</p>
+                                            <p className="text-xs text-muted-foreground">{enq.designation || "N/A"}</p>
                                         </td>
                                         <td className="px-6 py-4 flex flex-col gap-1 text-muted-foreground">
                                             <span>{enq.email}</span>

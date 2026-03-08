@@ -142,22 +142,8 @@ export default function RadialOrbitalTimeline({
             rotate: rotation,
           }}
         >
-          {/* Center Hub */}
-          <div className="absolute w-16 h-16 rounded-full bg-white/10 dark:bg-white/5 backdrop-blur-xl flex items-center justify-center z-10 border-2 border-black/10 dark:border-white/20 shadow-xl">
-            <div className="absolute w-20 h-20 rounded-full border border-black/5 dark:border-white/10 animate-ping opacity-30"></div>
-            <div
-              className="absolute w-24 h-24 rounded-full border border-black/5 dark:border-white/5 animate-ping opacity-20"
-              style={{ animationDelay: "0.5s" }}
-            ></div>
-            <motion.div 
-              style={{ rotate: counterRotation }}
-              className="w-8 h-8 rounded-full bg-white/80 dark:bg-white/80 backdrop-blur-md flex items-center justify-center shadow-inner"
-            >
-               <Workflow size={16} className="text-black dark:text-black" />
-            </motion.div>
-          </div>
-
-          <div className="absolute w-96 h-96 rounded-full border border-black/5 dark:border-white/10 shadow-[inset_0_0_50px_rgba(255,255,255,0.05)]"></div>
+          {/* Orbital Circle Path */}
+          <div className="absolute w-96 h-96 rounded-full border-2 border-black/15 dark:border-white/20 shadow-[inset_0_0_60px_rgba(0,0,0,0.05)] dark:shadow-[inset_0_0_50px_rgba(255,255,255,0.05)]"></div>
 
           {timelineData.map((item, index) => {
             const position = calculateNodePosition(index, timelineData.length);
@@ -188,7 +174,7 @@ export default function RadialOrbitalTimeline({
                 >
                     <div
                     className={`
-                    w-10 h-10 rounded-full flex items-center justify-center
+                    w-14 h-14 rounded-full flex items-center justify-center
                     ${
                         isExpanded
                         ? "bg-white text-black"
@@ -208,7 +194,7 @@ export default function RadialOrbitalTimeline({
                     ${isExpanded ? "scale-140" : "hover:scale-110"}
                     `}
                     >
-                    <Icon size={16} />
+                    <Icon size={24} />
                     </div>
 
                     <div

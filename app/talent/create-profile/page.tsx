@@ -11,11 +11,13 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useForm as useReactHookForm } from "react-hook-form";
 import { UploadButton } from "@/lib/uploadthing";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getUserProfile } from "@/actions/userActions";
 
 export default function TalentProfileCreatePage() {
     const router = useRouter();
     const [resumeUrl, setResumeUrl] = useState<string>("");
+    const [isLoadingData, setIsLoadingData] = useState(true);
     
     const form = useReactHookForm<UserProfileFormValues>({
         resolver: zodResolver(userProfileSchema),
@@ -33,6 +35,31 @@ export default function TalentProfileCreatePage() {
             github: "",
         },
     });
+
+    useEffect(() => {
+        getUserProfile().then((data) => {
+            if (data) {
+                form.reset({
+                    name: data.name || "",
+                    email: data.email || "",
+                    phone: data.phone || "",
+                    education: data.education || "",
+                    skills: data.skills || "",
+                    experience: data.experience || "",
+                    preferredDomain: data.preferredDomain || "",
+                    preferredJobType: data.preferredJobType || "",
+                    portfolioUrl: data.portfolioUrl || "",
+                    linkedin: data.linkedin || "",
+                    github: data.github || "",
+                });
+                if (data.resumeUrl) setResumeUrl(data.resumeUrl);
+            }
+            setIsLoadingData(false);
+        }).catch(err => {
+            console.error(err);
+            setIsLoadingData(false);
+        });
+    }, [form]);
 
     const onSubmit = async (data: UserProfileFormValues) => {
         if (!resumeUrl) {
@@ -53,12 +80,17 @@ export default function TalentProfileCreatePage() {
     return (
         <div className="flex flex-col gap-10 py-20 px-4 items-center justify-center min-h-[80vh]">
             <GradientHeader
-                title="Create Talent Profile"
-                subtitle="Showcase your skills and unlock opportunities."
+                title={resumeUrl ? "Edit Talent Profile" : "Create Talent Profile"}
+                subtitle={resumeUrl ? "Keep your clinical and technical details up to date." : "Showcase your skills and unlock opportunities."}
                 badge="For Talent"
             />
 
-            <GlassCard className="w-full max-w-7xl p-8 md:p-10 border border-[#9ca3af]/50 dark:border-white/20 shadow-xl">
+            {isLoadingData ? (
+                <div className="flex items-center justify-center py-20">
+                    <div className="w-10 h-10 border-4 border-[var(--primary)] border-t-transparent rounded-full animate-spin"></div>
+                </div>
+            ) : (
+                <GlassCard className="w-full max-w-7xl p-8 md:p-10 border border-[#9ca3af]/50 dark:border-white/20 shadow-xl">
                 <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-6">
                         <div className="flex flex-col gap-2">
@@ -95,7 +127,7 @@ export default function TalentProfileCreatePage() {
 
                         <div className="flex flex-col gap-2">
                             <label className="text-sm font-medium text-[var(--text-main)]">Experience *</label>
-                            <NeonInput {...form.register("experience")} placeholder="2 years in Web Dev" />
+                            <NeonInput {...form.register("experience")} placeholder="Fresher/2 Years in Web dev" />
                             {form.formState.errors.experience && (
                                 <span className="text-xs text-red-500">{form.formState.errors.experience.message}</span>
                             )}
@@ -192,10 +224,11 @@ export default function TalentProfileCreatePage() {
                         className="w-full md:w-auto self-center px-10 mt-4 py-4 text-base !bg-[#111827] dark:!bg-white !text-white dark:!text-black"
                         disabled={form.formState.isSubmitting}
                     >
-                        {form.formState.isSubmitting ? "Saving..." : "Create Profile"}
+                        {form.formState.isSubmitting ? "Saving..." : (resumeUrl ? "Update Profile" : "Create Profile")}
                     </GradientButton>
                 </form>
             </GlassCard>
+            )}
         </div>
     );
 }

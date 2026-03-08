@@ -2,7 +2,7 @@
 
 import { GlassCard } from "@/components/ui/GlassCard";
 import { CompanyEnquiry } from "@/lib/schema";
-import { Building2, Globe, Mail, Phone, Users, FileText } from "lucide-react";
+import { Building2, Globe, Mail, Phone, Users, FileText, Briefcase } from "lucide-react";
 
 export function CompanyOverviewTab({ company }: { company: CompanyEnquiry }) {
     return (
@@ -49,6 +49,22 @@ export function CompanyOverviewTab({ company }: { company: CompanyEnquiry }) {
                     <div className="flex items-center gap-3 text-[var(--text-main)]">
                         <Users className="w-5 h-5 text-[var(--text-main)]" />
                         <span>{company.companySize} Employees</span>
+                    </div>
+                </div>
+
+                <div className="flex flex-col gap-1">
+                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Contact Person</label>
+                    <div className="flex items-center gap-3 text-[var(--text-main)]">
+                        <Users className="w-5 h-5 text-[var(--text-main)]" />
+                        <span className="font-semibold">{company.contactPerson}</span>
+                    </div>
+                </div>
+
+                <div className="flex flex-col gap-1">
+                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Designation</label>
+                    <div className="flex items-center gap-3 text-[var(--text-main)]">
+                        <Briefcase className="w-5 h-5 text-[var(--text-main)]" />
+                        <span>{company.designation || "N/A"}</span>
                     </div>
                 </div>
 

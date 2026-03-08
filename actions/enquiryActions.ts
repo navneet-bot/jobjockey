@@ -81,6 +81,7 @@ export async function updateEnquiryStatus(id: string, status: "approved" | "reje
                         userId: targetUserId,
                         companyName: updated.companyName,
                         industry: updated.industry,
+                        designation: updated.designation,
                         companyWebsite: updated.companyUrl,
                         isVerified: true
                     });

@@ -83,30 +83,35 @@ export default function GuestHome() {
       </section>
 
       {/* ABOUT SECTION */}
-      <section className="container mx-auto px-6 overflow-hidden min-h-screen flex flex-col justify-center py-12 gap-8 lg:gap-12" id="about">
+      <section className="container mx-auto px-6 overflow-hidden min-h-screen flex flex-col justify-center py-12 gap-2" id="about">
         {/* Full Width Top Title */}
         <SectionReveal className="w-full flex justify-center text-center">
           <GradientHeader
             align="center"
-            badge="About Job Jockey"
+            badge={
+              <>
+                <Users className="w-5 h-5" />
+                <span>About Job Jockey</span>
+              </>
+            }
             title="Build Your Team with Job-Ready Talent"
             subtitle=""
           />
         </SectionReveal>
 
-        {/* Side-by-Side Content */}
-        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16 group/about w-full mt-4 lg:mt-8">
-          {/* Left Text Description */}
-          <SectionReveal className="w-full lg:w-1/3 flex flex-col justify-center">
-            <div className="flex flex-col gap-6 text-lg md:text-xl text-[var(--text-dim)] leading-relaxed text-center lg:text-left">
+        {/* Centered Content Column */}
+        <div className="flex flex-col items-center gap-6 lg:gap-8 group/about w-full mt-2">
+          {/* Top Text Description */}
+          <SectionReveal className="w-full max-w-5xl flex flex-col justify-center">
+            <div className="flex flex-col gap-6 text-lg md:text-xl text-[var(--text-dim)] leading-relaxed text-center">
               <p>
                 Job Jockey connects businesses with trained professionals ready to contribute from day one. We support companies with hiring, workforce solutions, and project support while helping professionals access meaningful career opportunities.
               </p>
             </div>
           </SectionReveal>
 
-          {/* Right SVG Graphic */}
-          <SectionReveal className="w-full lg:w-2/3">
+          {/* Bottom SVG Graphic */}
+          <SectionReveal className="w-full max-w-3xl">
             <GlassCard className="relative p-0 overflow-hidden aspect-video flex items-center justify-center border-[var(--primary)]/20 shadow-[0_0_40px_rgba(255,255,255,0.05)] transition-all duration-500 hover:shadow-[0_0_60px_rgba(var(--primary-rgb),0.2)] hover:-translate-y-2 group">
               <div className="absolute inset-0 bg-gradient-to-br from-[var(--primary)]/10 to-transparent z-0 group-hover:opacity-80 transition-opacity duration-500" />
               <div className="relative z-10 w-full h-full overflow-hidden rounded-xl bg-[#0F121C]">

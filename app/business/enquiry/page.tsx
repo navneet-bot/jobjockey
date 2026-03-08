@@ -19,6 +19,7 @@ export default function BusinessEnquiryPage() {
             companyName: "",
             industry: "",
             contactPerson: "",
+            designation: "",
             email: "",
             phone: "",
             companyUrl: "",
@@ -67,10 +68,18 @@ export default function BusinessEnquiryPage() {
                         </div>
 
                         <div className="flex flex-col gap-2">
-                            <label className="text-sm font-medium text-[var(--text-main)]">Point of Contact *</label>
+                            <label className="text-sm font-medium text-[var(--text-main)]">Contact Person *</label>
                             <NeonInput {...form.register("contactPerson")} placeholder="Aditya Varma" />
                             {form.formState.errors.contactPerson && (
                                 <span className="text-xs text-red-500">{form.formState.errors.contactPerson.message}</span>
+                            )}
+                        </div>
+
+                        <div className="flex flex-col gap-2">
+                            <label className="text-sm font-medium text-[var(--text-main)]">Contact Person Designation *</label>
+                            <NeonInput {...form.register("designation")} placeholder="HR Manager / Director" />
+                            {form.formState.errors.designation && (
+                                <span className="text-xs text-red-500">{form.formState.errors.designation.message}</span>
                             )}
                         </div>
 
@@ -120,22 +129,22 @@ export default function BusinessEnquiryPage() {
                             <label className="text-sm font-medium text-[var(--text-main)]">GST Number (Optional)</label>
                             <NeonInput {...form.register("gstNumber")} placeholder="Optional GST ID" />
                         </div>
-                    </div>
 
-                    <div className="flex flex-col gap-2">
-                        <label className="text-sm font-medium text-[var(--text-main)]">Hire Status *</label>
-                        <select
-                            {...form.register("hiringNeeds")}
-                            className="flex h-12 w-full rounded-xl border border-[var(--glass-border)] bg-[var(--glass-bg)] px-3 py-2 text-sm text-[var(--text-main)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
-                        >
-                            <option value="" className="bg-[var(--glass-bg)] text-[var(--text-main)]">Select Status</option>
-                            <option value="Actively Hiring" className="bg-[var(--glass-bg)] text-[var(--text-main)]">Actively Hiring</option>
-                            <option value="Occasionally Hiring" className="bg-[var(--glass-bg)] text-[var(--text-main)]">Occasionally Hiring</option>
-                            <option value="Not Hiring" className="bg-[var(--glass-bg)] text-[var(--text-main)]">Not Hiring</option>
-                        </select>
-                        {form.formState.errors.hiringNeeds && (
-                            <span className="text-xs text-red-500">{form.formState.errors.hiringNeeds.message}</span>
-                        )}
+                        <div className="flex flex-col gap-2">
+                            <label className="text-sm font-medium text-[var(--text-main)]">Hire Status *</label>
+                            <select
+                                {...form.register("hiringNeeds")}
+                                className="flex h-12 w-full rounded-xl border border-[var(--glass-border)] bg-[var(--glass-bg)] px-3 py-2 text-sm text-[var(--text-main)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+                            >
+                                <option value="" className="bg-[var(--glass-bg)] text-[var(--text-main)]">Select Status</option>
+                                <option value="Actively Hiring" className="bg-[var(--glass-bg)] text-[var(--text-main)]">Actively Hiring</option>
+                                <option value="Occasionally Hiring" className="bg-[var(--glass-bg)] text-[var(--text-main)]">Occasionally Hiring</option>
+                                <option value="Not Hiring" className="bg-[var(--glass-bg)] text-[var(--text-main)]">Not Hiring</option>
+                            </select>
+                            {form.formState.errors.hiringNeeds && (
+                                <span className="text-xs text-red-500">{form.formState.errors.hiringNeeds.message}</span>
+                            )}
+                        </div>
                     </div>
 
                     <div className="flex flex-col gap-2">

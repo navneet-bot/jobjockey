@@ -1,6 +1,7 @@
 import { getJobs } from "@/actions/jobActions";
 import { GradientHeader } from "@/components/ui/GradientHeader";
 import { JobFeed } from "@/components/features/job/JobFeed";
+import { Briefcase } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +14,12 @@ export default async function JobsPage() {
             <GradientHeader
                 title="Explore Full-Time Jobs"
                 subtitle="Find the perfect role that matches your skills at top verified companies."
-                badge="Career Opportunities"
+                badge={
+                    <>
+                        <Briefcase className="w-5 h-5" />
+                        <span>Career Opportunities</span>
+                    </>
+                }
             />
 
             <JobFeed initialJobs={jobs} />

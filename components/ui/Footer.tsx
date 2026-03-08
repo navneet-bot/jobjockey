@@ -72,7 +72,7 @@ export function Footer() {
                     </div>
                     <div className="pt-4 border-t border-foreground/10">
                         <p className="text-sm mb-2">To apply, send your resume to:</p>
-                        <a href="mailto:careers@jobjockey.in" className="text-lg font-bold text-[var(--primary)] hover:underline">careers@jobjockey.in</a>
+                        <a href="mailto:careers@jobjockey.in" className="text-lg font-bold text-foreground hover:underline">careers@jobjockey.in</a>
                     </div>
                 </div>
             )
@@ -103,7 +103,7 @@ export function Footer() {
                     </div>
                     <div className="pt-4 border-t border-foreground/10">
                         <p className="text-sm">If you have any questions about your data, contact us at:</p>
-                        <a href="mailto:support@jobjockey.in" className="font-bold text-[var(--primary)] hover:underline">support@jobjockey.in</a>
+                        <a href="mailto:support@jobjockey.in" className="font-bold text-foreground hover:underline">support@jobjockey.in</a>
                     </div>
                 </div>
             )
@@ -130,7 +130,7 @@ export function Footer() {
                     </p>
                     <div className="pt-4 border-t border-foreground/10">
                         <p className="text-sm">For any queries, contact:</p>
-                        <a href="mailto:support@jobjockey.in" className="font-bold text-[var(--primary)] hover:underline">support@jobjockey.in</a>
+                        <a href="mailto:support@jobjockey.in" className="font-bold text-foreground hover:underline">support@jobjockey.in</a>
                     </div>
                 </div>
             )

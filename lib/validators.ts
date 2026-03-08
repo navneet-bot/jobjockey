@@ -46,7 +46,8 @@ export type JobFormValues = z.infer<typeof jobFormSchema>;
 export const companyEnquirySchema = z.object({
   companyName: z.string().min(2, "Company name is required"),
   industry: z.string().min(2, "Industry is required"),
-  contactPerson: z.string().min(2, "Point of contact is required"),
+  contactPerson: z.string().min(2, "Contact person is required"),
+  designation: z.string().min(2, "Designation is required"),
   email: z.string().email("Valid email is required"),
   phone: z.string().min(10, "Phone number must be at least 10 characters"),
   companyUrl: z.string().url("Must be a valid url").optional().or(z.literal('')),

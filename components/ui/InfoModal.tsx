@@ -57,7 +57,7 @@ export function InfoModal({ isOpen, onClose, title, children }: InfoModalProps) 
                                         duration: 0.6
                                     }}
                                     className={cn(
-                                        "relative w-full max-w-lg glass-panel border-[var(--glass-border)] p-8 shadow-2xl rounded-[32px] overflow-hidden focus:outline-none"
+                                        "relative w-full max-w-lg bg-white dark:bg-[var(--glass-bg)] border-[var(--glass-border)] p-8 shadow-2xl rounded-[32px] overflow-hidden focus:outline-none backdrop-blur-xl"
                                     )}
                                 >
                                     {/* Inner Glow Effect */}
@@ -68,7 +68,7 @@ export function InfoModal({ isOpen, onClose, title, children }: InfoModalProps) 
                                             <DialogPrimitive.Title className="text-2xl sm:text-3xl font-display font-bold text-foreground tracking-tight">
                                                 {title}
                                             </DialogPrimitive.Title>
-                                            <DialogPrimitive.Close className="p-2 rounded-full bg-foreground/5 hover:bg-foreground/10 transition-all duration-200 text-foreground/60 hover:text-foreground focus:outline-none focus:ring-2 focus:ring-[var(--primary)] group">
+                                            <DialogPrimitive.Close className="p-2 rounded-full bg-foreground/10 hover:bg-foreground/20 transition-all duration-200 text-foreground focus:outline-none focus:ring-2 focus:ring-[var(--primary)] group">
                                                 <motion.div
                                                     whileHover={{ rotate: 90, scale: 1.15 }}
                                                     transition={{ duration: 0.2 }}

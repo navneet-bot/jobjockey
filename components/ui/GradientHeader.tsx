@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 interface GradientHeaderProps {
     title: string;
     subtitle?: string;
-    badge?: string;
+    badge?: React.ReactNode;
     align?: "left" | "center";
     className?: string;
 }
@@ -24,7 +24,7 @@ export function GradientHeader({ title, subtitle, badge, align = "center", class
             )}
         >
             {badge && (
-                <span className="px-4 py-1.5 rounded-full bg-[var(--glass-bg)] border border-[var(--glass-border)] text-sm font-medium text-[#111827] dark:text-[var(--primary)] shadow-sm dark:shadow-[0_0_15px_var(--primary-glow)]">
+                <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[var(--glass-bg)] border border-[var(--glass-border)] text-sm font-medium text-[#111827] dark:text-[var(--primary)] shadow-sm dark:shadow-[0_0_15px_var(--primary-glow)]">
                     {badge}
                 </span>
             )}
