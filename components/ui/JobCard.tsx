@@ -76,7 +76,7 @@ export function JobCard({ job }: { job: Job | Internship }) {
 
                 {(isInternship && (job as Internship).stipend) && (
                     <div className="flex items-center gap-1.5 text-sm font-medium text-[#111827] dark:text-foreground mt-1">
-                        <span className="text-[var(--primary)] font-bold">Stipend:</span>
+                        <span className="text-[#111827] dark:text-[var(--primary)] font-bold">Stipend:</span>
                         {(job as Internship).stipend}
                     </div>
                 )}

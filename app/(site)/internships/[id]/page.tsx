@@ -85,7 +85,7 @@ export default async function InternshipPage({ params }: InternshipPageProps) {
                 <section className="lg:col-span-2 flex flex-col gap-8">
                     <GlassCard className="prose dark:prose-invert max-w-none">
                         <div className="flex items-center gap-2 mb-4 text-[#111827] dark:text-white">
-                            <Info className="w-6 h-6 text-[var(--primary)]" />
+                            <Info className="w-6 h-6 text-[#111827] dark:text-[var(--primary)]" />
                             <h3 className="text-2xl font-bold m-0">Internship Overview</h3>
                         </div>
                         <div className="whitespace-pre-wrap text-muted-foreground leading-relaxed text-base">
@@ -97,7 +97,7 @@ export default async function InternshipPage({ params }: InternshipPageProps) {
                         {internship.whatWillLearn && (
                             <GlassCard className="flex flex-col gap-4">
                                 <div className="flex items-center gap-2 text-[#111827] dark:text-white">
-                                    <GraduationCap className="w-6 h-6 text-[var(--primary)]" />
+                                    <GraduationCap className="w-6 h-6 text-[#111827] dark:text-[var(--primary)]" />
                                     <h3 className="text-xl font-bold">What You Will Learn</h3>
                                 </div>
                                 <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">{internship.whatWillLearn}</p>
@@ -106,7 +106,7 @@ export default async function InternshipPage({ params }: InternshipPageProps) {
                         {internship.projectsAndTasks && (
                             <GlassCard className="flex flex-col gap-4">
                                 <div className="flex items-center gap-2 text-[#111827] dark:text-white">
-                                    <Briefcase className="w-6 h-6 text-[var(--primary)]" />
+                                    <Briefcase className="w-6 h-6 text-[#111827] dark:text-[var(--primary)]" />
                                     <h3 className="text-xl font-bold">Projects & Tasks</h3>
                                 </div>
                                 <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">{internship.projectsAndTasks}</p>
@@ -116,12 +116,12 @@ export default async function InternshipPage({ params }: InternshipPageProps) {
 
                     <GlassCard className="flex flex-col gap-6">
                         <div className="flex items-center gap-2 text-[#111827] dark:text-white">
-                            <Users className="w-6 h-6 text-[var(--primary)]" />
+                            <Users className="w-6 h-6 text-[#111827] dark:text-[var(--primary)]" />
                             <h3 className="text-xl font-bold">Skills & Education</h3>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="flex flex-col gap-3">
-                                <h4 className="text-sm font-semibold uppercase tracking-wider text-[var(--primary)]">Required Skills</h4>
+                                <h4 className="text-sm font-semibold uppercase tracking-wider text-[#111827] dark:text-[var(--primary)]">Required Skills</h4>
                                 <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">{internship.requiredSkills}</p>
                             </div>
                             <div className="flex flex-col gap-3">
@@ -137,7 +137,7 @@ export default async function InternshipPage({ params }: InternshipPageProps) {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <GlassCard className="flex flex-col gap-4">
                             <div className="flex items-center gap-2 text-[#111827] dark:text-white">
-                                <Star className="w-6 h-6 text-[var(--primary)]" />
+                                <Star className="w-6 h-6 text-[#111827] dark:text-[var(--primary)]" />
                                 <h3 className="text-xl font-bold">Benefits & Perks</h3>
                             </div>
                             <div className="grid grid-cols-1 gap-3">
@@ -158,12 +158,12 @@ export default async function InternshipPage({ params }: InternshipPageProps) {
 
                         <GlassCard className="flex flex-col gap-4">
                             <div className="flex items-center gap-2 text-[#111827] dark:text-white">
-                                <Calendar className="w-6 h-6 text-[var(--primary)]" />
+                                <Calendar className="w-6 h-6 text-[#111827] dark:text-[var(--primary)]" />
                                 <h3 className="text-xl font-bold">Application Details</h3>
                             </div>
                             <div className="space-y-3">
                                 <div className="space-y-1">
-                                    <span className="text-muted-foreground block text-xs uppercase tracking-wider">Stipend:</span>
+                                    <span className="text-[#111827] dark:text-muted-foreground block text-xs uppercase tracking-wider">Stipend:</span>
                                     <span className="font-bold text-[var(--text-main)] text-lg">{internship.stipend || "Unpaid"}</span>
                                 </div>
                                 <div className="flex justify-between text-sm">

@@ -92,7 +92,7 @@ export default async function JobPage({ params }: JobPageProps) {
                     {/* Main Description */}
                     <GlassCard className="prose dark:prose-invert max-w-none">
                         <div className="flex items-center gap-2 mb-4 text-[#111827] dark:text-white">
-                            <Info className="w-6 h-6 text-[var(--primary)]" />
+                            <Info className="w-6 h-6 text-[#111827] dark:text-[var(--primary)]" />
                             <h3 className="text-2xl font-bold m-0">Job Description</h3>
                         </div>
                         <div className="whitespace-pre-wrap text-muted-foreground leading-relaxed text-base">
@@ -104,7 +104,7 @@ export default async function JobPage({ params }: JobPageProps) {
                     {job.responsibilities && (
                         <GlassCard className="flex flex-col gap-4">
                             <div className="flex items-center gap-2 text-[#111827] dark:text-white">
-                                <ListChecks className="w-6 h-6 text-[var(--primary)]" />
+                                <ListChecks className="w-6 h-6 text-[#111827] dark:text-[var(--primary)]" />
                                 <h3 className="text-xl font-bold">Key Responsibilities</h3>
                             </div>
                             <div className="whitespace-pre-wrap text-muted-foreground text-sm leading-relaxed">
@@ -116,13 +116,13 @@ export default async function JobPage({ params }: JobPageProps) {
                     {/* Skills & Requirements */}
                     <GlassCard className="flex flex-col gap-6">
                         <div className="flex items-center gap-2 text-[#111827] dark:text-white">
-                            <Wrench className="w-6 h-6 text-[var(--primary)]" />
+                            <Wrench className="w-6 h-6 text-[#111827] dark:text-[var(--primary)]" />
                             <h3 className="text-xl font-bold">Skills & Requirements</h3>
                         </div>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="flex flex-col gap-3">
-                                <h4 className="text-sm font-semibold uppercase tracking-wider text-[var(--primary)]">Required Skills</h4>
+                                <h4 className="text-sm font-semibold uppercase tracking-wider text-[#111827] dark:text-[var(--primary)]">Required Skills</h4>
                                 <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">
                                     {job.requiredSkills}
                                 </p>
@@ -165,7 +165,7 @@ export default async function JobPage({ params }: JobPageProps) {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <GlassCard className="flex flex-col gap-4">
                             <div className="flex items-center gap-2 text-[#111827] dark:text-white">
-                                <Clock className="w-6 h-6 text-[var(--primary)]" />
+                                <Clock className="w-6 h-6 text-[#111827] dark:text-[var(--primary)]" />
                                 <h3 className="text-xl font-bold">Experience Required</h3>
                             </div>
                             <div className="space-y-2">
@@ -192,7 +192,7 @@ export default async function JobPage({ params }: JobPageProps) {
 
                         <GlassCard className="flex flex-col gap-4">
                             <div className="flex items-center gap-2 text-[#111827] dark:text-white">
-                                <Currency className="w-6 h-6 text-[var(--primary)]" />
+                                <Currency className="w-6 h-6 text-[#111827] dark:text-[var(--primary)]" />
                                 <h3 className="text-xl font-bold">Compensation</h3>
                             </div>
                             <div className="space-y-3">
@@ -210,7 +210,7 @@ export default async function JobPage({ params }: JobPageProps) {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <GlassCard className="flex flex-col gap-4">
                             <div className="flex items-center gap-2 text-[#111827] dark:text-white">
-                                <Users className="w-6 h-6 text-[var(--primary)]" />
+                                <Users className="w-6 h-6 text-[#111827] dark:text-[var(--primary)]" />
                                 <h3 className="text-xl font-bold">Hiring Process</h3>
                             </div>
                             <div className="space-y-3">
@@ -235,7 +235,7 @@ export default async function JobPage({ params }: JobPageProps) {
 
                         <GlassCard className="flex flex-col gap-4">
                             <div className="flex items-center gap-2 text-[#111827] dark:text-white">
-                                <Star className="w-6 h-6 text-[var(--primary)]" />
+                                <Star className="w-6 h-6 text-[#111827] dark:text-[var(--primary)]" />
                                 <h3 className="text-xl font-bold">Perks & Benefits</h3>
                             </div>
                             <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">
