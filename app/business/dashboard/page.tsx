@@ -38,6 +38,7 @@ export default function BusinessDashboardPage() {
     });
     const [isSaving, setIsSaving] = useState(false);
     const [isEditingProfile, setIsEditingProfile] = useState(false);
+    const [selectedCategory, setSelectedCategory] = useState<"job" | "internship">("job");
 
     const calculateCompletion = () => {
         const fields = [
@@ -193,8 +194,35 @@ export default function BusinessDashboardPage() {
 
                 {activeTab === "jobs" && (
                     <GlassCard className="p-8">
-                        <div className="flex justify-between items-center mb-6">
-                            <h3 className="text-xl font-bold text-[var(--text-main)]">Manage Your Jobs</h3>
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+                            <div>
+                                <h3 className="text-2xl font-bold text-[var(--text-main)]">Manage Your Opportunities</h3>
+                                <p className="text-sm text-[var(--text-dim)]">View and manage your active postings.</p>
+                            </div>
+                            
+                            <div className="flex bg-[var(--glass-bg)] p-1 rounded-xl border border-[var(--glass-border)] self-start">
+                                <button
+                                    onClick={() => setSelectedCategory("job")}
+                                    className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${
+                                        selectedCategory === "job"
+                                            ? "bg-[#111827] text-white dark:bg-white dark:text-black shadow-lg"
+                                            : "text-[var(--text-dim)] hover:text-[var(--text-main)]"
+                                    }`}
+                                >
+                                    Jobs
+                                </button>
+                                <button
+                                    onClick={() => setSelectedCategory("internship")}
+                                    className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${
+                                        selectedCategory === "internship"
+                                            ? "bg-[#111827] text-white dark:bg-white dark:text-black shadow-lg"
+                                            : "text-[var(--text-dim)] hover:text-[var(--text-main)]"
+                                    }`}
+                                >
+                                    Internships
+                                </button>
+                            </div>
+
                             <Link href="/business/post-job">
                                 <Button className="rounded-full bg-[#111827] text-white dark:bg-white dark:text-black hover:bg-[#111827]/90 dark:hover:bg-white/90 font-bold flex items-center gap-2">
                                     <PlusCircle className="w-4 h-4" />
@@ -207,16 +235,18 @@ export default function BusinessDashboardPage() {
                             <div className="text-center py-20 border border-dashed border-[var(--glass-border)] rounded-xl">
                                 <p className="text-[var(--text-dim)]">Loading your jobs...</p>
                             </div>
-                        ) : jobs.length > 0 ? (
+                        ) : jobs.filter(j => j.jobCategory === selectedCategory).length > 0 ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {jobs.map((job) => (
-                                    <JobCard key={job.id} job={job} />
-                                ))}
+                                {jobs
+                                    .filter(j => j.jobCategory === selectedCategory)
+                                    .map((job) => (
+                                        <JobCard key={job.id} job={job} />
+                                    ))}
                             </div>
                         ) : (
                             <div className="text-center py-20 border border-dashed border-[var(--glass-border)] rounded-xl">
                                 <Briefcase className="w-10 h-10 mx-auto text-[var(--text-dim)] mb-4 opacity-50" />
-                                <p className="text-[var(--text-dim)] mb-4">You have no active job postings.</p>
+                                <p className="text-[var(--text-dim)] mb-4">You have no active {selectedCategory === 'job' ? 'job' : 'internship'} postings.</p>
                                 <Link href="/business/post-job">
                                     <Button variant="outline" className="rounded-full border-[var(--primary)] text-[var(--primary)] hover:bg-[var(--primary)]/10">
                                         Post your first job

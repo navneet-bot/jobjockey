@@ -1,51 +1,63 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Job } from "@/lib/schema";
-import { Briefcase, MapPin } from "lucide-react";
+import { Job, Internship } from "@/lib/schema";
+import { Briefcase, MapPin, Clock, IndianRupee, GraduationCap } from "lucide-react";
 import Link from "next/link";
 import JobActionBtns from "./JobActionBtns";
 
 interface JobCardProps {
-  job: Job;
+  job: any; // Using any because of the combined type with jobCategory
 }
 
 export default function JobCard({ job }: JobCardProps) {
-  return (
-    <Card className="relative">
-      <CardContent>
-        <div className="flex gap-4 flex-col">
-          <div>
-            <Link href={`/jobs/${job.id}`}>
-              <h3 className="font-semibold text-lg leading-tight">
-                {job.title}
-              </h3>
-            </Link>
+  const isInternship = job.jobCategory === 'internship' || 'duration' in job;
+  const item = job as any;
 
-            <p className="text-sm text-muted-foreground mt-1">{job.company}</p>
+  return (
+    <Card className="relative overflow-hidden group hover:border-[var(--primary)]/30 transition-all duration-300">
+      <CardContent className="p-5">
+        <div className="flex gap-5 flex-col">
+          <div className="flex justify-between items-start">
+            <div className="flex-1">
+              <Link href={isInternship ? `/internships/${item.id}` : `/jobs/${item.id}`}>
+                <h3 className="font-bold text-lg leading-tight text-[var(--text-main)] group-hover:text-[var(--primary)] transition-colors">
+                  {item.title}
+                </h3>
+              </Link>
+              <p className="text-sm text-[var(--text-dim)] mt-1">{item.company}</p>
+            </div>
+            <Badge variant="outline" className={`text-[10px] uppercase font-bold ${isInternship ? 'border-amber-500/50 text-amber-500' : 'border-blue-500/50 text-blue-500'}`}>
+              {isInternship ? 'Internship' : 'Job'}
+            </Badge>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+          <div className="flex flex-wrap items-center gap-y-2 gap-x-4 text-sm text-[var(--text-dim)]">
             <div className="flex items-center gap-1.5">
-              <MapPin className="h-4 w-4" />
-              <span>{job.location}</span>
+              <MapPin className="h-4 w-4 text-[var(--primary)]" />
+              <span>{item.location}</span>
             </div>
 
             <div className="flex items-center gap-1.5">
-              <Briefcase className="h-4 w-4" />
-              <span>{job.jobType}</span>
+              {isInternship ? <Clock className="h-4 w-4 text-[var(--primary)]" /> : <Briefcase className="h-4 w-4 text-[var(--primary)]" />}
+              <span>{isInternship ? item.duration : item.jobType}</span>
             </div>
 
-            {job.salary && (
-              <span className="text-foreground font-medium">{job.salary}</span>
+            {(item.salary || item.stipend) && (
+              <div className="flex items-center gap-1.5 font-semibold text-[var(--text-main)]">
+                <IndianRupee className="h-4 w-4 text-[var(--primary)]" />
+                <span>{item.salary || item.stipend}</span>
+              </div>
             )}
           </div>
 
-          <div className="flex items-center justify-between">
-            <Badge variant={"secondary"} className="font-normal">
-              {job.experienceLevel}
-            </Badge>
-            <span className="text-sm text-muted-foreground">
-              {new Date(job.postedAt).toLocaleDateString("en-IN", {
+          <div className="flex items-center justify-between border-t border-[var(--glass-border)] pt-4">
+            <div className="flex items-center gap-2">
+              <Badge variant="secondary" className="font-medium bg-[var(--glass-bg)] border-[var(--glass-border)]">
+                {isInternship ? "Student" : item.experienceLevel}
+              </Badge>
+            </div>
+            <span className="text-xs text-[var(--text-dim)] font-medium">
+              Posted: {new Date(item.postedAt).toLocaleDateString("en-IN", {
                 day: "2-digit",
                 month: "short",
                 year: "numeric",
@@ -53,7 +65,9 @@ export default function JobCard({ job }: JobCardProps) {
             </span>
           </div>
         </div>
-        <JobActionBtns jobId={job.id} ownerId={job.postedBy} />
+        <div className="mt-5">
+          <JobActionBtns jobId={item.id} ownerId={item.postedBy} />
+        </div>
       </CardContent>
     </Card>
   );
