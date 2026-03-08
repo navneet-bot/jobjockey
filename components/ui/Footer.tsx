@@ -17,22 +17,30 @@ export function Footer() {
         about: {
             title: "About Job Jockey",
             content: (
-                <div className="space-y-4">
+                <div className="space-y-6">
                     <p>
                         Job Jockey is a remote-first training and hiring partner focused on building job-ready talent for modern companies.
-                        We work closely with businesses to understand their hiring needs and required skill sets. Based on those requirements, we train students and freshers in real-world tools, technologies, and workflows. Our goal is to bridge the gap between education and industry.
                     </p>
                     <p>
-                        We don’t just help candidates find jobs, We prepare them to perform from day one.
+                        We work closely with businesses to understand their hiring needs and required skill sets. Based on those requirements, we train students and freshers in real-world tools, technologies, and workflows. Our goal is to bridge the gap between education and industry.
+                    </p>
+                    <p className="font-medium text-foreground">
+                        We don’t just help candidates find jobs - we prepare them to perform from day one.
                     </p>
                     <div>
-                        <p className="font-semibold mb-2">Our Services:</p>
-                        <ul className="list-disc pl-6 space-y-1 text-foreground/70">
-                            <li>Hiring support for companies</li>
-                            <li>Industry-aligned training programs</li>
-                            <li>Remote job and internship opportunities</li>
-                            <li>Workforce support solutions</li>
-                        </ul>
+                        <h4 className="font-bold text-foreground mb-1 text-lg">Our Services</h4>
+                        <p className="text-foreground/80 leading-relaxed">
+                            {["Hiring support for companies", "Industry-aligned training programs", "Remote job and internship opportunities", "Workforce support solutions"].join(", ")}.
+                        </p>
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-foreground mb-1 text-lg">Our Mission</h4>
+                        <p>
+                            To create skilled, confident, and deployment-ready professionals while helping companies reduce hiring and training costs.
+                        </p>
+                        <p className="mt-4 text-sm opacity-70 italic">
+                            We operate remotely and collaborate with companies and candidates across India.
+                        </p>
                     </div>
                 </div>
             )
@@ -40,36 +48,90 @@ export function Footer() {
         careers: {
             title: "Careers at Job Jockey",
             content: (
-                <div className="space-y-4">
+                <div className="space-y-6">
                     <p>
-                        We are building a team that believes in growth, learning, and innovation. At Job Jockey, we value:
+                        We are building a team that believes in growth, learning, and innovation.
                     </p>
-                    <ul className="list-disc pl-6 space-y-1 text-foreground/70">
-                        <li>Responsibility</li>
-                        <li>Clear communication</li>
-                        <li>Continuous learning</li>
-                        <li>Results-driven mindset</li>
-                    </ul>
+                    <div>
+                        <h4 className="font-bold text-foreground mb-1 text-lg">What We Value</h4>
+                        <p className="text-foreground/80 leading-relaxed">
+                            {["Responsibility", "Clear communication", "Continuous learning", "Results-driven mindset"].join(", ")}.
+                        </p>
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-foreground mb-1 text-lg">Roles We Regularly Hire For</h4>
+                        <p className="text-foreground/80 leading-relaxed">
+                            {["HR Recruiters", "Sales & Business Development Executives", "Training Coordinators", "Digital Marketing Interns", "Operations Executives"].join(", ")}.
+                        </p>
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-foreground mb-1 text-lg">Why Work With Us?</h4>
+                        <p className="text-foreground/80 leading-relaxed">
+                            {["Remote-first work culture", "Fast-growing environment", "Leadership opportunities", "Performance-based growth", "Practical industry exposure"].join(", ")}.
+                        </p>
+                    </div>
+                    <div className="pt-4 border-t border-foreground/10">
+                        <p className="text-sm mb-2">To apply, send your resume to:</p>
+                        <a href="mailto:careers@jobjockey.in" className="text-lg font-bold text-[var(--primary)] hover:underline">careers@jobjockey.in</a>
+                    </div>
                 </div>
             )
         },
         privacy: {
             title: "Privacy Policy",
             content: (
-                <div className="space-y-4">
+                <div className="space-y-6">
                     <p>
                         At Job Jockey, we respect your privacy and are committed to protecting your personal information.
                     </p>
+                    <div>
+                        <h4 className="font-bold text-foreground mb-1 text-lg">Information We Collect</h4>
+                        <p className="text-foreground/80 leading-relaxed">
+                            {["Name", "Email address", "Phone number", "Resume/CV details", "Professional information"].join(", ")}.
+                        </p>
+                    </div>
+                    <div>
+                        <h4 className="font-bold text-foreground mb-1 text-lg">How We Use Your Information</h4>
+                        <p className="text-foreground/80 leading-relaxed">
+                            {["To connect you with job opportunities", "To communicate about training programs", "To improve our services", "To share relevant company opportunities"].join(", ")}.
+                        </p>
+                    </div>
+                    <div className="space-y-3 pt-2">
+                        <p>We do not sell or rent your personal data to third parties.</p>
+                        <p>We may share candidate information only with verified partner companies for hiring purposes.</p>
+                        <p className="font-medium">Your data is stored securely and used only for professional and recruitment purposes.</p>
+                    </div>
+                    <div className="pt-4 border-t border-foreground/10">
+                        <p className="text-sm">If you have any questions about your data, contact us at:</p>
+                        <a href="mailto:support@jobjockey.in" className="font-bold text-[var(--primary)] hover:underline">support@jobjockey.in</a>
+                    </div>
                 </div>
             )
         },
         terms: {
             title: "Terms of Service",
             content: (
-                <div className="space-y-4">
+                <div className="space-y-6">
                     <p>
-                        By using our website and services, you agree to the following terms.
+                        By using our website and services, you agree to the following terms:
                     </p>
+                    <p className="text-foreground/80 leading-relaxed">
+                        {[
+                            "Job Jockey provides hiring and training support services",
+                            "We do not guarantee job placement unless specifically mentioned in a written agreement",
+                            "Candidates must provide accurate and truthful information",
+                            "Companies must provide clear hiring requirements and fair evaluation processes",
+                            "Fees paid for services are non-refundable unless stated otherwise in writing",
+                            "We reserve the right to update our services and policies at any time"
+                        ].join(", ")}.
+                    </p>
+                    <p className="font-medium pt-2">
+                        By continuing to use our website, you accept these terms.
+                    </p>
+                    <div className="pt-4 border-t border-foreground/10">
+                        <p className="text-sm">For any queries, contact:</p>
+                        <a href="mailto:support@jobjockey.in" className="font-bold text-[var(--primary)] hover:underline">support@jobjockey.in</a>
+                    </div>
                 </div>
             )
         }
@@ -90,7 +152,7 @@ export function Footer() {
                             </span>
                         </Link>
                         <p className="text-white/60 text-sm leading-relaxed max-w-xs">
-                            Job Jockey helps companies hire trained candidates. We also help students and freshers learn practical skills and get remote jobs or internships.
+                            Job Jockey is a remote-first training and hiring partner focused on building job-ready talent and bridging the gap between education and industry.
                         </p>
                         <div className="flex items-center gap-4 text-white/40 mt-2">
                             <Link href="https://x.com/navneet_ac55349" target="_blank" className="hover:text-[var(--primary)] transition-colors">
@@ -134,7 +196,7 @@ export function Footer() {
                                 <Mail className="w-5 h-5 text-[var(--primary)] shrink-0" />
                                 <div className="flex flex-col gap-1">
                                     <a href="mailto:careers@jobjockey.in" className="hover:text-[var(--primary)]">careers@jobjockey.in</a>
-                                    <a href="mailto:info@jobjockey.in" className="hover:text-[var(--primary)]">info@jobjockey.in</a>
+                                    <a href="mailto:support@jobjockey.in" className="hover:text-[var(--primary)]">support@jobjockey.in</a>
                                 </div>
                             </li>
                             <li className="flex items-start gap-3">
