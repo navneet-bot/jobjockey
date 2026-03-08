@@ -107,10 +107,8 @@ export const jobsTable = pgTable("jobs", {
   company: varchar("company", { length: 255 }).notNull(),
   location: varchar("location", { length: 255 }).notNull(),
   jobType: jobTypeEnum("job_type").notNull(),
-  jobCategory: jobCategoryEnum("job_category").default("job").notNull(),
   experienceLevel: experienceLevelEnum("experience_level").notNull(),
   salary: varchar("salary", { length: 255 }),
-  duration: text("duration"),
   department: text("department"),
   workMode: text("work_mode"), // Remote, Hybrid, On-site
   responsibilities: text("responsibilities"),
@@ -130,15 +128,6 @@ export const jobsTable = pgTable("jobs", {
   joiningDate: text("joining_date"),
   perksAndBenefits: text("perks_and_benefits"),
   specialInstructions: text("special_instructions"),
-  whatWillLearn: text("what_will_learn"),
-  projectsAndTasks: text("projects_and_tasks"),
-  educationLevel: text("education_level"),
-  eligibleCourses: text("eligible_courses"),
-  mentorshipProvided: boolean("mentorship_provided").default(false),
-  trainingProvided: boolean("training_provided").default(false),
-  certificateProvided: boolean("certificate_provided").default(false),
-  letterOfRecProvided: boolean("letter_of_rec_provided").default(false),
-  ppoPossibility: boolean("ppo_possibility").default(false),
   selectionProcess: text("selection_process"),
   description: text("description").notNull(),
   applicationUrl: varchar("application_url").notNull(),
@@ -148,11 +137,46 @@ export const jobsTable = pgTable("jobs", {
     .notNull(),
 });
 
+export const internshipsTable = pgTable("internships", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  companyId: uuid("company_id").references(() => companyEnquiriesTable.id, { onDelete: "cascade" }),
+  postedBy: varchar("posted_by", { length: 255 }).notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  company: varchar("company", { length: 255 }).notNull(),
+  location: varchar("location", { length: 255 }).notNull(),
+  duration: text("duration"), // Duration of internship
+  stipend: varchar("stipend", { length: 255 }),
+  department: text("department"),
+  workMode: text("work_mode"),
+  description: text("description").notNull(),
+  whatWillLearn: text("what_will_learn"),
+  projectsAndTasks: text("projects_and_tasks"),
+  requiredSkills: text("required_skills"),
+  toolsAndTechnologies: text("tools_and_technologies"),
+  educationLevel: text("education_level"),
+  eligibleCourses: text("eligible_courses"),
+  mentorshipProvided: boolean("mentorship_provided").default(false),
+  trainingProvided: boolean("training_provided").default(false),
+  certificateProvided: boolean("certificate_provided").default(false),
+  letterOfRecProvided: boolean("letter_of_rec_provided").default(false),
+  ppoPossibility: boolean("ppo_possibility").default(false),
+  selectionProcess: text("selection_process"),
+  openPositions: text("open_positions"),
+  joiningDate: text("joining_date"),
+  deadline: text("deadline"),
+  applicationUrl: varchar("application_url").notNull(),
+  isApproved: boolean("is_approved").default(false).notNull(),
+  postedAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
+
 export const applicationsTable = pgTable("applications", {
   id: uuid("id").defaultRandom().primaryKey(),
   jobId: uuid("job_id")
-    .references(() => jobsTable.id, { onDelete: "cascade" })
-    .notNull(),
+    .references(() => jobsTable.id, { onDelete: "cascade" }),
+  internshipId: uuid("internship_id")
+    .references(() => internshipsTable.id, { onDelete: "cascade" }),
   userId: varchar("user_id", { length: 255 }).notNull(), // Clerk user ID of applicant
   resumeUrl: varchar("resume_url", { length: 1024 }),
   status: applicationStatusEnum("status").default("pending").notNull(),
@@ -163,6 +187,9 @@ export const applicationsTable = pgTable("applications", {
 
 export type NewJob = typeof jobsTable.$inferInsert;
 export type Job = typeof jobsTable.$inferSelect;
+
+export type NewInternship = typeof internshipsTable.$inferInsert;
+export type Internship = typeof internshipsTable.$inferSelect;
 
 export type NewCompanyEnquiry = typeof companyEnquiriesTable.$inferInsert;
 export type CompanyEnquiry = typeof companyEnquiriesTable.$inferSelect;

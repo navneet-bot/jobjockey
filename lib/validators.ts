@@ -3,11 +3,10 @@ import * as z from "zod";
 export const jobFormSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
   jobType: z.enum(["Full-time", "Part-time", "Contract"]),
-  jobCategory: z.enum(["job", "internship", "training"]),
+  jobCategory: z.literal("job"),
   location: z.string().min(2, "Location is required"),
   experienceLevel: z.enum(["Entry Level", "Mid-Level", "Senior", "Manager"]),
   salary: z.string().optional(),
-  duration: z.string().optional(),
   department: z.string().optional(),
   workMode: z.string().optional(),
   responsibilities: z.string().optional(),
@@ -27,8 +26,24 @@ export const jobFormSchema = z.object({
   joiningDate: z.string().optional(),
   perksAndBenefits: z.string().optional(),
   specialInstructions: z.string().optional(),
+  selectionProcess: z.string().optional(),
+  description: z.string().min(50, "Description must be at least 50 characters"),
+  applicationUrl: z.string().url("Must be a valid url"),
+});
+
+export const internshipFormSchema = z.object({
+  title: z.string().min(3, "Title must be at least 3 characters"),
+  jobCategory: z.literal("internship"),
+  location: z.string().min(2, "Location is required"),
+  duration: z.string().optional(),
+  stipend: z.string().optional(),
+  department: z.string().optional(),
+  workMode: z.string().optional(),
+  description: z.string().min(50, "Description must be at least 50 characters"),
   whatWillLearn: z.string().optional(),
   projectsAndTasks: z.string().optional(),
+  requiredSkills: z.string().optional(),
+  toolsAndTechnologies: z.string().optional(),
   educationLevel: z.string().optional(),
   eligibleCourses: z.string().optional(),
   mentorshipProvided: z.boolean().optional(),
@@ -37,11 +52,14 @@ export const jobFormSchema = z.object({
   letterOfRecProvided: z.boolean().optional(),
   ppoPossibility: z.boolean().optional(),
   selectionProcess: z.string().optional(),
-  description: z.string().min(50, "Description must be at least 50 characters"),
+  openPositions: z.string().optional(),
+  joiningDate: z.string().optional(),
+  deadline: z.string().optional(),
   applicationUrl: z.string().url("Must be a valid url"),
 });
 
 export type JobFormValues = z.infer<typeof jobFormSchema>;
+export type InternshipFormValues = z.infer<typeof internshipFormSchema>;
 
 export const companyEnquirySchema = z.object({
   companyName: z.string().min(2, "Company name is required"),

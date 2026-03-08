@@ -13,13 +13,6 @@ import { getMyJobs } from "@/actions/jobActions";
 import { Job } from "@/lib/schema";
 import { toast } from "sonner";
 import JobCard from "@/components/features/job/JobCard";
-import { 
-    Select, 
-    SelectContent, 
-    SelectItem, 
-    SelectTrigger, 
-    SelectValue 
-} from "@/components/ui/select";
 
 export default function BusinessDashboardPage() {
     const [activeTab, setActiveTab] = useState("overview");
@@ -32,7 +25,6 @@ export default function BusinessDashboardPage() {
         companyWebsite: "", 
         description: "",
         contactPerson: "",
-        designation: "",
         email: "",
         phone: "",
         companySize: "",
@@ -49,7 +41,6 @@ export default function BusinessDashboardPage() {
             profile.companyWebsite,
             profile.description,
             profile.contactPerson,
-            profile.designation,
             profile.email,
             profile.phone,
             profile.companySize,
@@ -77,7 +68,6 @@ export default function BusinessDashboardPage() {
                         companyWebsite: profileData.companyWebsite || "",
                         description: profileData.description || "",
                         contactPerson: profileData.contactPerson || "",
-                        designation: profileData.designation || "",
                         email: profileData.email || "",
                         phone: profileData.phone || "",
                         companySize: profileData.companySize || "",
@@ -253,7 +243,7 @@ export default function BusinessDashboardPage() {
                                 </div>
 
                                 <div className="flex flex-col gap-2">
-                                    <label className="text-sm font-medium text-[var(--text-main)]">Contact Person *</label>
+                                    <label className="text-sm font-medium text-[var(--text-main)]">Point of Contact *</label>
                                     <input 
                                         type="text" 
                                         value={profile.contactPerson}
@@ -261,18 +251,6 @@ export default function BusinessDashboardPage() {
                                         disabled={!isEditingProfile}
                                         className="w-full bg-[var(--glass-bg)] border border-[var(--glass-border)] rounded-xl px-4 py-3 text-[var(--text-main)] outline-none disabled:opacity-60 disabled:cursor-not-allowed" 
                                         placeholder="Aditya Varma" 
-                                    />
-                                </div>
-
-                                <div className="flex flex-col gap-2">
-                                    <label className="text-sm font-medium text-[var(--text-main)]">Designation *</label>
-                                    <input 
-                                        type="text" 
-                                        value={profile.designation}
-                                        onChange={(e) => setProfile({ ...profile, designation: e.target.value })}
-                                        disabled={!isEditingProfile}
-                                        className="w-full bg-[var(--glass-bg)] border border-[var(--glass-border)] rounded-xl px-4 py-3 text-[var(--text-main)] outline-none disabled:opacity-60 disabled:cursor-not-allowed" 
-                                        placeholder="HR Manager" 
                                     />
                                 </div>
 
@@ -314,22 +292,19 @@ export default function BusinessDashboardPage() {
 
                                 <div className="flex flex-col gap-2">
                                     <label className="text-sm font-medium text-[var(--text-main)]">Company Size *</label>
-                                    <Select 
-                                        value={profile.companySize} 
-                                        onValueChange={(val) => setProfile({ ...profile, companySize: val })}
+                                    <select
+                                        value={profile.companySize}
+                                        onChange={(e) => setProfile({ ...profile, companySize: e.target.value })}
                                         disabled={!isEditingProfile}
+                                        className="flex h-[50px] w-full rounded-xl border border-[var(--glass-border)] bg-[var(--glass-bg)] px-3 py-2 text-sm text-[var(--text-main)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] disabled:opacity-60 disabled:cursor-not-allowed"
                                     >
-                                        <SelectTrigger className="w-full h-[50px] bg-[var(--glass-bg)] border-[var(--glass-border)] rounded-xl text-left">
-                                            <SelectValue placeholder="Select Size" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="1-10">1-10 employees</SelectItem>
-                                            <SelectItem value="11-50">11-50 employees</SelectItem>
-                                            <SelectItem value="51-200">51-200 employees</SelectItem>
-                                            <SelectItem value="201-500">201-500 employees</SelectItem>
-                                            <SelectItem value="500+">500+ employees</SelectItem>
-                                        </SelectContent>
-                                    </Select>
+                                        <option value="" className="bg-[var(--glass-bg)] text-[var(--text-main)]">Select Size</option>
+                                        <option value="1-10" className="bg-[var(--glass-bg)] text-[var(--text-main)]">1-10 employees</option>
+                                        <option value="11-50" className="bg-[var(--glass-bg)] text-[var(--text-main)]">11-50 employees</option>
+                                        <option value="51-200" className="bg-[var(--glass-bg)] text-[var(--text-main)]">51-200 employees</option>
+                                        <option value="201-500" className="bg-[var(--glass-bg)] text-[var(--text-main)]">201-500 employees</option>
+                                        <option value="500+" className="bg-[var(--glass-bg)] text-[var(--text-main)]">500+ employees</option>
+                                    </select>
                                 </div>
 
                                 <div className="flex flex-col gap-2">
@@ -343,26 +318,22 @@ export default function BusinessDashboardPage() {
                                         placeholder="Optional GST ID" 
                                     />
                                 </div>
-
-                                <div className="flex flex-col gap-2">
-                                    <label className="text-sm font-medium text-[var(--text-main)]">Hire Status *</label>
-                                    <Select 
-                                        value={profile.hiringNeeds} 
-                                        onValueChange={(val) => setProfile({ ...profile, hiringNeeds: val })}
-                                        disabled={!isEditingProfile}
-                                    >
-                                        <SelectTrigger className="w-full h-[50px] bg-[var(--glass-bg)] border-[var(--glass-border)] rounded-xl text-left">
-                                            <SelectValue placeholder="Select Status" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="Actively Hiring">Actively Hiring</SelectItem>
-                                            <SelectItem value="Occasionally Hiring">Occasionally Hiring</SelectItem>
-                                            <SelectItem value="Not Hiring">Not Hiring</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
                             </div>
 
+                            <div className="flex flex-col gap-2">
+                                <label className="text-sm font-medium text-[var(--text-main)]">Hire Status *</label>
+                                <select
+                                    value={profile.hiringNeeds}
+                                    onChange={(e) => setProfile({ ...profile, hiringNeeds: e.target.value })}
+                                    disabled={!isEditingProfile}
+                                    className="flex h-[50px] w-full rounded-xl border border-[var(--glass-border)] bg-[var(--glass-bg)] px-3 py-2 text-sm text-[var(--text-main)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] disabled:opacity-60 disabled:cursor-not-allowed"
+                                >
+                                    <option value="" className="bg-[var(--glass-bg)] text-[var(--text-main)]">Select Status</option>
+                                    <option value="Actively Hiring" className="bg-[var(--glass-bg)] text-[var(--text-main)]">Actively Hiring</option>
+                                    <option value="Occasionally Hiring" className="bg-[var(--glass-bg)] text-[var(--text-main)]">Occasionally Hiring</option>
+                                    <option value="Not Hiring" className="bg-[var(--glass-bg)] text-[var(--text-main)]">Not Hiring</option>
+                                </select>
+                            </div>
 
                             <div className="flex flex-col gap-2">
                                 <label className="text-sm font-medium text-[var(--text-main)]">Company Description</label>

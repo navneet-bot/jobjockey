@@ -1,6 +1,7 @@
 "use client";
 
 import { Controller, useForm } from "react-hook-form";
+import { useState } from "react";
 
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,7 +19,7 @@ import {
   InputGroupText,
   InputGroupTextarea,
 } from "@/components/ui/input-group";
-import { jobFormSchema, JobFormValues } from "@/lib/validators";
+import { jobFormSchema, internshipFormSchema, JobFormValues, InternshipFormValues } from "@/lib/validators";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Select,
@@ -28,6 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { createJob, updateJob } from "@/actions/jobActions";
+import { createInternship, updateInternship } from "@/actions/internshipActions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Briefcase, GraduationCap, Clock, Building2, UserCheck, Calendar, Info, Layers, Wrench } from "lucide-react";
@@ -36,7 +38,7 @@ import { Separator } from "@/components/ui/separator";
 
 interface PostJobFormProps {
   jobId?: string;
-  initialData?: JobFormValues;
+  initialData?: any; // Can be JobFormValues or InternshipFormValues
 }
 
 export default function PostJobForm({ jobId, initialData }: PostJobFormProps) {
@@ -50,6 +52,7 @@ export default function PostJobForm({ jobId, initialData }: PostJobFormProps) {
     location: "",
     experienceLevel: "Entry Level",
     salary: "",
+    stipend: "",
     duration: "",
     department: "",
     workMode: "Remote",
@@ -93,8 +96,11 @@ export default function PostJobForm({ jobId, initialData }: PostJobFormProps) {
     });
   }
 
+  // We need to re-initialize form when category changes to use correct schema
+  const [currentCategory, setCurrentCategory] = useState(initialData?.jobCategory || "job");
+
   const form = useForm<any>({
-    resolver: zodResolver(jobFormSchema),
+    resolver: zodResolver(currentCategory === "job" ? jobFormSchema : internshipFormSchema),
     defaultValues: mergedDefaultValues,
   });
 
@@ -108,9 +114,13 @@ export default function PostJobForm({ jobId, initialData }: PostJobFormProps) {
     try {
       let response;
       if (isEditMode) {
-        response = await updateJob(jobId, data);
+        response = data.jobCategory === "job" 
+          ? await updateJob(jobId, data) 
+          : await updateInternship(jobId, data);
       } else {
-        response = await createJob(data);
+        response = data.jobCategory === "job" 
+          ? await createJob(data) 
+          : await createInternship(data);
       }
 
       if (response.success) {
@@ -147,6 +157,7 @@ export default function PostJobForm({ jobId, initialData }: PostJobFormProps) {
             <button
               type="button"
               onClick={() => {
+                setCurrentCategory("job");
                 form.setValue("jobCategory", "job");
                 form.setValue("jobType", "Full-time");
               }}
@@ -163,6 +174,7 @@ export default function PostJobForm({ jobId, initialData }: PostJobFormProps) {
             <button
               type="button"
               onClick={() => {
+                setCurrentCategory("internship");
                 form.setValue("jobCategory", "internship");
                 form.setValue("jobType", "Full-time");
               }}
@@ -841,9 +853,9 @@ export default function PostJobForm({ jobId, initialData }: PostJobFormProps) {
                   <div>
                     <SectionTitle icon={Briefcase}>Internship Benefits</SectionTitle>
                     <FieldGroup>
-                       <div className="flex items-center gap-4 mb-4">
+                       <div className="grid grid-cols-1 gap-4 mb-4">
                           <Controller
-                            name="salary"
+                            name="stipend"
                             control={form.control}
                             render={({ field }) => (
                               <Field className="flex-1">

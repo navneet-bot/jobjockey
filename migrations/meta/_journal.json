@@ -29,6 +29,20 @@
       "when": 1772679845720,
       "tag": "0003_add_is_approved_to_jobs",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1772980685066,
+      "tag": "0004_tense_starbolt",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1772981620736,
+      "tag": "0005_busy_gwen_stacy",
+      "breakpoints": true
     }
   ]
 }

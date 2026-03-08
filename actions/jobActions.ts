@@ -107,13 +107,14 @@ export async function createJob(jobData: JobFormData) {
       };
     }
 
-    // 2. Insert job with auto-populated company details
+    const { jobCategory, ...jobData } = validation.data;
+
     await db.insert(jobsTable).values({
-      ...validation.data,
+      ...jobData,
       companyId: enquiry.id,
       company: enquiry.companyName,
       postedBy: userId,
-      isApproved: true, // Assuming company-posted jobs are pre-approved once company is verified
+      isApproved: true,
     });
 
     revalidatePath("/");
@@ -186,11 +187,9 @@ export async function updateJob(id: string, jobData: JobFormData) {
       .set({
         title: validation.data.title,
         jobType: validation.data.jobType,
-        jobCategory: validation.data.jobCategory,
         location: validation.data.location,
         experienceLevel: validation.data.experienceLevel,
         salary: validation.data.salary,
-        duration: validation.data.duration,
         department: validation.data.department,
         workMode: validation.data.workMode,
         responsibilities: validation.data.responsibilities,
@@ -210,15 +209,6 @@ export async function updateJob(id: string, jobData: JobFormData) {
         joiningDate: validation.data.joiningDate,
         perksAndBenefits: validation.data.perksAndBenefits,
         specialInstructions: validation.data.specialInstructions,
-        whatWillLearn: validation.data.whatWillLearn,
-        projectsAndTasks: validation.data.projectsAndTasks,
-        educationLevel: validation.data.educationLevel,
-        eligibleCourses: validation.data.eligibleCourses,
-        mentorshipProvided: validation.data.mentorshipProvided,
-        trainingProvided: validation.data.trainingProvided,
-        certificateProvided: validation.data.certificateProvided,
-        letterOfRecProvided: validation.data.letterOfRecProvided,
-        ppoPossibility: validation.data.ppoPossibility,
         selectionProcess: validation.data.selectionProcess,
         description: validation.data.description,
         applicationUrl: validation.data.applicationUrl,

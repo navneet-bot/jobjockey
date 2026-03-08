@@ -1,22 +1,27 @@
 "use server";
 import { db } from "@/lib/db";
-import { applicationsTable, jobsTable, userProfilesTable } from "@/lib/schema";
+import { applicationsTable, internshipsTable, jobsTable, userProfilesTable } from "@/lib/schema";
 import { auth, currentUser, clerkClient } from "@clerk/nextjs/server";
-import { eq, desc, and, ne } from "drizzle-orm";
+import { eq, desc, and, ne, or } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
-export async function applyForJob(jobId: string, resumeUrl?: string) {
+export async function applyForJob(id: string, category: "job" | "internship", resumeUrl?: string) {
     const { userId } = await auth();
     if (!userId) return { success: false, error: "Unauthorized" };
 
     try {
+        const whereClause = category === "job" 
+            ? and(eq(applicationsTable.jobId, id), eq(applicationsTable.userId, userId))
+            : and(eq(applicationsTable.internshipId, id), eq(applicationsTable.userId, userId));
+
         const [existing] = await db.select().from(applicationsTable)
-            .where(and(eq(applicationsTable.jobId, jobId), eq(applicationsTable.userId, userId))).limit(1);
+            .where(whereClause).limit(1);
 
         if (existing) return { success: false, error: "Already applied for this position." };
 
         await db.insert(applicationsTable).values({
-            jobId,
+            jobId: category === "job" ? id : null,
+            internshipId: category === "internship" ? id : null,
             userId,
             resumeUrl
         });
@@ -29,7 +34,7 @@ export async function applyForJob(jobId: string, resumeUrl?: string) {
             revalidatePath("/profile");
         }
 
-        revalidatePath(`/jobs/${jobId}`);
+        revalidatePath(category === "job" ? `/jobs/${id}` : `/internships/${id}`);
         revalidatePath("/applications");
         return { success: true };
     } catch (err: any) {
@@ -41,14 +46,18 @@ export async function getMyApplications() {
     const { userId } = await auth();
     if (!userId) return [];
 
-    return await db.select({
+    const applications = await db.select({
         application: applicationsTable,
-        job: jobsTable
+        job: jobsTable,
+        internship: internshipsTable
     })
         .from(applicationsTable)
         .leftJoin(jobsTable, eq(applicationsTable.jobId, jobsTable.id))
+        .leftJoin(internshipsTable, eq(applicationsTable.internshipId, internshipsTable.id))
         .where(eq(applicationsTable.userId, userId))
         .orderBy(desc(applicationsTable.appliedAt));
+
+    return applications;
 }
 
 export async function getAllApplications() {
@@ -58,10 +67,12 @@ export async function getAllApplications() {
     const data = await db.select({
         application: applicationsTable,
         job: jobsTable,
+        internship: internshipsTable,
         profile: userProfilesTable
     })
         .from(applicationsTable)
         .leftJoin(jobsTable, eq(applicationsTable.jobId, jobsTable.id))
+        .leftJoin(internshipsTable, eq(applicationsTable.internshipId, internshipsTable.id))
         .leftJoin(userProfilesTable, eq(applicationsTable.userId, userProfilesTable.userId))
         .orderBy(desc(applicationsTable.appliedAt));
 
@@ -101,15 +112,20 @@ export async function getCompanyApplications() {
     const data = await db.select({
         application: applicationsTable,
         job: jobsTable,
+        internship: internshipsTable,
         profile: userProfilesTable
     })
         .from(applicationsTable)
         .leftJoin(jobsTable, eq(applicationsTable.jobId, jobsTable.id))
+        .leftJoin(internshipsTable, eq(applicationsTable.internshipId, internshipsTable.id))
         .leftJoin(userProfilesTable, eq(applicationsTable.userId, userProfilesTable.userId))
         .where(
             role === "admin"
                 ? undefined
-                : and(eq(jobsTable.postedBy, userId), ne(applicationsTable.status, "pending"))
+                : and(
+                    or(eq(jobsTable.postedBy, userId), eq(internshipsTable.postedBy, userId)),
+                    ne(applicationsTable.status, "pending")
+                  )
         )
         .orderBy(desc(applicationsTable.appliedAt));
 

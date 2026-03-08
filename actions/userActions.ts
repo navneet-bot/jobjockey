@@ -55,7 +55,6 @@ export type CompanyProfileData = {
     companyWebsite: string;
     description: string;
     contactPerson?: string;
-    designation?: string;
     email?: string;
     phone?: string;
     companySize?: string;
