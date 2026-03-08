@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Job } from "@/lib/schema";
+import { Job, Internship } from "@/lib/schema";
 import { GlassCard } from "./GlassCard";
 import { formatDistanceToNow } from "date-fns";
 import { MapPin, Briefcase, GraduationCap, Building2, Clock } from "lucide-react";
@@ -9,9 +9,12 @@ import Link from "next/link";
 import { GradientButton } from "./GradientButton";
 import SectionReveal from "./SectionReveal";
 
-export function JobCard({ job }: { job: Job }) {
-    const isInternship = job.jobCategory === "internship";
-    const isTraining = job.jobCategory === "training";
+export function JobCard({ job }: { job: Job | Internship }) {
+    // Determine category based on type or existing properties if possible,
+    // but better to just check if it's in the Job or Internship type.
+    // Since we're using discriminant types or just checking for specific fields:
+    const isInternship = 'duration' in job || 'stipend' in job;
+    const category = isInternship ? "internship" : "job";
 
     const badgeColor = "text-[#111827] dark:text-[var(--primary)] bg-black/5 dark:bg-[rgba(255,255,255,0.12)] border-black/10 dark:border-[rgba(255,255,255,0.08)]";
 
@@ -34,7 +37,7 @@ export function JobCard({ job }: { job: Job }) {
                         </div>
                     </div>
                     <span className={`text-xs font-medium px-2.5 py-1 rounded-full border ${badgeColor}`}>
-                        {job.jobCategory.charAt(0).toUpperCase() + job.jobCategory.slice(1)}
+                        {category.charAt(0).toUpperCase() + category.slice(1)}
                     </span>
                 </div>
 
@@ -43,26 +46,38 @@ export function JobCard({ job }: { job: Job }) {
                         <MapPin className="w-4 h-4 text-[#111827] dark:text-[var(--primary)]" />
                         {job.location}
                     </div>
-                    <div className="flex items-center gap-1.5 group/icon">
-                        <Briefcase className="w-4 h-4 text-[#111827] dark:text-[var(--primary)]" />
-                        {job.jobType}
-                    </div>
-                    <div className="flex items-center gap-1.5 group/icon">
-                        <GraduationCap className="w-4 h-4 text-[#111827] dark:text-[var(--primary)]" />
-                        {job.experienceLevel}
-                    </div>
+                    {'jobType' in job && (
+                        <div className="flex items-center gap-1.5 group/icon">
+                            <Briefcase className="w-4 h-4 text-[#111827] dark:text-[var(--primary)]" />
+                            {job.jobType}
+                        </div>
+                    )}
+                    {'experienceLevel' in job && (
+                        <div className="flex items-center gap-1.5 group/icon">
+                            <GraduationCap className="w-4 h-4 text-[#111827] dark:text-[var(--primary)]" />
+                            {job.experienceLevel}
+                        </div>
+                    )}
                 </div>
 
-                {job.salary && (
-                    <div className="text-sm font-medium text-[#111827] dark:text-foreground mt-1">
-                        {isInternship ? `Stipend: ${job.salary}` : job.salary}
-                    </div>
+                {isInternship ? (
+                    (job as Internship).stipend && (
+                        <div className="text-sm font-medium text-[#111827] dark:text-foreground mt-1">
+                            Stipend: {(job as Internship).stipend}
+                        </div>
+                    )
+                ) : (
+                    (job as Job).salary && (
+                        <div className="text-sm font-medium text-[#111827] dark:text-foreground mt-1">
+                            {(job as Job).salary}
+                        </div>
+                    )
                 )}
 
-                {isInternship && job.duration && (
+                {isInternship && (job as Internship).duration && (
                     <div className="flex items-center gap-1.5 text-xs text-[#111827]/60 dark:text-muted-foreground mt-1">
                         <Clock className="w-3.5 h-3.5 text-[var(--primary)]" />
-                        Duration: {job.duration}
+                        Duration: {(job as Internship).duration}
                     </div>
                 )}
 
@@ -70,7 +85,7 @@ export function JobCard({ job }: { job: Job }) {
                     <span className="text-xs text-[#111827]/50 dark:text-muted-foreground">
                         {formatDistanceToNow(new Date(job.postedAt), { addSuffix: true })}
                     </span>
-                    <Link href={`/jobs/${job.id}`}>
+                    <Link href={isInternship ? `/internships/${job.id}` : `/jobs/${job.id}`}>
                         <GradientButton className="py-2 px-4 text-sm h-auto">
                             View Details
                         </GradientButton>

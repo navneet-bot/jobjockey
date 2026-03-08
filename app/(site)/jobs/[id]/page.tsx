@@ -1,4 +1,5 @@
 import { getSingleJob } from "@/actions/jobActions";
+import { getSingleInternship } from "@/actions/internshipActions";
 import { getUserProfile } from "@/actions/userActions";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GradientHeader } from "@/components/ui/GradientHeader";
@@ -7,6 +8,7 @@ import { MapPin, Briefcase, GraduationCap, Building2, Calendar, Currency, Clock,
 import { formatDistanceToNow } from "date-fns";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
+import { Internship, Job } from "@/lib/schema";
 
 interface JobPageProps {
     params: Promise<{ id: string }>;
@@ -14,18 +16,28 @@ interface JobPageProps {
 
 export async function generateMetadata({ params }: JobPageProps): Promise<Metadata> {
     return {
-        title: "JobJockey - Job Details",
+        title: "JobJockey - Opportunity Details",
     };
 }
 
 export default async function JobPage({ params }: JobPageProps) {
     const { id } = await params;
-    const job = await getSingleJob(id);
+    
+    let job: Job | Internship | null = await getSingleJob(id);
+    let isInternship = false;
+    
+    if (!job) {
+        job = await getSingleInternship(id);
+        isInternship = !!job;
+    }
+    
     const profile = await getUserProfile();
 
     if (!job) {
         return notFound();
     }
+
+    const category = isInternship ? "internship" : "job";
 
     return (
         <div className="flex flex-col gap-8 pb-32">

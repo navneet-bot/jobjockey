@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export default async function JobsPage() {
     const allJobs = await getJobs();
-    const jobs = allJobs.filter(j => j.jobCategory === "job" && j.isApproved);
+    const jobs = allJobs.filter(j => j.isApproved);
 
     return (
         <div className="flex flex-col gap-10 pb-20">

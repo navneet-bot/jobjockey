@@ -2,12 +2,12 @@
 
 import { useTransition, useState, useEffect } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { Job } from "@/lib/schema";
+import { Job, Internship } from "@/lib/schema";
 import { JobCard } from "@/components/ui/JobCard";
 import { SidebarFilter } from "@/components/ui/SidebarFilter";
 import { GlassSearchBar } from "@/components/ui/GlassSearchBar";
 
-export function JobFeed({ initialJobs }: { initialJobs: Job[] }) {
+export function JobFeed({ initialJobs }: { initialJobs: (Job | Internship)[] }) {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
@@ -24,11 +24,11 @@ export function JobFeed({ initialJobs }: { initialJobs: Job[] }) {
         let filtered = [...initialJobs];
 
         if (currentJobType !== "all") {
-            filtered = filtered.filter(j => j.jobType === currentJobType);
+            filtered = filtered.filter(j => 'jobType' in j && j.jobType === currentJobType);
         }
 
         if (currentExperience !== "all") {
-            filtered = filtered.filter(j => j.experienceLevel === currentExperience);
+            filtered = filtered.filter(j => 'experienceLevel' in j && j.experienceLevel === currentExperience);
         }
 
         if (currentSearch) {

@@ -1,4 +1,4 @@
-import { getJobs } from "@/actions/jobActions";
+import { getInternships } from "@/actions/internshipActions";
 import { GradientHeader } from "@/components/ui/GradientHeader";
 import { JobFeed } from "@/components/features/job/JobFeed";
 import { GraduationCap } from "lucide-react";
@@ -6,8 +6,8 @@ import { GraduationCap } from "lucide-react";
 export const dynamic = "force-dynamic";
 
 export default async function InternshipsPage() {
-    const allJobs = await getJobs();
-    const internships = allJobs.filter(j => j.jobCategory === "internship" && j.isApproved);
+    const internships = await getInternships();
+    const approvedInternships = internships.filter(i => i.isApproved);
 
     return (
         <div className="flex flex-col gap-10 pb-20">
@@ -22,7 +22,7 @@ export default async function InternshipsPage() {
                 }
             />
 
-            <JobFeed initialJobs={internships} />
+            <JobFeed initialJobs={approvedInternships} />
         </div>
     );
 }
