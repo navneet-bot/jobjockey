@@ -63,8 +63,6 @@ export function AdminCompanyTable({ statusFilter }: { statusFilter?: "pending" |
                                 <th className="px-6 py-4 font-medium">Company Details</th>
                                 <th className="px-6 py-4 font-medium">Contact Person</th>
                                 <th className="px-6 py-4 font-medium">Contact Details</th>
-                                <th className="px-6 py-4 font-medium">Size</th>
-                                <th className="px-6 py-4 font-medium">GST</th>
                                 <th className="px-6 py-4 font-medium text-center">Status</th>
                                 {statusFilter === 'approved' && <th className="px-6 py-4 font-medium text-center">Total Jobs</th>}
                                 <th className="px-6 py-4 font-medium text-right">Actions</th>
@@ -72,9 +70,9 @@ export function AdminCompanyTable({ statusFilter }: { statusFilter?: "pending" |
                         </thead>
                         <tbody className="divide-y divide-[var(--glass-border)] text-[var(--text-main)]">
                             {loading ? (
-                                <tr><td colSpan={6} className="px-6 py-10 text-center"><div className="inline-block w-6 h-6 border-2 border-[var(--text-main)] dark:border-[var(--primary)] border-t-transparent rounded-full animate-spin"></div></td></tr>
+                                <tr><td colSpan={8} className="px-6 py-10 text-center"><div className="inline-block w-6 h-6 border-2 border-[var(--text-main)] dark:border-[var(--primary)] border-t-transparent rounded-full animate-spin"></div></td></tr>
                             ) : enquiries.length === 0 ? (
-                                <tr><td colSpan={6} className="px-6 py-10 text-center text-muted-foreground">No enquiries found.</td></tr>
+                                <tr><td colSpan={8} className="px-6 py-10 text-center text-muted-foreground">No enquiries found.</td></tr>
                             ) : (
                                 enquiries.map((enq) => (
                                     <tr key={enq.id} className="hover:bg-[var(--glass-bg)] transition-colors">
@@ -94,8 +92,6 @@ export function AdminCompanyTable({ statusFilter }: { statusFilter?: "pending" |
                                             <span>{enq.email}</span>
                                             <span className="text-xs">{enq.phone}</span>
                                         </td>
-                                        <td className="px-6 py-4 text-muted-foreground">{enq.companySize}</td>
-                                        <td className="px-6 py-4 text-muted-foreground">{enq.gstNumber || "N/A"}</td>
                                         <td className="px-6 py-4 text-center">
                                             <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${enq.status === 'approved' ? 'bg-green-500/10 text-green-400 border border-green-500/20' :
                                                 enq.status === 'rejected' ? 'bg-red-500/10 text-red-400 border border-red-500/20' :

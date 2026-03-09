@@ -2,7 +2,29 @@
 
 import { GradientHeader } from "@/components/ui/GradientHeader";
 import { GlassCard } from "@/components/ui/GlassCard";
-import { Briefcase, FileText, CheckCircle, BarChart, Settings, PlusCircle } from "lucide-react";
+import { 
+    Briefcase, 
+    FileText, 
+    CheckCircle, 
+    BarChart, 
+    Settings, 
+    PlusCircle,
+    GraduationCap, 
+    User, 
+    Mail, 
+    Phone, 
+    Calendar, 
+    ArrowRight, 
+    Check, 
+    X, 
+    Clock, 
+    Building2, 
+    Globe, 
+    Users, 
+    ShieldCheck, 
+    Tag, 
+    UserCheck 
+} from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
@@ -23,7 +45,6 @@ import {
 import { Job, Internship } from "@/lib/schema";
 import { toast } from "sonner";
 import JobCard from "@/components/features/job/JobCard";
-import { GraduationCap, User, Mail, Phone, Calendar, ArrowRight, Check, X, Clock } from "lucide-react";
 
 export default function BusinessDashboardPage() {
     const [activeTab, setActiveTab] = useState("overview");
@@ -199,6 +220,127 @@ export default function BusinessDashboardPage() {
                                 </GlassCard>
                             ))}
                         </div>
+
+                        {/* Detailed Company Overview Summary */}
+                        <GlassCard className="p-8">
+                            <div className="flex items-center gap-3 mb-8">
+                                <Building2 className="w-6 h-6 text-blue-400" />
+                                <h3 className="text-xl font-bold text-[var(--text-main)]">Company Overview</h3>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-10 gap-x-12">
+                                <div className="space-y-1.5">
+                                    <p className="text-[10px] font-bold text-[var(--text-dim)] uppercase tracking-[0.15em] opacity-60">Company Name</p>
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 rounded-lg bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5">
+                                            <Building2 className="w-4 h-4 text-blue-400" />
+                                        </div>
+                                        <span className="font-semibold text-[var(--text-main)]">{profile.companyName || "Not provided"}</span>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <p className="text-[10px] font-bold text-[var(--text-dim)] uppercase tracking-[0.15em] opacity-60">Industry</p>
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 rounded-lg bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5">
+                                            <Tag className="w-4 h-4 text-purple-400" />
+                                        </div>
+                                        <span className="font-semibold text-[var(--text-main)]">{profile.industry || "Not provided"}</span>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <p className="text-[10px] font-bold text-[var(--text-dim)] uppercase tracking-[0.15em] opacity-60">Website</p>
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 rounded-lg bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5">
+                                            <Globe className="w-4 h-4 text-blue-400" />
+                                        </div>
+                                        <span className="font-semibold text-[var(--text-main)] italic opacity-80">{profile.companyWebsite || "Not provided"}</span>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <p className="text-[10px] font-bold text-[var(--text-dim)] uppercase tracking-[0.15em] opacity-60">Email Address</p>
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 rounded-lg bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5">
+                                            <Mail className="w-4 h-4 text-green-400" />
+                                        </div>
+                                        <span className="font-semibold text-[var(--text-main)]">{profile.email || "Not provided"}</span>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <p className="text-[10px] font-bold text-[var(--text-dim)] uppercase tracking-[0.15em] opacity-60">Phone Number</p>
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 rounded-lg bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5">
+                                            <Phone className="w-4 h-4 text-green-400" />
+                                        </div>
+                                        <span className="font-semibold text-[var(--text-main)]">{profile.phone || "Not provided"}</span>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <p className="text-[10px] font-bold text-[var(--text-dim)] uppercase tracking-[0.15em] opacity-60">Company Size</p>
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 rounded-lg bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5">
+                                            <Users className="w-4 h-4 text-blue-400" />
+                                        </div>
+                                        <span className="font-semibold text-[var(--text-main)]">{profile.companySize ? `${profile.companySize} Employees` : "Not provided"}</span>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <p className="text-[10px] font-bold text-[var(--text-dim)] uppercase tracking-[0.15em] opacity-60">Contact Person</p>
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 rounded-lg bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5">
+                                            <User className="w-4 h-4 text-blue-400" />
+                                        </div>
+                                        <span className="font-semibold text-[var(--text-main)]">{profile.contactPerson || "Not provided"}</span>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <p className="text-[10px] font-bold text-[var(--text-dim)] uppercase tracking-[0.15em] opacity-60">Designation</p>
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 rounded-lg bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5">
+                                            <Briefcase className="w-4 h-4 text-blue-400" />
+                                        </div>
+                                        <span className="font-semibold text-[var(--text-main)]">{profile.designation || "Not provided"}</span>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <p className="text-[10px] font-bold text-[var(--text-dim)] uppercase tracking-[0.15em] opacity-60">Hire Status</p>
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 rounded-lg bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5">
+                                            <UserCheck className="w-4 h-4 text-purple-400" />
+                                        </div>
+                                        <span className={`font-semibold ${profile.hiringNeeds === 'Not Hiring' ? 'text-red-400' : 'text-green-400'}`}>
+                                            {profile.hiringNeeds || "Not specified"}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <p className="text-[10px] font-bold text-[var(--text-dim)] uppercase tracking-[0.15em] opacity-60">GST Number</p>
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 rounded-lg bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5">
+                                            <ShieldCheck className="w-4 h-4 text-green-400" />
+                                        </div>
+                                        <span className="font-semibold text-[var(--text-main)]">{profile.gstNumber || "N/A"}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {profile.description && (
+                                <div className="mt-12 pt-8 border-t border-[var(--glass-border)]">
+                                    <p className="text-[10px] font-bold text-[var(--text-dim)] uppercase tracking-[0.15em] opacity-60 mb-4">Company Overview / Message</p>
+                                    <div className="p-6 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5">
+                                        <p className="text-[var(--text-dim)] leading-relaxed text-sm">{profile.description}</p>
+                                    </div>
+                                </div>
+                            )}
+                        </GlassCard>
                     </div>
                 )}
 
