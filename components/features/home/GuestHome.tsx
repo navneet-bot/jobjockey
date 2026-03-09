@@ -485,28 +485,28 @@ export default function GuestHome() {
               number: 5000,
               suffix: "+",
               label: "Professionals in Talent Network",
-              color: "text-blue-500"
+              color: "text-[#111827] dark:text-white"
             },
             {
               icon: Briefcase,
               number: 300,
               suffix: "+",
               label: "Jobs & Internships Posted",
-              color: "text-[var(--primary)]"
+              color: "text-[#111827] dark:text-white"
             },
             {
               icon: Building2,
               number: 100,
               suffix: "+",
               label: "Partner Companies Hiring",
-              color: "text-purple-500"
+              color: "text-[#111827] dark:text-white"
             },
             {
               icon: TrendingUp,
               number: 95,
               suffix: "%",
               label: "Successful Hiring Matches",
-              color: "text-green-500"
+              color: "text-[#111827] dark:text-white"
             }
           ].map((stat, index) => (
             <GlassCard 
@@ -611,7 +611,7 @@ export default function GuestHome() {
                   <div className="w-20 h-20 rounded-2xl bg-black/5 dark:bg-[var(--primary)]/10 flex items-center justify-center text-[#111827] dark:text-[var(--primary)] mb-2 group-hover:rotate-6 transition-transform relative">
                     <Building2 className="w-10 h-10" />
                   </div>
-                  <h4 className="text-2xl font-bold text-[var(--text-main)] group-hover:text-[var(--primary)] transition-colors">For Businesses</h4>
+                  <h4 className="text-2xl font-bold text-[var(--text-main)] transition-colors">For Businesses</h4>
                   <p className="text-[var(--text-dim)] leading-relaxed text-lg">
                     Find and hire job-ready talent, post jobs, and build high-performance teams efficiently.
                   </p>
@@ -632,7 +632,7 @@ export default function GuestHome() {
                   <div className="w-20 h-20 rounded-2xl bg-black/5 dark:bg-[var(--primary)]/10 flex items-center justify-center text-[#111827] dark:text-[var(--primary)] mb-2 group-hover:-rotate-6 transition-transform relative">
                     <Briefcase className="w-10 h-10" />
                   </div>
-                  <h4 className="text-2xl font-bold text-[var(--text-main)] group-hover:text-[var(--primary)] transition-colors">For Talent</h4>
+                  <h4 className="text-2xl font-bold text-[var(--text-main)] transition-colors">For Talent</h4>
                   <p className="text-[var(--text-dim)] leading-relaxed text-lg">
                     Create your profile, discover new job opportunities, and accelerate your career growth.
                   </p>
