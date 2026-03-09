@@ -9,7 +9,14 @@ import { GradientButton } from "@/components/ui/GradientButton";
 import { GradientHeader } from "@/components/ui/GradientHeader";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { useForm as useReactHookForm } from "react-hook-form";
+import { useForm as useReactHookForm, Controller } from "react-hook-form";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 
 export default function BusinessEnquiryPage() {
     const router = useRouter();
@@ -109,17 +116,24 @@ export default function BusinessEnquiryPage() {
 
                         <div className="flex flex-col gap-2">
                             <label className="text-sm font-medium text-[var(--text-main)]">Company Size *</label>
-                            <select
-                                {...form.register("companySize")}
-                                className="flex h-12 w-full rounded-xl border border-[var(--glass-border)] bg-[var(--glass-bg)] px-3 py-2 text-sm text-[var(--text-main)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
-                            >
-                                <option value="" className="bg-[var(--glass-bg)] text-[var(--text-main)]">Select Size</option>
-                                <option value="1-10" className="bg-[var(--glass-bg)] text-[var(--text-main)]">1-10 employees</option>
-                                <option value="11-50" className="bg-[var(--glass-bg)] text-[var(--text-main)]">11-50 employees</option>
-                                <option value="51-200" className="bg-[var(--glass-bg)] text-[var(--text-main)]">51-200 employees</option>
-                                <option value="201-500" className="bg-[var(--glass-bg)] text-[var(--text-main)]">201-500 employees</option>
-                                <option value="500+" className="bg-[var(--glass-bg)] text-[var(--text-main)]">500+ employees</option>
-                            </select>
+                            <Controller
+                                name="companySize"
+                                control={form.control}
+                                render={({ field }) => (
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select Size" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="1-10">1-10 employees</SelectItem>
+                                            <SelectItem value="11-50">11-50 employees</SelectItem>
+                                            <SelectItem value="51-200">51-200 employees</SelectItem>
+                                            <SelectItem value="201-500">201-500 employees</SelectItem>
+                                            <SelectItem value="500+">500+ employees</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                )}
+                            />
                             {form.formState.errors.companySize && (
                                 <span className="text-xs text-red-500">{form.formState.errors.companySize.message}</span>
                             )}
@@ -132,15 +146,22 @@ export default function BusinessEnquiryPage() {
 
                         <div className="flex flex-col gap-2">
                             <label className="text-sm font-medium text-[var(--text-main)]">Hire Status *</label>
-                            <select
-                                {...form.register("hiringNeeds")}
-                                className="flex h-12 w-full rounded-xl border border-[var(--glass-border)] bg-[var(--glass-bg)] px-3 py-2 text-sm text-[var(--text-main)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
-                            >
-                                <option value="" className="bg-[var(--glass-bg)] text-[var(--text-main)]">Select Status</option>
-                                <option value="Actively Hiring" className="bg-[var(--glass-bg)] text-[var(--text-main)]">Actively Hiring</option>
-                                <option value="Occasionally Hiring" className="bg-[var(--glass-bg)] text-[var(--text-main)]">Occasionally Hiring</option>
-                                <option value="Not Hiring" className="bg-[var(--glass-bg)] text-[var(--text-main)]">Not Hiring</option>
-                            </select>
+                            <Controller
+                                name="hiringNeeds"
+                                control={form.control}
+                                render={({ field }) => (
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select Status" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="Actively Hiring">Actively Hiring</SelectItem>
+                                            <SelectItem value="Occasionally Hiring">Occasionally Hiring</SelectItem>
+                                            <SelectItem value="Not Hiring">Not Hiring</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                )}
+                            />
                             {form.formState.errors.hiringNeeds && (
                                 <span className="text-xs text-red-500">{form.formState.errors.hiringNeeds.message}</span>
                             )}

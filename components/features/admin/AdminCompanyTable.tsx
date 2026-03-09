@@ -72,7 +72,7 @@ export function AdminCompanyTable({ statusFilter }: { statusFilter?: "pending" |
                         </thead>
                         <tbody className="divide-y divide-[var(--glass-border)] text-[var(--text-main)]">
                             {loading ? (
-                                <tr><td colSpan={6} className="px-6 py-10 text-center"><div className="inline-block w-6 h-6 border-2 border-[var(--primary)] border-t-transparent rounded-full animate-spin"></div></td></tr>
+                                <tr><td colSpan={6} className="px-6 py-10 text-center"><div className="inline-block w-6 h-6 border-2 border-[var(--text-main)] dark:border-[var(--primary)] border-t-transparent rounded-full animate-spin"></div></td></tr>
                             ) : enquiries.length === 0 ? (
                                 <tr><td colSpan={6} className="px-6 py-10 text-center text-muted-foreground">No enquiries found.</td></tr>
                             ) : (
@@ -81,7 +81,7 @@ export function AdminCompanyTable({ statusFilter }: { statusFilter?: "pending" |
                                         <td className="px-6 py-4">
                                             <p className="font-semibold text-base">{enq.companyName}</p>
                                             {enq.companyUrl && (
-                                                <a href={enq.companyUrl} target="_blank" rel="noreferrer" className="text-xs text-[var(--text-main)] hover:text-[var(--primary)] transition-colors hover:underline">
+                                                <a href={enq.companyUrl} target="_blank" rel="noreferrer" className="text-xs text-[var(--text-main)] hover:text-[var(--text-main)] dark:hover:text-[var(--primary)] transition-colors hover:underline">
                                                     {enq.companyUrl}
                                                 </a>
                                             )}

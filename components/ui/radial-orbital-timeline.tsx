@@ -114,10 +114,7 @@ export default function RadialOrbitalTimeline({
     const y = radius * Math.sin(radian) + centerOffset.y;
 
     const zIndex = Math.round(100 + 50 * Math.cos(radian));
-    const opacity = Math.max(
-      0.4,
-      Math.min(1, 0.4 + 0.6 * ((1 + Math.sin(radian)) / 2))
-    );
+    const opacity = 1;
 
     return { x, y, angle, zIndex, opacity };
   };
@@ -154,7 +151,7 @@ export default function RadialOrbitalTimeline({
             const nodeStyle = {
               transform: `translate(${position.x}px, ${position.y}px)`,
               zIndex: isExpanded ? 200 : position.zIndex,
-              opacity: isExpanded ? 1 : position.opacity,
+              opacity: 1,
             };
 
             return (
@@ -179,8 +176,8 @@ export default function RadialOrbitalTimeline({
                         isExpanded
                         ? "bg-white text-black"
                         : isRelated
-                        ? "bg-white/50 dark:bg-white/50 text-black shadow-[0_0_15px_rgba(255,255,255,0.5)]"
-                        : "bg-white/80 dark:bg-white/80 backdrop-blur-md text-black dark:text-black"
+                        ? "bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.5)]"
+                        : "bg-white backdrop-blur-md text-black dark:text-black"
                     }
                     border-2 
                     ${
@@ -202,7 +199,7 @@ export default function RadialOrbitalTimeline({
                     absolute top-14 left-1/2 -translate-x-1/2 whitespace-nowrap
                     text-[10px] font-bold tracking-tighter uppercase
                     transition-all duration-300
-                    ${isExpanded ? "text-[var(--text-main)] scale-110 opacity-100" : "text-[var(--text-dim)] dark:text-white/60 opacity-80"}
+                    ${isExpanded ? "text-[var(--text-main)] scale-110 opacity-100" : "text-[var(--text-dim)] dark:text-white opacity-100"}
                     `}
                     >
                     {item.title}

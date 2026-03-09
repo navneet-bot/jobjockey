@@ -51,7 +51,7 @@ export function CompanyApplicationsTab({ companyId }: { companyId: string }) {
                     </thead>
                     <tbody className="divide-y divide-black/5 dark:divide-white/5 text-[var(--text-main)]">
                         {loading ? (
-                            <tr><td colSpan={4} className="px-6 py-10 text-center"><div className="inline-block w-6 h-6 border-2 border-[var(--primary)] border-t-transparent rounded-full animate-spin"></div></td></tr>
+                            <tr><td colSpan={4} className="px-6 py-10 text-center"><div className="inline-block w-6 h-6 border-2 border-[var(--text-main)] dark:border-[var(--primary)] border-t-transparent rounded-full animate-spin"></div></td></tr>
                         ) : applications.length === 0 ? (
                             <tr><td colSpan={4} className="px-6 py-10 text-center text-muted-foreground">No applications yet.</td></tr>
                         ) : (

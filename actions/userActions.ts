@@ -1,9 +1,9 @@
 "use server";
 import { db } from "@/lib/db";
-import { userProfilesTable, companiesTable } from "@/lib/schema";
+import { userProfilesTable, companiesTable, companyEnquiriesTable } from "@/lib/schema";
 import { userProfileSchema } from "@/lib/validators";
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import { eq } from "drizzle-orm";
+import { eq, desc, or } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 type ProfileFormData = {
@@ -55,6 +55,7 @@ export type CompanyProfileData = {
     companyWebsite: string;
     description: string;
     contactPerson?: string;
+    designation?: string;
     email?: string;
     phone?: string;
     companySize?: string;
@@ -65,8 +66,36 @@ export type CompanyProfileData = {
 export async function getCompanyProfile() {
     const { userId } = await auth();
     if (!userId) return null;
+
+    // 1. Try to get the existing profile
     const [company] = await db.select().from(companiesTable).where(eq(companiesTable.userId, userId)).limit(1);
-    return company || null;
+    if (company) return company;
+
+    // 2. Fallback: Check for a matching Business Enquiry to auto-fill details
+    const [enquiry] = await db.select()
+        .from(companyEnquiriesTable)
+        .where(eq(companyEnquiriesTable.userId, userId))
+        .orderBy(desc(companyEnquiriesTable.submittedAt))
+        .limit(1);
+
+    if (enquiry) {
+        return {
+            companyName: enquiry.companyName,
+            industry: enquiry.industry,
+            companyWebsite: enquiry.companyUrl,
+            description: enquiry.message || enquiry.hiringNeeds, // Use message or hiring needs as a starting description
+            contactPerson: enquiry.contactPerson,
+            designation: enquiry.designation,
+            email: enquiry.email,
+            phone: enquiry.phone,
+            companySize: enquiry.companySize,
+            gstNumber: enquiry.gstNumber,
+            hiringNeeds: enquiry.hiringNeeds,
+            isVerified: false
+        };
+    }
+
+    return null;
 }
 
 export async function updateCompanyProfile(data: CompanyProfileData) {

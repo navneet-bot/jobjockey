@@ -24,6 +24,7 @@ import LottieAnimation from "@/components/ui/LottieAnimation";
 import { staggerContainer } from "@/lib/animation-variants";
 import { ServiceCarousel } from "./ServiceCarousel";
 import RadialOrbitalTimeline from "@/components/ui/radial-orbital-timeline";
+import AnimatedCounter from "@/components/ui/AnimatedCounter";
 
 
 export default function GuestHome() {
@@ -288,7 +289,7 @@ export default function GuestHome() {
               <h3 className="text-2xl font-display font-bold text-[var(--text-main)]">For Businesses</h3>
             </SectionReveal>
             <SectionReveal stagger delay={0.1} className="relative min-h-[320px]">
-              <ServiceCarousel 
+              <ServiceCarousel
                 services={[
                   {
                     icon: Settings,
@@ -326,7 +327,7 @@ export default function GuestHome() {
                     desc: "Access trained early-career professionals ready to contribute to business operations while building industry experience.",
                     meta: "Next Gen Talent",
                   }
-                ]} 
+                ]}
               />
             </SectionReveal>
           </div>
@@ -337,7 +338,7 @@ export default function GuestHome() {
               <h3 className="text-2xl font-display font-bold text-[var(--text-main)]">For Talent</h3>
             </SectionReveal>
             <SectionReveal stagger delay={0.2} className="relative min-h-[320px]">
-              <ServiceCarousel 
+              <ServiceCarousel
                 services={[
                   {
                     icon: Laptop,
@@ -357,7 +358,7 @@ export default function GuestHome() {
                     desc: "Access industry-recognized training programs to master the skills demanded by modern employers.",
                     meta: "Verified certifications, Expert-led, Practical curriculum",
                   }
-                ]} 
+                ]}
               />
             </SectionReveal>
           </div>
@@ -379,13 +380,13 @@ export default function GuestHome() {
             <div className="text-center mb-12">
               <h3 className="text-3xl font-display font-bold text-[var(--text-main)]">For Companies</h3>
             </div>
-            
+
             <div className="w-full relative min-h-[500px] flex items-center justify-center scale-90 md:scale-100">
-             <RadialOrbitalTimeline 
+              <RadialOrbitalTimeline
                 timelineData={[
                   {
                     id: 1,
-                    title: "Businesses Share Requirements",
+                    title: "1. Businesses Share Requirements",
                     date: "Step 1",
                     content: "Companies tell us the roles and workforce requirements.",
                     category: "Company",
@@ -393,7 +394,7 @@ export default function GuestHome() {
                   },
                   {
                     id: 2,
-                    title: "Talent Selection",
+                    title: "2. Talent Selection",
                     date: "Step 2",
                     content: "Our team identifies and prepares suitable professionals from our talent network.",
                     category: "Company",
@@ -401,7 +402,7 @@ export default function GuestHome() {
                   },
                   {
                     id: 3,
-                    title: "Workforce Deployment",
+                    title: "3. Workforce Deployment",
                     date: "Step 3",
                     content: "Selected professionals begin supporting the business operations.",
                     category: "Company",
@@ -409,13 +410,13 @@ export default function GuestHome() {
                   },
                   {
                     id: 4,
-                    title: "Ongoing Management",
+                    title: "4. Ongoing Management",
                     date: "Step 4",
                     content: "Job Jockey manages payroll, compliance, and workforce coordination.",
                     category: "Company",
                     icon: Settings,
                   }
-                ]} 
+                ]}
               />
             </div>
           </SectionReveal>
@@ -425,13 +426,13 @@ export default function GuestHome() {
             <div className="text-center mb-12">
               <h3 className="text-3xl font-display font-bold text-[var(--text-main)]">For Candidates</h3>
             </div>
-            
+
             <div className="w-full relative min-h-[500px] flex items-center justify-center scale-90 md:scale-100">
-             <RadialOrbitalTimeline 
+              <RadialOrbitalTimeline
                 timelineData={[
                   {
                     id: 5,
-                    title: "Apply Now",
+                    title: "1. Apply Now",
                     date: "Step 1",
                     content: "Browse and apply for high-quality jobs or internships matching your skills.",
                     category: "Candidate",
@@ -439,7 +440,7 @@ export default function GuestHome() {
                   },
                   {
                     id: 6,
-                    title: "Skill Assessment",
+                    title: "2. Skill Assessment",
                     date: "Step 2",
                     content: "Complete our comprehensive skill assessment to validate your expertise.",
                     category: "Candidate",
@@ -447,7 +448,7 @@ export default function GuestHome() {
                   },
                   {
                     id: 7,
-                    title: "Real-world Training",
+                    title: "3. Real-world Training",
                     date: "Step 3",
                     content: "Get hands-on training based on real company workflows and projects.",
                     category: "Candidate",
@@ -455,17 +456,77 @@ export default function GuestHome() {
                   },
                   {
                     id: 8,
-                    title: "Direct Placement",
+                    title: "4. Direct Placement",
                     date: "Step 4",
                     content: "Get placed in top-tier internships or full-time roles with our partners.",
                     category: "Candidate",
                     icon: Briefcase,
                   }
-                ]} 
+                ]}
               />
             </div>
           </SectionReveal>
         </div>
+      </section>
+      
+      {/* STATISTICS SECTION */}
+      <section className="container mx-auto px-6 py-20" id="statistics">
+        <SectionReveal className="text-center mb-16">
+          <GradientHeader
+            title="Trusted by Growing Talent & Companies"
+            subtitle="Numbers that reflect our growing network of professionals and businesses."
+          />
+        </SectionReveal>
+
+        <SectionReveal stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
+          {[
+            {
+              icon: Users,
+              number: 5000,
+              suffix: "+",
+              label: "Professionals in Talent Network",
+              color: "text-blue-500"
+            },
+            {
+              icon: Briefcase,
+              number: 300,
+              suffix: "+",
+              label: "Jobs & Internships Posted",
+              color: "text-[var(--primary)]"
+            },
+            {
+              icon: Building2,
+              number: 100,
+              suffix: "+",
+              label: "Partner Companies Hiring",
+              color: "text-purple-500"
+            },
+            {
+              icon: TrendingUp,
+              number: 95,
+              suffix: "%",
+              label: "Successful Hiring Matches",
+              color: "text-green-500"
+            }
+          ].map((stat, index) => (
+            <GlassCard 
+              key={index} 
+              className="p-10 flex flex-col items-center text-center gap-6 group hover:shadow-[0_0_30px_rgba(var(--primary-rgb),0.15)] transition-all duration-300 border-white/5 dark:border-white/10"
+            >
+              <div className={`w-16 h-16 rounded-2xl bg-black/5 dark:bg-white/5 flex items-center justify-center text-[#111827] dark:text-white group-hover:scale-110 transition-transform`}>
+                <stat.icon className={`w-8 h-8 ${stat.color}`} />
+              </div>
+              <div className="flex flex-col gap-2">
+                <h3 className="text-4xl md:text-5xl font-bold text-[var(--text-main)] tracking-tight">
+                  <AnimatedCounter to={stat.number} suffix={stat.suffix} />
+                </h3>
+                <p className="text-[var(--text-dim)] font-medium uppercase tracking-wider text-sm">
+                  {stat.label}
+                </p>
+              </div>
+            </GlassCard>
+          ))}
+        </SectionReveal>
       </section>
 
       {/* WHY CHOOSE US */}
@@ -528,7 +589,7 @@ export default function GuestHome() {
                 Candidates get access to opportunities with growing companies across industries.
               </p>
             </GlassCard>
-            
+
           </SectionReveal>
         </div>
       </section>

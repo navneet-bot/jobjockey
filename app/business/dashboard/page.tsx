@@ -12,6 +12,14 @@ import { getCompanyProfile, updateCompanyProfile, CompanyProfileData } from "@/a
 import { getMyJobs } from "@/actions/jobActions";
 import { getMyInternships } from "@/actions/internshipActions";
 import { getCompanyApplications, updateApplicationStatus } from "@/actions/applicationActions";
+import { useForm, Controller } from "react-hook-form";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 import { Job, Internship } from "@/lib/schema";
 import { toast } from "sonner";
 import JobCard from "@/components/features/job/JobCard";
@@ -30,6 +38,7 @@ export default function BusinessDashboardPage() {
         companyWebsite: "", 
         description: "",
         contactPerson: "",
+        designation: "",
         email: "",
         phone: "",
         companySize: "",
@@ -46,6 +55,7 @@ export default function BusinessDashboardPage() {
             profile.companyWebsite,
             profile.description,
             profile.contactPerson,
+            profile.designation,
             profile.email,
             profile.phone,
             profile.companySize,
@@ -71,8 +81,8 @@ export default function BusinessDashboardPage() {
                 setStats(statsData);
                 
                 const combined = [
-                    ...jobData.map(j => ({ ...j, jobCategory: 'job' as const })),
-                    ...internshipData.map(i => ({ ...i, jobCategory: 'internship' as const }))
+                    ...jobData.map((j: Job) => ({ ...j, jobCategory: 'job' as const })),
+                    ...internshipData.map((i: Internship) => ({ ...i, jobCategory: 'internship' as const }))
                 ];
                 setJobs(combined);
                 setLoadingJobs(false);
@@ -87,6 +97,7 @@ export default function BusinessDashboardPage() {
                         companyWebsite: profileData.companyWebsite || "",
                         description: profileData.description || "",
                         contactPerson: profileData.contactPerson || "",
+                        designation: profileData.designation || "",
                         email: profileData.email || "",
                         phone: profileData.phone || "",
                         companySize: profileData.companySize || "",
@@ -216,9 +227,8 @@ export default function BusinessDashboardPage() {
                         ) : (
                             <div className="text-center py-20 border border-dashed border-[var(--glass-border)] rounded-xl">
                                 <Briefcase className="w-10 h-10 mx-auto text-[var(--text-dim)] mb-4 opacity-50" />
-                                <p className="text-[var(--text-dim)] mb-4">You have no active job postings.</p>
                                 <Link href="/business/post-job">
-                                    <Button variant="outline" className="rounded-full border-[var(--primary)] text-[var(--primary)] hover:bg-[var(--primary)]/10">
+                                    <Button variant="outline" className="rounded-full border-[#111827] text-[#111827] dark:border-white dark:text-white hover:bg-[#111827]/10 dark:hover:bg-white/10">
                                         Post your first job
                                     </Button>
                                 </Link>
@@ -231,10 +241,6 @@ export default function BusinessDashboardPage() {
                     <GlassCard className="p-8">
                         <div className="flex justify-between items-center mb-6">
                             <h3 className="text-xl font-bold text-[var(--text-main)]">Applications ({applications.length})</h3>
-                            <div className="flex gap-2 text-xs">
-                                <span className="flex items-center gap-1 text-green-500 font-medium"><Check className="w-3 h-3"/> Approved</span>
-                                <span className="flex items-center gap-1 text-blue-500 font-medium"><ArrowRight className="w-3 h-3"/> Interview</span>
-                            </div>
                         </div>
                         
                         {loadingApps ? (
@@ -343,9 +349,15 @@ export default function BusinessDashboardPage() {
 
                 {activeTab === "profile" && (
                     <GlassCard className="p-8 relative">
-                        <div className="absolute top-8 right-8 flex flex-col items-end">
-                            <span className="text-2xl font-bold text-[var(--primary)]">{calculateCompletion()}%</span>
-                            <span className="text-xs text-[var(--text-dim)] uppercase tracking-wider">Profile Completed</span>
+                        <div className="absolute top-8 right-8 flex flex-col items-end gap-1">
+                            <span className="text-2xl font-bold text-[#111827] dark:text-[var(--primary)]">{calculateCompletion()}%</span>
+                            <span className="text-[10px] text-[var(--text-dim)] uppercase tracking-widest font-semibold mb-1">Profile Completed</span>
+                            <div className="w-32 h-1.5 bg-black/5 dark:bg-white/10 rounded-full overflow-hidden">
+                                <div 
+                                    className="h-full bg-gradient-to-r from-[#111827] to-[#111827]/80 dark:from-[var(--primary)] dark:to-[var(--primary)]/80 transition-all duration-500 ease-out shadow-[0_0_8px_rgba(0,0,0,0.1)] dark:shadow-[0_0_12px_rgba(var(--primary-rgb),0.3)]"
+                                    style={{ width: `${calculateCompletion()}%` }}
+                                ></div>
+                            </div>
                         </div>
                         <h3 className="text-xl font-bold text-[var(--text-main)] mb-6">Company Profile Settings</h3>
                         <p className="text-[var(--text-dim)] mb-6 max-w-2xl">Update your company description, industry, and website here to appear in job postings.</p>
@@ -377,7 +389,7 @@ export default function BusinessDashboardPage() {
                                 </div>
 
                                 <div className="flex flex-col gap-2">
-                                    <label className="text-sm font-medium text-[var(--text-main)]">Point of Contact *</label>
+                                    <label className="text-sm font-medium text-[var(--text-main)]">Contact Person *</label>
                                     <input 
                                         type="text" 
                                         value={profile.contactPerson}
@@ -385,6 +397,18 @@ export default function BusinessDashboardPage() {
                                         disabled={!isEditingProfile}
                                         className="w-full bg-[var(--glass-bg)] border border-[var(--glass-border)] rounded-xl px-4 py-3 text-[var(--text-main)] outline-none disabled:opacity-60 disabled:cursor-not-allowed" 
                                         placeholder="Aditya Varma" 
+                                    />
+                                </div>
+
+                                <div className="flex flex-col gap-2">
+                                    <label className="text-sm font-medium text-[var(--text-main)]">Contact Person Designation *</label>
+                                    <input 
+                                        type="text" 
+                                        value={profile.designation}
+                                        onChange={(e) => setProfile({ ...profile, designation: e.target.value })}
+                                        disabled={!isEditingProfile}
+                                        className="w-full bg-[var(--glass-bg)] border border-[var(--glass-border)] rounded-xl px-4 py-3 text-[var(--text-main)] outline-none disabled:opacity-60 disabled:cursor-not-allowed" 
+                                        placeholder="HR Manager / Director" 
                                     />
                                 </div>
 
@@ -426,19 +450,22 @@ export default function BusinessDashboardPage() {
 
                                 <div className="flex flex-col gap-2">
                                     <label className="text-sm font-medium text-[var(--text-main)]">Company Size *</label>
-                                    <select
-                                        value={profile.companySize}
-                                        onChange={(e) => setProfile({ ...profile, companySize: e.target.value })}
+                                    <Select 
+                                        value={profile.companySize} 
+                                        onValueChange={(val) => setProfile({ ...profile, companySize: val })}
                                         disabled={!isEditingProfile}
-                                        className="flex h-[50px] w-full rounded-xl border border-[var(--glass-border)] bg-[var(--glass-bg)] px-3 py-2 text-sm text-[var(--text-main)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] disabled:opacity-60 disabled:cursor-not-allowed"
                                     >
-                                        <option value="" className="bg-[var(--glass-bg)] text-[var(--text-main)]">Select Size</option>
-                                        <option value="1-10" className="bg-[var(--glass-bg)] text-[var(--text-main)]">1-10 employees</option>
-                                        <option value="11-50" className="bg-[var(--glass-bg)] text-[var(--text-main)]">11-50 employees</option>
-                                        <option value="51-200" className="bg-[var(--glass-bg)] text-[var(--text-main)]">51-200 employees</option>
-                                        <option value="201-500" className="bg-[var(--glass-bg)] text-[var(--text-main)]">201-500 employees</option>
-                                        <option value="500+" className="bg-[var(--glass-bg)] text-[var(--text-main)]">500+ employees</option>
-                                    </select>
+                                        <SelectTrigger className="h-[50px]">
+                                            <SelectValue placeholder="Select Size" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="1-10">1-10 employees</SelectItem>
+                                            <SelectItem value="11-50">11-50 employees</SelectItem>
+                                            <SelectItem value="51-200">51-200 employees</SelectItem>
+                                            <SelectItem value="201-500">201-500 employees</SelectItem>
+                                            <SelectItem value="500+">500+ employees</SelectItem>
+                                        </SelectContent>
+                                    </Select>
                                 </div>
 
                                 <div className="flex flex-col gap-2">
@@ -452,25 +479,28 @@ export default function BusinessDashboardPage() {
                                         placeholder="Optional GST ID" 
                                     />
                                 </div>
+
+                                <div className="flex flex-col gap-2">
+                                    <label className="text-sm font-medium text-[var(--text-main)]">Hire Status *</label>
+                                    <Select 
+                                        value={profile.hiringNeeds} 
+                                        onValueChange={(val) => setProfile({ ...profile, hiringNeeds: val })}
+                                        disabled={!isEditingProfile}
+                                    >
+                                        <SelectTrigger className="h-[50px]">
+                                            <SelectValue placeholder="Select Status" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="Actively Hiring">Actively Hiring</SelectItem>
+                                            <SelectItem value="Occasionally Hiring">Occasionally Hiring</SelectItem>
+                                            <SelectItem value="Not Hiring">Not Hiring</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
                             </div>
 
                             <div className="flex flex-col gap-2">
-                                <label className="text-sm font-medium text-[var(--text-main)]">Hire Status *</label>
-                                <select
-                                    value={profile.hiringNeeds}
-                                    onChange={(e) => setProfile({ ...profile, hiringNeeds: e.target.value })}
-                                    disabled={!isEditingProfile}
-                                    className="flex h-[50px] w-full rounded-xl border border-[var(--glass-border)] bg-[var(--glass-bg)] px-3 py-2 text-sm text-[var(--text-main)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] disabled:opacity-60 disabled:cursor-not-allowed"
-                                >
-                                    <option value="" className="bg-[var(--glass-bg)] text-[var(--text-main)]">Select Status</option>
-                                    <option value="Actively Hiring" className="bg-[var(--glass-bg)] text-[var(--text-main)]">Actively Hiring</option>
-                                    <option value="Occasionally Hiring" className="bg-[var(--glass-bg)] text-[var(--text-main)]">Occasionally Hiring</option>
-                                    <option value="Not Hiring" className="bg-[var(--glass-bg)] text-[var(--text-main)]">Not Hiring</option>
-                                </select>
-                            </div>
-
-                            <div className="flex flex-col gap-2">
-                                <label className="text-sm font-medium text-[var(--text-main)]">Company Description</label>
+                                <label className="text-sm font-medium text-[var(--text-main)]">Company Overview / Message</label>
                                 <textarea 
                                     value={profile.description}
                                     onChange={(e) => setProfile({ ...profile, description: e.target.value })}
@@ -485,7 +515,7 @@ export default function BusinessDashboardPage() {
                                     <Button 
                                         onClick={handleSaveProfile}
                                         disabled={isSaving}
-                                        className="rounded-full px-8 py-6 text-lg bg-[#111827] dark:bg-white text-white dark:text-black"
+                                        className="rounded-full px-8 py-6 text-lg bg-[#111827] dark:bg-white text-white dark:text-black hover:bg-[#111827]/90 dark:hover:bg-white/90"
                                     >
                                         {isSaving ? "Saving..." : "Save Profile"}
                                     </Button>
@@ -501,7 +531,7 @@ export default function BusinessDashboardPage() {
                             ) : (
                                 <Button 
                                     onClick={() => setIsEditingProfile(true)}
-                                    className="w-max mt-4 rounded-full px-8 py-6 text-lg bg-[#111827] dark:bg-white text-white dark:text-black"
+                                    className="w-max mt-4 rounded-full px-8 py-6 text-lg bg-[#111827] dark:bg-white text-white dark:text-black hover:bg-[#111827]/90 dark:hover:bg-white/90"
                                 >
                                     Update Profile
                                 </Button>

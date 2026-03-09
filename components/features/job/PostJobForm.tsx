@@ -141,7 +141,7 @@ export default function PostJobForm({ jobId, initialData }: PostJobFormProps) {
 
   const SectionTitle = ({ children, icon: Icon }: { children: React.ReactNode; icon: any }) => (
     <div className="flex items-center gap-2 mb-6 mt-4">
-      <div className="p-2 rounded-lg bg-[var(--primary)]/10 text-[var(--primary)]">
+      <div className="p-2 rounded-lg bg-black/5 dark:bg-white/10 text-[#111827] dark:text-[var(--primary)]">
         <Icon className="w-5 h-5" />
       </div>
       <h3 className="text-xl font-bold text-[var(--text-main)]">{children}</h3>
@@ -962,7 +962,7 @@ export default function PostJobForm({ jobId, initialData }: PostJobFormProps) {
           variant="outline" 
           size="lg"
           onClick={() => isEditMode ? router.push("/business/dashboard") : form.reset()}
-          className="rounded-xl border-[var(--glass-border)]"
+          className="rounded-xl border-[var(--glass-border)] text-black dark:text-white hover:bg-black/5 dark:hover:bg-white/10 hover:text-black dark:hover:text-white"
         >
           {isEditMode ? "Cancel Changes" : "Reset Form"}
         </Button>
@@ -971,7 +971,7 @@ export default function PostJobForm({ jobId, initialData }: PostJobFormProps) {
           type="submit" 
           form="post-job-form"
           size="lg"
-          className="rounded-xl bg-[var(--primary)] text-black font-bold hover:scale-[1.02] transition-transform px-10"
+          className="rounded-xl bg-[#111827] dark:bg-white text-white dark:text-black font-bold hover:scale-[1.02] transition-all px-10 hover:bg-[#111827]/90 dark:hover:bg-white/90"
         >
           {isSubmitting
             ? isEditMode

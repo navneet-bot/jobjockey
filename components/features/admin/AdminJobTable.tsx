@@ -32,7 +32,7 @@ export function AdminJobTable({ jobs }: { jobs: any[] }) {
                                 return (
                                     <tr key={job.id} className="hover:bg-[var(--glass-bg)] transition-colors">
                                         <td className="px-6 py-4">
-                                            <Link href={detailHref} className="font-semibold text-base hover:text-[var(--primary)] transition-colors inline-flex items-center gap-2">
+                                            <Link href={detailHref} className="font-semibold text-base hover:text-[var(--text-main)] dark:hover:text-[var(--primary)] transition-colors inline-flex items-center gap-2">
                                                 {job.title}
                                                 <ExternalLink className="w-3 h-3 text-muted-foreground" />
                                             </Link>
@@ -49,7 +49,7 @@ export function AdminJobTable({ jobs }: { jobs: any[] }) {
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <Link href={editHref}>
-                                                <button className="text-[var(--text-main)] dark:text-[var(--primary)] hover:text-[var(--primary)] transition-colors">
+                                                <button className="text-[var(--text-main)] dark:text-[var(--primary)] hover:text-[var(--text-main)] dark:hover:text-[var(--primary)] transition-colors">
                                                     Edit
                                                 </button>
                                             </Link>

@@ -36,7 +36,7 @@ export function CompanyJobsTab({ companyId }: { companyId: string }) {
                     </thead>
                     <tbody className="divide-y divide-black/5 dark:divide-white/5 text-[var(--text-main)]">
                         {loading ? (
-                            <tr><td colSpan={5} className="px-6 py-10 text-center"><div className="inline-block w-6 h-6 border-2 border-[var(--primary)] border-t-transparent rounded-full animate-spin"></div></td></tr>
+                            <tr><td colSpan={5} className="px-6 py-10 text-center"><div className="inline-block w-6 h-6 border-2 border-[var(--text-main)] dark:border-[var(--primary)] border-t-transparent rounded-full animate-spin"></div></td></tr>
                         ) : jobs.length === 0 ? (
                             <tr><td colSpan={5} className="px-6 py-10 text-center text-muted-foreground">No jobs posted yet.</td></tr>
                         ) : (
@@ -45,7 +45,7 @@ export function CompanyJobsTab({ companyId }: { companyId: string }) {
                                     <td className="px-6 py-4">
                                         <Link
                                             href={`/jobs/${job.id}`}
-                                            className="font-semibold text-[var(--text-main)] hover:text-[var(--primary)] transition-colors inline-flex items-center gap-2"
+                                            className="font-semibold text-[var(--text-main)] hover:text-[var(--text-main)] dark:hover:text-[var(--primary)] transition-colors inline-flex items-center gap-2"
                                             target="_blank"
                                         >
                                             {job.title}
