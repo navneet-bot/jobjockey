@@ -139,13 +139,15 @@ export default function CompanyHome({ companyData }: { companyData: any }) {
           <p className="text-[var(--text-dim)] text-lg max-w-2xl">
             Let Job Jockey help coordinate interviews, handle shortlisting, and connect you with thoroughly vetted candidates.
           </p>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.98 }}
-            className="mt-4 rounded-full px-8 py-3 bg-[#111827] dark:bg-white text-white dark:text-black font-bold text-lg transition-all duration-200 shadow-lg"
-          >
-            Contact Support
-          </motion.button>
+          <a href="mailto:support@jobjockey.in">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
+              className="mt-4 rounded-full px-8 py-3 bg-[#111827] dark:bg-white text-white dark:text-black font-bold text-lg transition-all duration-200 shadow-lg"
+            >
+              Contact Support
+            </motion.button>
+          </a>
         </GlassCard>
       </section>
     </div>

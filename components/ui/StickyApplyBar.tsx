@@ -23,9 +23,10 @@ interface StickyApplyBarProps {
     category: "job" | "internship";
     salary?: string | null;
     initialResumeUrl?: string | null;
+    initialHasApplied?: boolean;
 }
 
-export function StickyApplyBar({ jobId, category, salary, initialResumeUrl }: StickyApplyBarProps) {
+export function StickyApplyBar({ jobId, category, salary, initialResumeUrl, initialHasApplied = false }: StickyApplyBarProps) {
     const { user } = useUser();
     const role = user?.publicMetadata?.role;
     const isTalent = role === "talent";
@@ -34,6 +35,7 @@ export function StickyApplyBar({ jobId, category, salary, initialResumeUrl }: St
     const [isApplying, setIsApplying] = useState(false);
     const [isUploadingResume, setIsUploadingResume] = useState(false);
     const [open, setOpen] = useState(false);
+    const [hasApplied, setHasApplied] = useState(initialHasApplied);
 
     const handleApply = async () => {
         if (!resumeUrl) {
@@ -46,6 +48,7 @@ export function StickyApplyBar({ jobId, category, salary, initialResumeUrl }: St
 
         if (res.success) {
             toast.success("Application submitted successfully!");
+            setHasApplied(true);
             setOpen(false);
         } else {
             toast.error(res.error || "Failed to submit application");
@@ -61,6 +64,15 @@ export function StickyApplyBar({ jobId, category, salary, initialResumeUrl }: St
                 </div>
 
                 {isTalent && (
+                    hasApplied ? (
+                        <GradientButton 
+                            disabled 
+                            className="w-full sm:w-auto px-10 opacity-100 cursor-default bg-green-500/20 text-green-500 border border-green-500/30 flex items-center gap-2"
+                        >
+                            <CheckCircle2 className="w-5 h-5" />
+                            Applied
+                        </GradientButton>
+                    ) : (
                     <Dialog open={open} onOpenChange={setOpen}>
                         <DialogTrigger asChild>
                             <GradientButton className="w-full sm:w-auto px-10">
@@ -159,7 +171,8 @@ export function StickyApplyBar({ jobId, category, salary, initialResumeUrl }: St
                             </div>
                         </DialogContent>
                     </Dialog>
-                )}
+                )
+            )}
             </GlassCard>
         </div>
     );

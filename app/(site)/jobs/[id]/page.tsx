@@ -2,7 +2,9 @@ import { getSingleJob } from "@/actions/jobActions";
 import { getUserProfile } from "@/actions/userActions";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GradientHeader } from "@/components/ui/GradientHeader";
+import { applyForJob, checkApplicationStatus } from "@/actions/applicationActions";
 import { InlineApplyButton } from "@/components/features/job/InlineApplyButton";
+import { StickyApplyBar } from "@/components/ui/StickyApplyBar";
 import { MapPin, Briefcase, GraduationCap, Building2, Calendar, Currency, Clock, Star, ListChecks, Wrench, GraduationCap as EducationIcon, Info, Users, CheckCircle2 } from "lucide-react";
 import { currentUser } from "@clerk/nextjs/server";
 import { formatDistanceToNow } from "date-fns";
@@ -26,6 +28,9 @@ export default async function JobPage({ params }: JobPageProps) {
     const user = await currentUser();
     const role = user?.publicMetadata?.role;
     const isTalent = role === "talent";
+
+    // Check if the user has already applied
+    const hasApplied = isTalent ? await checkApplicationStatus(id, "job") : false;
 
     if (!job) {
         return notFound();
@@ -261,11 +266,23 @@ export default async function JobPage({ params }: JobPageProps) {
                                 jobId={job.id} 
                                 category="job" 
                                 initialResumeUrl={profile?.resumeUrl} 
+                                initialHasApplied={hasApplied}
                             />
                         </div>
                     )}
                 </section>
             </div>
+
+            {/* Sticky Apply Bar (Mobile & Desktop Floating) */}
+            {isTalent && (
+                <StickyApplyBar 
+                    jobId={job.id} 
+                    category="job" 
+                    salary={job.salary} 
+                    initialResumeUrl={profile?.resumeUrl}
+                    initialHasApplied={hasApplied}
+                />
+            )}
         </div>
     );
 }

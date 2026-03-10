@@ -5,6 +5,25 @@ import { auth, currentUser, clerkClient } from "@clerk/nextjs/server";
 import { eq, desc, and, ne, or } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
+export async function checkApplicationStatus(id: string, category: "job" | "internship") {
+    const { userId } = await auth();
+    if (!userId) return false;
+
+    try {
+        const whereClause = category === "job" 
+            ? and(eq(applicationsTable.jobId, id), eq(applicationsTable.userId, userId))
+            : and(eq(applicationsTable.internshipId, id), eq(applicationsTable.userId, userId));
+
+        const [existing] = await db.select().from(applicationsTable)
+            .where(whereClause).limit(1);
+
+        return !!existing;
+    } catch (err) {
+        console.error("Failed to check application status:", err);
+        return false;
+    }
+}
+
 export async function applyForJob(id: string, category: "job" | "internship", resumeUrl?: string) {
     const { userId } = await auth();
     if (!userId) return { success: false, error: "Unauthorized" };

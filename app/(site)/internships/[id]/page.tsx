@@ -2,7 +2,9 @@ import { getSingleInternship } from "@/actions/internshipActions";
 import { getUserProfile } from "@/actions/userActions";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GradientHeader } from "@/components/ui/GradientHeader";
+import { applyForJob, checkApplicationStatus } from "@/actions/applicationActions";
 import { InlineApplyButton } from "@/components/features/job/InlineApplyButton";
+import { StickyApplyBar } from "@/components/ui/StickyApplyBar";
 import { MapPin, Briefcase, GraduationCap, Building2, Calendar, Clock, Info, CheckCircle2, Star, Users } from "lucide-react";
 import { currentUser } from "@clerk/nextjs/server";
 import { formatDistanceToNow } from "date-fns";
@@ -26,6 +28,9 @@ export default async function InternshipPage({ params }: InternshipPageProps) {
     const user = await currentUser();
     const role = user?.publicMetadata?.role;
     const isTalent = role === "talent";
+
+    // Check if the user has already applied
+    const hasApplied = isTalent ? await checkApplicationStatus(id, "internship") : false;
 
     if (!internship) {
         return notFound();
@@ -185,11 +190,23 @@ export default async function InternshipPage({ params }: InternshipPageProps) {
                                 jobId={internship.id} 
                                 category="internship" 
                                 initialResumeUrl={profile?.resumeUrl} 
+                                initialHasApplied={hasApplied}
                             />
                         </div>
                     )}
                 </section>
             </div>
+
+            {/* Sticky Apply Bar */}
+            {isTalent && (
+                <StickyApplyBar 
+                    jobId={internship.id} 
+                    category="internship" 
+                    salary={internship.stipend} 
+                    initialResumeUrl={profile?.resumeUrl}
+                    initialHasApplied={hasApplied}
+                />
+            )}
         </div>
     );
 }

@@ -11,7 +11,8 @@ import Link from "next/link";
 
 type WrappedApp = {
     application: any;
-    job: any;
+    job?: any;
+    internship?: any;
 };
 
 export default function ApplicationsPage() {
@@ -64,17 +65,27 @@ export default function ApplicationsPage() {
                         </Link>
                     </GlassCard>
                 ) : (
-                    apps.map(({ application, job }) => (
-                        <GlassCard key={application.id} className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 group hoverLift">
-                            <div className="flex items-start gap-4 flex-1">
-                                <div className="h-12 w-12 rounded-full bg-secondary flex items-center justify-center border border-border mt-1">
-                                    <Building2 className="text-muted-foreground w-6 h-6" />
-                                </div>
-                                <div className="flex flex-col gap-1">
-                                    <Link href={`/jobs/${job.id}`} className="hover:text-[var(--primary)] transition-colors">
-                                        <h3 className="text-xl font-bold text-[var(--text-main)]">{job.title}</h3>
-                                    </Link>
-                                    <p className="text-muted-foreground font-medium">{job.company}</p>
+                    apps.map(({ application, job, internship }) => {
+                        const jobOrInternship = job || internship;
+                        const isInternship = !!internship;
+                        const detailHref = isInternship ? `/internships/${jobOrInternship?.id}` : `/jobs/${jobOrInternship?.id}`;
+
+                        return (
+                            <GlassCard key={application.id} className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 group hoverLift">
+                                <div className="flex items-start gap-4 flex-1">
+                                    <div className="h-12 w-12 rounded-full bg-secondary flex items-center justify-center border border-border mt-1">
+                                        <Building2 className="text-muted-foreground w-6 h-6" />
+                                    </div>
+                                    <div className="flex flex-col gap-1">
+                                        <Link href={detailHref} className="hover:text-[var(--primary)] transition-colors">
+                                            <h3 className="text-xl font-bold text-[var(--text-main)]">
+                                                {jobOrInternship?.title || "Deleted Position"}
+                                                <span className="px-2 py-0.5 rounded text-[10px] uppercase font-bold bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-muted-foreground ml-2">
+                                                    {isInternship ? "Internship" : "Job"}
+                                                </span>
+                                            </h3>
+                                        </Link>
+                                        <p className="text-muted-foreground font-medium">{jobOrInternship?.company || "Unknown Company"}</p>
 
                                     <div className="flex flex-wrap gap-4 mt-2 text-sm text-muted-foreground">
                                         <div className="flex items-center gap-1.5 flex-wrap">
@@ -92,13 +103,14 @@ export default function ApplicationsPage() {
                                         )}
                                     </div>
                                 </div>
-                            </div>
+                                </div>
 
-                            <div className="flex flex-col items-end gap-3 w-full md:w-auto">
-                                {getStatusBadge(application.status)}
-                            </div>
-                        </GlassCard>
-                    ))
+                                <div className="flex flex-col items-end gap-3 w-full md:w-auto">
+                                    {getStatusBadge(application.status)}
+                                </div>
+                            </GlassCard>
+                        );
+                    })
                 )}
             </div>
         </div>

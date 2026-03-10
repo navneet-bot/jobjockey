@@ -28,16 +28,19 @@ export default async function AdminDashboardPage() {
                     title="Pending Companies"
                     value={companies.value}
                     icon={<Building className="w-7 h-7" />}
+                    href="/admin/enquiries"
                 />
                 <DashboardStat
                     title="Active Jobs"
                     value={jobs.value}
                     icon={<Briefcase className="w-7 h-7" />}
+                    href="/admin/jobs"
                 />
                 <DashboardStat
                     title="Pending Applications"
                     value={applications.value}
                     icon={<FileText className="w-7 h-7" />}
+                    href="/admin/applications"
                 />
             </div>
 

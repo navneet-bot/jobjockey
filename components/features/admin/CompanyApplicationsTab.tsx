@@ -17,8 +17,10 @@ export function CompanyApplicationsTab({ companyId }: { companyId: string }) {
         // We might need a specific getApplicationsByCompany action or filtered getAllApplications.
         // For now, let's filter the results of getCompanyApplications (which for admin returns all)
         const data = await getCompanyApplications();
-        // Filter applications that belong to jobs of this specific company
-        const filtered = data.filter((app: any) => app.job.companyId === companyId);
+        // Filter applications that belong to jobs or internships of this specific company
+        const filtered = data.filter((app: any) => 
+            (app.job?.companyId === companyId) || (app.internship?.companyId === companyId)
+        );
         setApplications(filtered);
         setLoading(false);
     }
@@ -73,7 +75,14 @@ export function CompanyApplicationsTab({ companyId }: { companyId: string }) {
                                             <span>{app.profile.phone}</span>
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4 text-muted-foreground">{app.job.title}</td>
+                                    <td className="px-6 py-4">
+                                        <div className="flex flex-col">
+                                            <span className="text-[var(--text-main)] font-medium">{(app.job || app.internship)?.title || "Deleted Position"}</span>
+                                            <span className="text-[10px] uppercase font-bold text-muted-foreground">
+                                                {app.internship ? "Internship" : "Job"}
+                                            </span>
+                                        </div>
+                                    </td>
                                     <td className="px-6 py-4 text-center">
                                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${app.application.status === 'shortlisted' ? 'bg-green-500/10 text-green-400 border border-green-500/20' :
                                             app.application.status === 'rejected' ? 'bg-red-500/10 text-red-400 border border-red-500/20' :

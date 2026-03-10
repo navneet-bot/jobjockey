@@ -426,7 +426,7 @@ export default function BusinessDashboardPage() {
                                                     <p className="text-xs text-[var(--text-dim)] uppercase tracking-widest font-bold">Applying for</p>
                                                     <div className="flex items-center gap-2">
                                                         {isInternship ? <GraduationCap className="w-4 h-4 text-[var(--primary)]"/> : <Briefcase className="w-4 h-4 text-[var(--primary)]"/>}
-                                                        <span className="font-semibold text-sm text-[var(--text-main)]">{jobOrInternship.title}</span>
+                                                        <span className="font-semibold text-sm text-[var(--text-main)]">{jobOrInternship?.title || "Deleted Position"}</span>
                                                         <span className="px-2 py-0.5 rounded text-[9px] font-bold bg-[var(--glass-bg)] border border-[var(--glass-border)] text-[var(--text-dim)] uppercase">
                                                             {isInternship ? "Internship" : "Job"}
                                                         </span>

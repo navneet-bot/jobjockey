@@ -172,8 +172,6 @@ export function Footer() {
                         <nav className="flex flex-col gap-3">
                             <Link href="/jobs" className="text-sm text-white/60 hover:text-[var(--primary)] transition-all">Jobs</Link>
                             <Link href="/internships" className="text-sm text-white/60 hover:text-[var(--primary)] transition-all">Internships</Link>
-                            <Link href="/business/enquiry" className="text-sm text-white/60 hover:text-[var(--primary)] transition-all">For Businesses</Link>
-                            <Link href="/talent/create-profile" className="text-sm text-white/60 hover:text-[var(--primary)] transition-all">For Talent</Link>
                         </nav>
                     </div>
 

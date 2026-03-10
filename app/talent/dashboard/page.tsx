@@ -183,7 +183,7 @@ export default function TalentDashboardPage() {
                                                     )}
                                                 </div>
                                                 <div className="flex flex-col">
-                                                    <h4 className="font-bold text-[var(--text-main)]">{jobOrInternship?.title || "Unknown Position"}</h4>
+                                                    <h4 className="font-bold text-[var(--text-main)]">{jobOrInternship?.title || "Deleted Position"}</h4>
                                                     <div className="flex items-center gap-2">
                                                         <span className="text-sm text-[var(--text-dim)]">{jobOrInternship?.company || "Unknown Company"}</span>
                                                         <span className="px-2 py-0.5 rounded-full text-[10px] uppercase font-bold bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-[var(--text-dim)]">
