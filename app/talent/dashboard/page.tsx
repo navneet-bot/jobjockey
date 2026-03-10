@@ -126,12 +126,12 @@ export default function TalentDashboardPage() {
                                         <GlassCard className="p-6 flex flex-col h-full gap-4 group hover:border-[var(--primary)]/40 transition-all cursor-pointer">
                                             <div className="flex justify-between items-start">
                                                 <div className="w-12 h-12 rounded-xl bg-[var(--glass-bg)] border border-[var(--glass-border)] flex items-center justify-center shrink-0">
-                                                    <Briefcase className="w-6 h-6 text-[#111827] dark:text-white group-hover:text-[var(--primary)] transition-colors" />
+                                                    <Briefcase className="w-6 h-6 text-[#111827] dark:text-white dark:group-hover:text-[var(--primary)] transition-colors" />
                                                 </div>
                                                 <span className="text-xs font-bold text-green-500 bg-green-500/10 px-2 py-1 rounded-full border border-green-500/20">90% Match</span>
                                             </div>
                                             <div>
-                                                <h4 className="text-lg font-bold text-[var(--text-main)] group-hover:text-[var(--primary)] transition-colors line-clamp-1">{job.title}</h4>
+                                                <h4 className="text-lg font-bold text-[var(--text-main)] dark:group-hover:text-[var(--primary)] transition-colors line-clamp-1">{job.title}</h4>
                                                 <p className="text-[var(--text-dim)] text-sm">{job.company}</p>
                                             </div>
                                             <div className="flex gap-2 mt-auto">
@@ -252,7 +252,7 @@ export default function TalentDashboardPage() {
                                         <Link href="/courses" key={i}>
                                             <li className="flex justify-between items-center group cursor-pointer hover:bg-[var(--glass-bg)] p-2 rounded-lg -mx-2 transition-colors">
                                                 <span className="text-[var(--text-dim)] group-hover:text-[var(--text-main)] text-sm">{resource}</span>
-                                                <ExternalLink className="w-4 h-4 text-[var(--text-dim)] group-hover:text-[var(--primary)]" />
+                                                <ExternalLink className="w-4 h-4 text-[var(--text-dim)] dark:group-hover:text-[var(--primary)] transition-colors" />
                                             </li>
                                         </Link>
                                     ))}
@@ -350,7 +350,7 @@ export default function TalentDashboardPage() {
                                             <span className="text-xs font-bold text-red-500">PDF</span>
                                         </div>
                                         <div className="flex flex-col overflow-hidden">
-                                            <span className="text-sm font-medium text-[var(--text-main)] group-hover:text-[var(--primary)] truncate max-w-[200px] md:max-w-xs">
+                                            <span className="text-sm font-medium text-[var(--text-main)] dark:group-hover:text-[var(--primary)] transition-colors truncate max-w-[200px] md:max-w-xs">
                                                 {loading ? "Loading..." : profile?.resumeUrl ? profile.resumeUrl.split('/').pop() : "No resume uploaded"}
                                             </span>
                                             <span className="text-xs text-[var(--text-dim)]">

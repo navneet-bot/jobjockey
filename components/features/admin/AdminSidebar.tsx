@@ -3,19 +3,35 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Building, Briefcase, Users, Settings } from "lucide-react";
+import { LayoutDashboard, Building, Briefcase, Users, Settings, MessageSquare } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
+import { useState, useEffect } from "react";
+import { getAdminUnreadCountTotal } from "@/actions/chatActions";
 
 const adminNav = [
     { text: "Dashboard", href: "/admin", icon: LayoutDashboard },
     { text: "Pending Enquiries", href: "/admin/enquiries", icon: Briefcase },
     { text: "Approved Companies", href: "/admin/companies", icon: Building },
     { text: "Applications", href: "/admin/applications", icon: Users },
+    { text: "Chat", href: "/admin/chat", icon: MessageSquare },
     { text: "Settings", href: "/admin/settings", icon: Settings },
 ];
 
 export function AdminSidebar() {
     const pathname = usePathname();
+    const [unreadCount, setUnreadCount] = useState(0);
+
+    useEffect(() => {
+        const fetchUnread = async () => {
+            const res = await getAdminUnreadCountTotal();
+            if (res.success) {
+                setUnreadCount(res.count ?? 0);
+            }
+        };
+        fetchUnread();
+        const interval = setInterval(fetchUnread, 15000); // Check every 15s
+        return () => clearInterval(interval);
+    }, []);
 
     return (
         <aside className="hidden md:flex w-64 shrink-0 flex-col gap-4">
@@ -36,7 +52,12 @@ export function AdminSidebar() {
                                 )}
                             >
                                 <item.icon className="w-4 h-4" />
-                                {item.text}
+                                <span className="flex-1">{item.text}</span>
+                                {item.text === "Chat" && unreadCount > 0 && (
+                                    <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[1.2rem] text-center">
+                                        {unreadCount}
+                                    </span>
+                                )}
                             </Link>
                         )
                     })}

@@ -24,6 +24,21 @@ export const ourFileRouter = {
             console.log("file url", file.url);
             return { url: file.url };
         }),
+    chatAttachments: f({ 
+        pdf: { maxFileSize: "8MB", maxFileCount: 1 },
+        image: { maxFileSize: "8MB", maxFileCount: 1 },
+        text: { maxFileSize: "8MB", maxFileCount: 1 },
+        blob: { maxFileSize: "8MB", maxFileCount: 1 },
+    })
+        .middleware(async ({ req }) => {
+            const { userId } = getAuth(req);
+            if (!userId) throw new Error("Unauthorized");
+            return { userId };
+        })
+        .onUploadComplete(async ({ metadata, file }) => {
+            console.log("Chat attachment upload complete for userId:", metadata.userId);
+            return { url: file.url, name: file.name, type: file.type };
+        }),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;

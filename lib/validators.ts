@@ -92,3 +92,17 @@ export const userProfileSchema = z.object({
 });
 
 export type UserProfileFormValues = z.infer<typeof userProfileSchema>;
+
+export const platformSettingsSchema = z.object({
+  maxJobPostsPerCompany: z.number().min(0),
+  maxInternshipPostsPerCompany: z.number().min(0),
+  jobDefaultExpiryDays: z.number().min(1),
+  internshipDefaultExpiryDays: z.number().min(1),
+  allowCompaniesToChooseExpiry: z.boolean(),
+  showCompaniesPublicly: z.boolean(),
+  showJobsPublicly: z.boolean(),
+  showInternshipsPublicly: z.boolean(),
+  autoDeleteExpiredPosts: z.boolean(),
+});
+
+export type PlatformSettingsFormValues = z.infer<typeof platformSettingsSchema>;

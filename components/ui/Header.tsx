@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton, useUser } from "@clerk/nextjs";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
+import { NotificationBell } from "./NotificationBell";
 
 const navItems = [
     { name: "HOME", href: "/" },
@@ -166,14 +167,17 @@ export function Header() {
                                     {dashboardText}
                                 </Link>
                             )}
+                            <NotificationBell />
                             <ThemeToggle />
                             <UserButton afterSignOutUrl="/" appearance={{ elements: { avatarBox: "w-9 h-9 border border-white/20" } }} />
                         </div>
                     </SignedIn>
                 </div>
 
-                {/* Mobile Menu Toggle */}
                 <div className="flex items-center gap-4 md:hidden z-50">
+                    <SignedIn>
+                        <NotificationBell />
+                    </SignedIn>
                     <button
                         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                         className="p-2 text-white/70 hover:text-white"

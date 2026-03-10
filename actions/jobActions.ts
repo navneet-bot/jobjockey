@@ -6,7 +6,8 @@ import { jobFormSchema } from "@/lib/validators";
 import { auth } from "@clerk/nextjs/server";
 import { and, desc, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { userProfilesTable, companyEnquiriesTable } from "@/lib/schema";
+import { userProfilesTable, companyEnquiriesTable, platformSettingsTable } from "@/lib/schema";
+import { addDays } from "date-fns";
 
 type JobFormData = {
   title: string;
@@ -40,9 +41,15 @@ type JobFormData = {
 
 export async function getJobs() {
   try {
+    const [settings] = await db.select().from(platformSettingsTable).limit(1);
+    const showJobs = settings?.showJobsPublicly ?? true;
+
+    if (!showJobs) return [];
+
     const jobs = await db
       .select()
       .from(jobsTable)
+      .where(eq(jobsTable.isExpired, false))
       .orderBy(desc(jobsTable.postedAt));
 
     return jobs;
@@ -96,14 +103,36 @@ export async function createJob(jobData: JobFormData) {
       };
     }
 
-    const { jobCategory, ...jobData } = validation.data;
+    const { jobCategory, ...jobDataRest } = validation.data;
+
+    // 2. Fetch platform settings
+    const [settings] = await db.select().from(platformSettingsTable).limit(1);
+    const maxJobs = settings?.maxJobPostsPerCompany ?? 10;
+    const defaultExpiryDays = settings?.jobDefaultExpiryDays ?? 30;
+
+    // 3. Check current job count for this company
+    const currentJobs = await db
+      .select()
+      .from(jobsTable)
+      .where(eq(jobsTable.postedBy, userId));
+
+    if (currentJobs.length >= maxJobs) {
+      return {
+        success: false,
+        error: `Maximum job posting limit reached (${maxJobs}). Please remove existing posts to add more.`,
+      };
+    }
+
+    // 4. Calculate expiry date
+    const expiryDate = addDays(new Date(), defaultExpiryDays);
 
     await db.insert(jobsTable).values({
-      ...jobData,
+      ...jobDataRest,
       companyId: enquiry.id,
       company: enquiry.companyName,
       postedBy: userId,
       isApproved: true,
+      expiryDate,
     });
 
     revalidatePath("/");

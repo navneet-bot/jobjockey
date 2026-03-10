@@ -11,7 +11,7 @@ import Link from "next/link";
 import { GlassModal, GlassModalContent, GlassModalHeader, GlassModalTitle, GlassModalDescription } from "@/components/ui/GlassModal";
 
 export function AdminCompanyTable({ statusFilter }: { statusFilter?: "pending" | "approved" | "rejected" }) {
-    const [enquiries, setEnquiries] = useState<CompanyEnquiry[]>([]);
+    const [enquiries, setEnquiries] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [totalJobs, setTotalJobs] = useState<Record<string, number>>({});
     const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -102,8 +102,7 @@ export function AdminCompanyTable({ statusFilter }: { statusFilter?: "pending" |
                                         </td>
                                         {statusFilter === 'approved' && (
                                             <td className="px-6 py-4 text-center text-muted-foreground">
-                                                {/* Placeholder for total jobs count - would require a join or separate fetch in a real app */}
-                                                0
+                                                {enq.jobCount || 0}
                                             </td>
                                         )}
                                         <td className="px-6 py-4 text-right">

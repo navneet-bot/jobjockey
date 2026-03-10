@@ -6,12 +6,20 @@ import { internshipFormSchema, InternshipFormValues } from "@/lib/validators";
 import { auth } from "@clerk/nextjs/server";
 import { and, desc, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { platformSettingsTable } from "@/lib/schema";
+import { addDays } from "date-fns";
 
 export async function getInternships() {
   try {
+    const [settings] = await db.select().from(platformSettingsTable).limit(1);
+    const showInternships = settings?.showInternshipsPublicly ?? true;
+
+    if (!showInternships) return [];
+
     const internships = await db
       .select()
       .from(internshipsTable)
+      .where(eq(internshipsTable.isExpired, false))
       .orderBy(desc(internshipsTable.postedAt));
 
     return internships;
@@ -66,12 +74,34 @@ export async function createInternship(internshipData: InternshipFormValues) {
 
     const { jobCategory, ...internshipDataRest } = validation.data;
 
+    // 2. Fetch platform settings
+    const [settings] = await db.select().from(platformSettingsTable).limit(1);
+    const maxInternships = settings?.maxInternshipPostsPerCompany ?? 10;
+    const defaultExpiryDays = settings?.internshipDefaultExpiryDays ?? 30;
+
+    // 3. Check current internship count for this company
+    const currentInternships = await db
+      .select()
+      .from(internshipsTable)
+      .where(eq(internshipsTable.postedBy, userId));
+
+    if (currentInternships.length >= maxInternships) {
+      return {
+        success: false,
+        error: `Maximum internship posting limit reached (${maxInternships}). Please remove existing posts to add more.`,
+      };
+    }
+
+    // 4. Calculate expiry date
+    const expiryDate = addDays(new Date(), defaultExpiryDays);
+
     await db.insert(internshipsTable).values({
       ...internshipDataRest,
       companyId: enquiry.id,
       company: enquiry.companyName,
       postedBy: userId,
       isApproved: true,
+      expiryDate,
     });
 
     revalidatePath("/");

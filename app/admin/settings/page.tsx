@@ -1,27 +1,49 @@
-import { GlassCard } from "@/components/ui/GlassCard";
 import { GradientHeader } from "@/components/ui/GradientHeader";
-import { Settings } from "lucide-react";
+import { getPlatformSettings } from "@/actions/adminSettingsActions";
+import { SettingsForm } from "./SettingsForm";
+import { GlassCard } from "@/components/ui/GlassCard";
+import { Info } from "lucide-react";
 
-export default function AdminSettingsPage() {
+export default async function AdminSettingsPage() {
+    const settings = await getPlatformSettings();
+
+    if (!settings) {
+        return (
+            <div className="flex flex-col gap-10">
+                <GradientHeader
+                    align="left"
+                    title="Admin Settings"
+                    subtitle="Configure platform preferences and administrative controls."
+                />
+                <GlassCard className="p-12 text-center text-destructive">
+                    Failed to load platform settings. Please try again.
+                </GlassCard>
+            </div>
+        );
+    }
+
     return (
-        <div className="flex flex-col gap-10">
+        <div className="flex flex-col gap-10 pb-20">
             <GradientHeader
                 align="left"
                 title="Admin Settings"
                 subtitle="Configure platform preferences and administrative controls."
             />
 
-            <GlassCard className="p-12 border-dashed flex flex-col items-center justify-center gap-6 text-center">
-                <div className="w-20 h-20 rounded-full bg-primary/5 flex items-center justify-center border border-primary/10">
-                    <Settings className="w-10 h-10 text-muted-foreground animate-[spin_8s_linear_infinite]" />
+            <div className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/20 rounded-2xl p-6 flex items-start gap-4 mb-2">
+                <div className="p-2 bg-black/10 dark:bg-white/10 rounded-lg text-[#111827] dark:text-white">
+                    <Info className="w-5 h-5" />
                 </div>
-                <div className="space-y-2">
-                    <h4 className="text-2xl font-bold text-[var(--text-main)]">Coming Soon</h4>
-                    <p className="text-muted-foreground max-w-md mx-auto">
-                        We are currently refining the administrative settings. New configuration options for platform controls and user management will be available here soon.
+                <div>
+                    <h4 className="font-bold text-[#111827] dark:text-white">Platform Configuration</h4>
+                    <p className="text-sm text-[var(--text-dim)] max-w-2xl">
+                        These settings directly control the core behavior of the Job Jockey platform. 
+                        Changes made here will be reflected instantly for all companies and users.
                     </p>
                 </div>
-            </GlassCard>
+            </div>
+
+            <SettingsForm initialData={settings} />
         </div>
     );
 }

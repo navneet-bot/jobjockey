@@ -15,12 +15,12 @@ export const GlassCard = React.forwardRef<HTMLDivElement, GlassCardProps>(
         return (
             <motion.div
                 ref={ref}
-                whileHover={{
+                whileHover={hoverLift ? {
                     scale: 1.02,
                     y: -3,
                     transition: { duration: 0.15, ease: "easeOut" }
-                }}
-                whileTap={{ scale: 0.97 }}
+                } : undefined}
+                whileTap={hoverLift ? { scale: 0.97 } : undefined}
                 className={cn(
                     "relative overflow-hidden bg-[var(--glass-bg)] border border-[var(--glass-border)] backdrop-blur-2xl shadow-lg dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] rounded-[24px] transition-all duration-200",
                     "hover:shadow-[0_0_20px_rgba(0,0,0,0.08)] dark:hover:shadow-[0_0_20px_rgba(255,255,255,0.07)] hover:border-black/20 dark:hover:border-white/25"

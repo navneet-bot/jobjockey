@@ -26,15 +26,12 @@ export default async function AdminJobsPage() {
 
     return (
         <div className="flex flex-col gap-10">
-            <div className="flex flex-col sm:flex-row gap-6 justify-between items-start sm:items-end">
+            <div className="flex flex-col sm:flex-row gap-6 justify-between items-start sm:items-end mb-4">
                 <GradientHeader
                     align="left"
                     title="Manage Jobs"
                     subtitle="Oversee all listings across Jobs, Internships, and Training categories."
                 />
-                <Link href="/post-job" className="shrink-0">
-                    <GradientButton>+ Post New Job</GradientButton>
-                </Link>
             </div>
 
             <AdminJobTable jobs={combined} />

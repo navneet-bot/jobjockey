@@ -5,6 +5,7 @@ import { userProfileSchema } from "@/lib/validators";
 import { auth, clerkClient } from "@clerk/nextjs/server";
 import { eq, desc, or } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { createNotification } from "./notificationActions";
 
 type ProfileFormData = {
     name: string;
@@ -43,6 +44,15 @@ export async function upsertUserProfile(data: ProfileFormData) {
         }
         revalidatePath("/");
         revalidatePath("/profile");
+
+        await createNotification({
+            userId,
+            title: "Profile Updated",
+            message: data.resumeUrl ? "Your profile and resume have been updated successfully." : "Your profile has been updated successfully.",
+            type: "profile_updated",
+            link: "/talent/dashboard"
+        });
+
         return { success: true };
     } catch (err: any) {
         return { success: false, error: err.message };
@@ -91,7 +101,8 @@ export async function getCompanyProfile() {
             companySize: enquiry.companySize,
             gstNumber: enquiry.gstNumber,
             hiringNeeds: enquiry.hiringNeeds,
-            isVerified: false
+            isVerified: false,
+            userId: userId
         };
     }
 
@@ -116,6 +127,15 @@ export async function updateCompanyProfile(data: CompanyProfileData) {
             });
         }
         revalidatePath("/business/dashboard");
+
+        await createNotification({
+            userId,
+            title: "Business Profile Updated",
+            message: "Your company profile settings have been saved successfully.",
+            type: "profile_updated",
+            link: "/business/dashboard"
+        });
+
         return { success: true };
     } catch (err: any) {
         return { success: false, error: err.message };

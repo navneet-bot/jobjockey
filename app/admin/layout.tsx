@@ -8,7 +8,19 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-    const user = await currentUser();
+    let user;
+    try {
+        user = await currentUser();
+    } catch (e) {
+        console.error("Clerk auth failed:", e);
+        return (
+            <div className="p-10 text-center">
+                <h1 className="text-xl font-bold text-destructive">Authentication Error</h1>
+                <p className="text-muted-foreground mt-2">Failed to reach authentication server. Please check your internet connection.</p>
+            </div>
+        );
+    }
+    
     if (!user || user?.publicMetadata?.role !== "admin") {
         redirect("/");
     }

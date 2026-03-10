@@ -23,9 +23,15 @@ import {
     Users, 
     ShieldCheck, 
     Tag, 
-    UserCheck 
+    UserCheck,
+    Download,
+    Search,
+    FilterX,
+    MessageSquare
 } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -34,6 +40,7 @@ import { getCompanyProfile, updateCompanyProfile, CompanyProfileData } from "@/a
 import { getMyJobs } from "@/actions/jobActions";
 import { getMyInternships } from "@/actions/internshipActions";
 import { getCompanyApplications, updateApplicationStatus } from "@/actions/applicationActions";
+import { getEmployerUnreadCount } from "@/actions/chatActions";
 import { useForm, Controller } from "react-hook-form";
 import {
     Select,
@@ -47,7 +54,9 @@ import { toast } from "sonner";
 import JobCard from "@/components/features/job/JobCard";
 
 export default function BusinessDashboardPage() {
+    const router = useRouter();
     const [activeTab, setActiveTab] = useState("overview");
+    const [unreadChatCount, setUnreadChatCount] = useState(0);
     const [stats, setStats] = useState({ activeJobs: 0, totalApplications: 0, shortlisted: 0 });
     const [jobs, setJobs] = useState<any[]>([]);
     const [applications, setApplications] = useState<any[]>([]);
@@ -68,6 +77,13 @@ export default function BusinessDashboardPage() {
     });
     const [isSaving, setIsSaving] = useState(false);
     const [isEditingProfile, setIsEditingProfile] = useState(false);
+
+    // Filter states
+    const [candidateName, setCandidateName] = useState("");
+    const [jobTitle, setJobTitle] = useState("");
+    const [appStatus, setAppStatus] = useState("all");
+    const [fromDate, setFromDate] = useState("");
+    const [toDate, setToDate] = useState("");
 
     const calculateCompletion = () => {
         const fields = [
@@ -125,6 +141,12 @@ export default function BusinessDashboardPage() {
                         gstNumber: profileData.gstNumber || "",
                         hiringNeeds: profileData.hiringNeeds || "",
                     });
+
+                    // Fetch unread chat count
+                    const unreadRes = await getEmployerUnreadCount(profileData.userId);
+                    if (unreadRes.success) {
+                        setUnreadChatCount(unreadRes.count ?? 0);
+                    }
                 }
             }
         };
@@ -155,6 +177,37 @@ export default function BusinessDashboardPage() {
         }
     };
 
+    const filteredApplications = applications.filter((app) => {
+        const jobOrInternship = app.job || app.internship;
+        const matchesName = !candidateName || app.profile?.name?.toLowerCase().includes(candidateName.toLowerCase());
+        const matchesTitle = !jobTitle || jobOrInternship?.title?.toLowerCase().includes(jobTitle.toLowerCase());
+        const matchesStatus = appStatus === "all" || app.application.status === appStatus;
+        const appDate = new Date(app.application.appliedAt);
+        const matchesFrom = !fromDate || appDate >= new Date(fromDate);
+        const matchesTo = !toDate || appDate <= new Date(toDate);
+
+        return matchesName && matchesTitle && matchesStatus && matchesFrom && matchesTo;
+    });
+
+    const handleExport = () => {
+        const params = new URLSearchParams();
+        if (fromDate) params.set("from", fromDate);
+        if (toDate) params.set("to", toDate);
+        if (jobTitle) params.set("title", jobTitle);
+        if (appStatus !== "all") params.set("status", appStatus);
+        if (candidateName) params.set("candidateName", candidateName);
+
+        window.open(`/api/export/applications?${params.toString()}`, "_blank");
+    };
+
+    const clearFilters = () => {
+        setCandidateName("");
+        setJobTitle("");
+        setAppStatus("all");
+        setFromDate("");
+        setToDate("");
+    };
+
     return (
         <div className="flex flex-col gap-8 py-12 px-6 container mx-auto min-h-screen">
             <GradientHeader
@@ -170,10 +223,17 @@ export default function BusinessDashboardPage() {
                     { id: "jobs", label: "Manage Jobs", icon: Briefcase },
                     { id: "applications", label: "Applications", icon: FileText },
                     { id: "profile", label: "Company Profile", icon: Settings },
+                    { id: "chat", label: `Chat${unreadChatCount > 0 ? ` (${unreadChatCount})` : ""}`, icon: MessageSquare },
                 ].map((tab) => (
                     <button
                         key={tab.id}
-                        onClick={() => setActiveTab(tab.id)}
+                        onClick={() => {
+                            if (tab.id === "chat") {
+                                router.push("/business/chat");
+                            } else {
+                                setActiveTab(tab.id);
+                            }
+                        }}
                         className={`flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all shrink-0 border ${
                             activeTab === tab.id
                                 ? "bg-[#111827] text-white border-[#111827] dark:bg-white dark:text-black dark:border-white"
@@ -380,18 +440,102 @@ export default function BusinessDashboardPage() {
                 )}
 
                 {activeTab === "applications" && (
-                    <GlassCard className="p-8">
-                        <div className="flex justify-between items-center mb-6">
-                            <h3 className="text-xl font-bold text-[var(--text-main)]">Applications ({applications.length})</h3>
-                        </div>
-                        
-                        {loadingApps ? (
-                            <div className="text-center py-20 border border-dashed border-[var(--glass-border)] rounded-xl">
-                                <p className="text-[var(--text-dim)]">Loading applications...</p>
+                    <div className="flex flex-col gap-6">
+                        <GlassCard className="p-8">
+                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+                                <div>
+                                    <h3 className="text-xl font-bold text-[var(--text-main)]">Applications ({filteredApplications.length})</h3>
+                                    <p className="text-sm text-[var(--text-dim)]">Manage and export applicants for your positions.</p>
+                                </div>
+                                <Button 
+                                    onClick={handleExport}
+                                    className="rounded-xl flex items-center gap-2 bg-[#111827] dark:bg-white text-white dark:text-black hover:bg-[#111827]/90 dark:hover:bg-white/90 shadow-lg"
+                                >
+                                    <Download className="w-4 h-4" />
+                                    Export CSV
+                                </Button>
                             </div>
-                        ) : applications.length > 0 ? (
-                            <div className="flex flex-col gap-4">
-                                {applications.map((app) => {
+
+                            {/* Filter Section */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end mb-8 p-6 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10">
+                                <div className="flex flex-col gap-2">
+                                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Candidate</label>
+                                    <div className="relative">
+                                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                                        <Input 
+                                            placeholder="Search name..." 
+                                            value={candidateName}
+                                            onChange={(e) => setCandidateName(e.target.value)}
+                                            className="pl-9 h-[45px] bg-white/5 border-white/10"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Job Title</label>
+                                    <div className="relative">
+                                        <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                                        <Input 
+                                            placeholder="Filter title..." 
+                                            value={jobTitle}
+                                            onChange={(e) => setJobTitle(e.target.value)}
+                                            className="pl-9 h-[45px] bg-white/5 border-white/10"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Status</label>
+                                    <Select value={appStatus} onValueChange={setAppStatus}>
+                                        <SelectTrigger className="h-[45px] bg-white/5 border-white/10">
+                                            <SelectValue placeholder="All Status" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="all">All Status</SelectItem>
+                                            <SelectItem value="pending" disabled>Pending (Admin only)</SelectItem>
+                                            <SelectItem value="shortlisted">Shortlisted</SelectItem>
+                                            <SelectItem value="interview">Interview</SelectItem>
+                                            <SelectItem value="waiting">Waiting</SelectItem>
+                                            <SelectItem value="selected">Selected</SelectItem>
+                                            <SelectItem value="rejected">Rejected</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">From</label>
+                                    <Input 
+                                        type="date" 
+                                        value={fromDate}
+                                        onChange={(e) => setFromDate(e.target.value)}
+                                        className="h-[45px] bg-white/5 border-white/10"
+                                    />
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest">To</label>
+                                    <div className="flex gap-2">
+                                        <Input 
+                                            type="date" 
+                                            value={toDate}
+                                            onChange={(e) => setToDate(e.target.value)}
+                                            className="h-[45px] bg-white/5 border-white/10 flex-1"
+                                        />
+                                        <Button 
+                                            variant="outline" 
+                                            onClick={clearFilters}
+                                            className="h-[45px] px-3 bg-white/5 border-white/10 text-muted-foreground hover:text-white"
+                                            title="Clear Filters"
+                                        >
+                                            <FilterX className="w-4 h-4" />
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {loadingApps ? (
+                                <div className="text-center py-20 border border-dashed border-[var(--glass-border)] rounded-xl">
+                                    <p className="text-[var(--text-dim)]">Loading applications...</p>
+                                </div>
+                            ) : filteredApplications.length > 0 ? (
+                                <div className="flex flex-col gap-4">
+                                    {filteredApplications.map((app) => {
                                     const isInternship = !!app.internship;
                                     const jobOrInternship = app.job || app.internship;
                                     
@@ -479,14 +623,14 @@ export default function BusinessDashboardPage() {
                                         </div>
                                     );
                                 })}
-                            </div>
-                        ) : (
-                            <div className="text-center py-20 border border-dashed border-[var(--glass-border)] rounded-xl">
-                                <FileText className="w-10 h-10 mx-auto text-[var(--text-dim)] mb-4 opacity-50" />
-                                <p className="text-[var(--text-dim)]">No applications received yet.</p>
-                            </div>
-                        )}
-                    </GlassCard>
+                                </div>
+                            ) : (
+                                <div className="text-center py-20 border border-dashed border-[var(--glass-border)] rounded-xl">
+                                    <p className="text-[var(--text-dim)]">No applications found matching your criteria.</p>
+                                </div>
+                            )}
+                        </GlassCard>
+                    </div>
                 )}
 
                 {activeTab === "profile" && (

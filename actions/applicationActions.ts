@@ -4,6 +4,7 @@ import { applicationsTable, internshipsTable, jobsTable, userProfilesTable } fro
 import { auth, currentUser, clerkClient } from "@clerk/nextjs/server";
 import { eq, desc, and, ne, or } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { createNotification } from "./notificationActions";
 
 export async function checkApplicationStatus(id: string, category: "job" | "internship") {
     const { userId } = await auth();
@@ -55,6 +56,25 @@ export async function applyForJob(id: string, category: "job" | "internship", re
 
         revalidatePath(category === "job" ? `/jobs/${id}` : `/internships/${id}`);
         revalidatePath("/applications");
+
+        // Notify Business
+        const [targetPos] = category === "job" 
+            ? await db.select({ title: jobsTable.title, postedBy: jobsTable.postedBy }).from(jobsTable).where(eq(jobsTable.id, id)).limit(1)
+            : await db.select({ title: internshipsTable.title, postedBy: internshipsTable.postedBy }).from(internshipsTable).where(eq(internshipsTable.id, id)).limit(1);
+
+        if (targetPos) {
+            const user = await currentUser();
+            const role = user?.publicMetadata?.role as string | undefined;
+
+            await createNotification({
+                userId: targetPos.postedBy,
+                title: "New Application Received",
+                message: `A new candidate has applied for your ${category}: ${targetPos.title}`,
+                type: "application_received",
+                link: role === "admin" ? "/admin/applications" : "/business/dashboard"
+            });
+        }
+
         return { success: true };
     } catch (err: any) {
         return { success: false, error: err.message };
@@ -283,6 +303,29 @@ export async function updateApplicationStatus(id: string, status: "pending" | "s
             }
 
             await db.update(applicationsTable).set({ status }).where(eq(applicationsTable.id, id));
+
+            // Notify Talent
+            const [application] = await db.select({ 
+                userId: applicationsTable.userId,
+                jobId: applicationsTable.jobId,
+                internshipId: applicationsTable.internshipId
+            }).from(applicationsTable).where(eq(applicationsTable.id, id)).limit(1);
+
+            if (application) {
+                const [pos] = application.jobId
+                    ? await db.select({ title: jobsTable.title }).from(jobsTable).where(eq(jobsTable.id, application.jobId)).limit(1)
+                    : application.internshipId 
+                        ? await db.select({ title: internshipsTable.title }).from(internshipsTable).where(eq(internshipsTable.id, application.internshipId)).limit(1)
+                        : [];
+
+                await createNotification({
+                    userId: application.userId,
+                    title: "Application Status Updated",
+                    message: `Your application for "${pos?.title || 'Position'}" has been updated to ${status}.`,
+                    type: "application_status_updated",
+                    link: "/applications"
+                });
+            }
         } else {
             return { success: false, error: "Insufficient permissions" };
         }

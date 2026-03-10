@@ -1,5 +1,6 @@
 import {
   boolean,
+  integer,
   pgEnum,
   pgTable,
   text,
@@ -41,6 +42,20 @@ export const applicationStatusEnum = pgEnum("application_status", [
   "selected",
   "rejected",
 ]);
+
+export const notificationTypeEnum = pgEnum("notification_type", [
+  "application_received",
+  "application_status_updated",
+  "job_approved",
+  "job_rejected",
+  "company_approved",
+  "company_rejected",
+  "new_enquiry",
+  "profile_updated",
+  "resume_uploaded",
+]);
+
+export const chatSenderRoleEnum = pgEnum("chat_sender_role", ["admin", "employer"]);
 
 export const userProfilesTable = pgTable("user_profiles", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -132,6 +147,8 @@ export const jobsTable = pgTable("jobs", {
   description: text("description").notNull(),
   applicationUrl: varchar("application_url").notNull(),
   isApproved: boolean("is_approved").default(false).notNull(), // Admin approval flag
+  expiryDate: timestamp("expiry_date", { withTimezone: true }),
+  isExpired: boolean("is_expired").default(false).notNull(),
   postedAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
@@ -166,6 +183,8 @@ export const internshipsTable = pgTable("internships", {
   deadline: text("deadline"),
   applicationUrl: varchar("application_url").notNull(),
   isApproved: boolean("is_approved").default(false).notNull(),
+  expiryDate: timestamp("expiry_date", { withTimezone: true }),
+  isExpired: boolean("is_expired").default(false).notNull(),
   postedAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
@@ -185,6 +204,62 @@ export const applicationsTable = pgTable("applications", {
     .notNull(),
 });
 
+export const notificationsTable = pgTable("notifications", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: varchar("user_id", { length: 255 }).notNull(), // Clerk user ID
+  title: varchar("title", { length: 255 }).notNull(),
+  message: text("message").notNull(),
+  type: notificationTypeEnum("type").notNull(),
+  isRead: boolean("is_read").default(false).notNull(),
+  link: varchar("link", { length: 1024 }),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
+
+export const chatConversationsTable = pgTable("chat_conversations", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  companyId: varchar("company_id", { length: 255 }).notNull().unique(), // Clerk user ID of employer
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
+
+export const chatMessagesTable = pgTable("chat_messages", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  conversationId: uuid("conversation_id")
+    .references(() => chatConversationsTable.id, { onDelete: "cascade" })
+    .notNull(),
+  senderId: varchar("sender_id", { length: 255 }).notNull(), // Clerk user ID
+  senderRole: chatSenderRoleEnum("sender_role").notNull(),
+  message: text("message"),
+  attachmentUrl: text("attachment_url"),
+  attachmentName: text("attachment_name"),
+  attachmentType: text("attachment_type"),
+  isRead: boolean("is_read").default(false).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
+
+export const platformSettingsTable = pgTable("platform_settings", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  maxJobPostsPerCompany: integer("max_job_posts_per_company").default(10).notNull(),
+  maxInternshipPostsPerCompany: integer("max_internship_posts_per_company").default(10).notNull(),
+  jobDefaultExpiryDays: integer("job_default_expiry_days").default(30).notNull(),
+  internshipDefaultExpiryDays: integer("internship_default_expiry_days").default(30).notNull(),
+  allowCompaniesToChooseExpiry: boolean("allow_companies_to_choose_expiry").default(false).notNull(),
+  showCompaniesPublicly: boolean("show_companies_publicly").default(true).notNull(),
+  showJobsPublicly: boolean("show_jobs_publicly").default(true).notNull(),
+  showInternshipsPublicly: boolean("show_internships_publicly").default(true).notNull(),
+  autoDeleteExpiredPosts: boolean("auto_delete_expired_posts").default(false).notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+export type NewPlatformSetting = typeof platformSettingsTable.$inferInsert;
+export type PlatformSetting = typeof platformSettingsTable.$inferSelect;
+
+
 export type NewJob = typeof jobsTable.$inferInsert;
 export type Job = typeof jobsTable.$inferSelect;
 
@@ -202,3 +277,12 @@ export type UserProfile = typeof userProfilesTable.$inferSelect;
 
 export type NewApplication = typeof applicationsTable.$inferInsert;
 export type Application = typeof applicationsTable.$inferSelect;
+
+export type NewNotification = typeof notificationsTable.$inferInsert;
+export type Notification = typeof notificationsTable.$inferSelect;
+
+export type NewChatConversation = typeof chatConversationsTable.$inferInsert;
+export type ChatConversation = typeof chatConversationsTable.$inferSelect;
+
+export type NewChatMessage = typeof chatMessagesTable.$inferInsert;
+export type ChatMessage = typeof chatMessagesTable.$inferSelect;

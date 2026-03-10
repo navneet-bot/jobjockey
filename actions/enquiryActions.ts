@@ -1,10 +1,11 @@
 "use server";
 import { db } from "@/lib/db";
-import { companyEnquiriesTable, companiesTable } from "@/lib/schema";
+import { companyEnquiriesTable, companiesTable, jobsTable, internshipsTable } from "@/lib/schema";
 import { companyEnquirySchema, CompanyEnquiryFormValues } from "@/lib/validators";
 import { auth, clerkClient } from "@clerk/nextjs/server";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, count } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { createNotification } from "./notificationActions";
 
 export async function submitCompanyEnquiry(data: CompanyEnquiryFormValues) {
     const validation = companyEnquirySchema.safeParse(data);
@@ -39,7 +40,27 @@ export async function getCompanyEnquiries(status?: "pending" | "approved" | "rej
     if (status) {
         query.where(eq(companyEnquiriesTable.status, status));
     }
-    return await query.orderBy(desc(companyEnquiriesTable.submittedAt));
+    const enquiries = await query.orderBy(desc(companyEnquiriesTable.submittedAt));
+
+    // Enhance with job counts for approved companies
+    const enhancedEnquiries = await Promise.all(enquiries.map(async (enq) => {
+        if (enq.status !== "approved") return { ...enq, jobCount: 0 };
+
+        const [jobRes] = await db.select({ count: count() })
+            .from(jobsTable)
+            .where(eq(jobsTable.companyId, enq.id));
+        
+        const [internRes] = await db.select({ count: count() })
+            .from(internshipsTable)
+            .where(eq(internshipsTable.companyId, enq.id));
+        
+        return {
+            ...enq,
+            jobCount: Number(jobRes.count) + Number(internRes.count)
+        };
+    }));
+
+    return JSON.parse(JSON.stringify(enhancedEnquiries));
 }
 
 export async function updateEnquiryStatus(id: string, status: "approved" | "rejected") {
@@ -90,6 +111,23 @@ export async function updateEnquiryStatus(id: string, status: "approved" | "reje
                         .set({ isVerified: true })
                         .where(eq(companiesTable.userId, targetUserId));
                 }
+
+                await createNotification({
+                    userId: targetUserId,
+                    title: "Company Approved",
+                    message: `Welcome to findtalent! Your company enquiry for ${updated.companyName} has been approved.`,
+                    type: "company_approved",
+                    link: "/business/dashboard"
+                });
+            }
+        } else if (status === "rejected" && updated) {
+            if (updated.userId) {
+                await createNotification({
+                    userId: updated.userId,
+                    title: "Enquiry Rejected",
+                    message: `We regret to inform you that your enquiry for ${updated.companyName} was not approved at this time.`,
+                    type: "company_rejected"
+                });
             }
         }
 

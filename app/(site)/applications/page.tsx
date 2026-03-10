@@ -77,7 +77,7 @@ export default function ApplicationsPage() {
                                         <Building2 className="text-muted-foreground w-6 h-6" />
                                     </div>
                                     <div className="flex flex-col gap-1">
-                                        <Link href={detailHref} className="hover:text-[var(--primary)] transition-colors">
+                                        <Link href={detailHref} className="dark:hover:text-[var(--primary)] hover:text-[#111827] transition-colors">
                                             <h3 className="text-xl font-bold text-[var(--text-main)]">
                                                 {jobOrInternship?.title || "Deleted Position"}
                                                 <span className="px-2 py-0.5 rounded text-[10px] uppercase font-bold bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-muted-foreground ml-2">
@@ -89,14 +89,14 @@ export default function ApplicationsPage() {
 
                                     <div className="flex flex-wrap gap-4 mt-2 text-sm text-muted-foreground">
                                         <div className="flex items-center gap-1.5 flex-wrap">
-                                            <Calendar className="w-4 h-4 text-[var(--primary)]" />
+                                            <Calendar className="w-4 h-4 text-[#111827] dark:text-[var(--primary)]" />
                                             Applied {formatDistanceToNow(new Date(application.appliedAt))} ago
                                         </div>
 
                                         {application.resumeUrl && (
                                             <div className="flex items-center gap-1.5 flex-wrap">
-                                                <FileText className="w-4 h-4 text-[var(--primary)]" />
-                                                <a href={application.resumeUrl} target="_blank" rel="noreferrer" className="hover:text-[var(--primary)] hover:underline">
+                                                <FileText className="w-4 h-4 text-[#111827] dark:text-[var(--primary)]" />
+                                                <a href={application.resumeUrl} target="_blank" rel="noreferrer" className="dark:hover:text-[var(--primary)] hover:text-[#111827] hover:underline">
                                                     View Submitted Resume
                                                 </a>
                                             </div>
