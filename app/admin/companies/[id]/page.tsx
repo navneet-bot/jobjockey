@@ -7,7 +7,7 @@ import { notFound } from "next/navigation";
 export default async function AdminCompanyDetailsPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
     const enquiries = await getCompanyEnquiries();
-    const company = enquiries.find(e => e.id === id);
+    const company = enquiries.find((e: any) => e.id === id);
 
     if (!company) notFound();
 
