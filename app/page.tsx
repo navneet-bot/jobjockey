@@ -10,24 +10,31 @@ export default async function Home() {
   const { userId } = await auth();
 
   if (userId) {
-    const [talentProfile] = await db
-      .select()
-      .from(userProfilesTable)
-      .where(eq(userProfilesTable.userId, userId))
-      .limit(1);
+    try {
+      const [talentProfile] = await db
+        .select()
+        .from(userProfilesTable)
+        .where(eq(userProfilesTable.userId, userId))
+        .limit(1);
 
-    if (talentProfile) {
-      return <TalentHome profileData={talentProfile} />;
-    }
+      if (talentProfile) {
+        return <TalentHome profileData={talentProfile} />;
+      }
 
-    const [businessProfile] = await db
-      .select()
-      .from(companiesTable)
-      .where(eq(companiesTable.userId, userId))
-      .limit(1);
+      const [businessProfile] = await db
+        .select()
+        .from(companiesTable)
+        .where(eq(companiesTable.userId, userId))
+        .limit(1);
 
-    if (businessProfile && businessProfile.isVerified) {
-      return <CompanyHome companyData={businessProfile} />;
+      if (businessProfile && businessProfile.isVerified) {
+        return <CompanyHome companyData={businessProfile} />;
+      }
+    } catch (error) {
+      console.error("Database query failed on Home page:", error);
+      // Fallback to GuestHome if database is unreachable but user is logged in
+      // This prevents a hard crash and allows the user to see the landing page
+      return <GuestHome />;
     }
   }
 
