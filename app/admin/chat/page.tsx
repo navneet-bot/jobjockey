@@ -151,7 +151,7 @@ export default function AdminChatPage() {
     );
 
     return (
-        <div className="flex flex-col gap-6 p-6 h-[calc(100vh-100px)]">
+        <div className="flex flex-col gap-6 p-4 h-[calc(100vh-140px)] min-h-[800px]">
             <GradientHeader
                 title="Company Chat Support"
                 subtitle="Manage communications with employers on the platform."
@@ -159,9 +159,9 @@ export default function AdminChatPage() {
                 className="py-0"
             />
 
-            <div className="flex-1 flex gap-6 overflow-hidden">
+            <div className="flex-1 flex gap-6 overflow-hidden min-h-0 min-w-full">
                 {/* Left Panel: Conversations List */}
-                <GlassCard hoverLift={false} className="w-80 flex flex-col overflow-hidden border-[var(--glass-border)]">
+                <div className="w-[400px] flex flex-col overflow-hidden bg-white/5 border border-white/10 rounded-2xl shadow-xl shrink-0">
                     <div className="p-4 border-b border-[var(--glass-border)]">
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-dim)]" />
@@ -244,10 +244,10 @@ export default function AdminChatPage() {
                             </div>
                         )}
                     </div>
-                </GlassCard>
+                </div>
 
                 {/* Right Panel: Chat Window */}
-                <GlassCard hoverLift={false} className="flex-1 flex flex-col overflow-hidden border-[var(--glass-border)] shadow-xl relative">
+                <div className="flex-1 flex flex-col overflow-hidden bg-white/5 border border-white/10 rounded-2xl shadow-2xl relative">
                     {selectedConv ? (
                         <>
                             {/* Chat Header */}
@@ -399,17 +399,17 @@ export default function AdminChatPage() {
                             </div>
                         </>
                     ) : (
-                        <div className="flex-1 flex flex-col items-center justify-center text-[var(--text-dim)] gap-4">
-                            <div className="p-6 rounded-full bg-black/5 dark:bg-white/5 border border-[var(--glass-border)]">
-                                <MessageSquare className="w-12 h-12 opacity-20" />
+                        <div className="flex-1 flex flex-col items-center justify-center text-[var(--text-dim)] gap-6 p-12">
+                            <div className="p-10 rounded-full bg-black/5 dark:bg-white/5 border border-[var(--glass-border)] animate-pulse shadow-inner">
+                                <MessageSquare className="w-20 h-20 opacity-10" />
                             </div>
-                            <div className="text-center">
-                                <h3 className="text-lg font-bold text-[var(--text-main)]">Your Messages</h3>
-                                <p className="text-sm">Select a company from the left to view or start a conversation.</p>
+                            <div className="text-center space-y-2">
+                                <h3 className="text-2xl font-bold text-[var(--text-main)]">Your Messages</h3>
+                                <p className="text-base max-w-sm mx-auto">Select a company from the left to view their profile, past interactions, or start a new conversation.</p>
                             </div>
                         </div>
                     )}
-                </GlassCard>
+                </div>
             </div>
         </div>
     );

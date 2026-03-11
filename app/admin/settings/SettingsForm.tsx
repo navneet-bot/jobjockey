@@ -9,14 +9,19 @@ import { GlassCard } from "@/components/ui/GlassCard";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { GradientButton } from "@/components/ui/GradientButton";
-import { ShieldCheck, Clock, Eye, Trash2, Save } from "lucide-react";
+import { ShieldCheck, Clock, Eye, Trash2, Save, Building2, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { CompanyRestrictionsForm } from "@/components/features/admin/CompanyRestrictionsForm";
+import { AdminManagementForm } from "@/components/features/admin/AdminManagementForm";
+
+type Company = { id: string; companyName: string | null };
 
 interface SettingsFormProps {
   initialData: PlatformSettingsFormValues;
+  companies: Company[];
 }
 
-export function SettingsForm({ initialData }: SettingsFormProps) {
+export function SettingsForm({ initialData, companies }: SettingsFormProps) {
   const form = useForm<PlatformSettingsFormValues>({
     resolver: zodResolver(platformSettingsSchema),
     defaultValues: initialData,
@@ -69,85 +74,115 @@ export function SettingsForm({ initialData }: SettingsFormProps) {
   );
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* SECTION 1: Posting Limits */}
-        <GlassCard className="p-8">
-          <SectionTitle icon={ShieldCheck} title="Posting Limits" />
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <Label>Max Job Posts per Company</Label>
-              <Input
-                type="number"
-                {...register("maxJobPostsPerCompany", { valueAsNumber: true })}
-                className="bg-background/50"
-              />
-              {errors.maxJobPostsPerCompany && <p className="text-xs text-destructive">{errors.maxJobPostsPerCompany.message}</p>}
+    <>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* SECTION 1: Posting Limits */}
+          <GlassCard className="p-8">
+            <SectionTitle icon={ShieldCheck} title="Posting Limits" />
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <Label>Max Job Posts per Company</Label>
+                <Input
+                  type="number"
+                  {...register("maxJobPostsPerCompany", { valueAsNumber: true })}
+                  className="bg-background/50"
+                />
+                {errors.maxJobPostsPerCompany && <p className="text-xs text-destructive">{errors.maxJobPostsPerCompany.message}</p>}
+              </div>
+              <div className="space-y-2">
+                <Label>Max Internship Posts per Company</Label>
+                <Input
+                  type="number"
+                  {...register("maxInternshipPostsPerCompany", { valueAsNumber: true })}
+                  className="bg-background/50"
+                />
+                {errors.maxInternshipPostsPerCompany && <p className="text-xs text-destructive">{errors.maxInternshipPostsPerCompany.message}</p>}
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label>Max Internship Posts per Company</Label>
-              <Input
-                type="number"
-                {...register("maxInternshipPostsPerCompany", { valueAsNumber: true })}
-                className="bg-background/50"
-              />
-              {errors.maxInternshipPostsPerCompany && <p className="text-xs text-destructive">{errors.maxInternshipPostsPerCompany.message}</p>}
+          </GlassCard>
+
+          {/* SECTION 2: Expiry Configuration */}
+          <GlassCard className="p-8">
+            <SectionTitle icon={Clock} title="Expiry Configuration" />
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <Label>Default Job Expiry (Days)</Label>
+                <Input
+                  type="number"
+                  {...register("jobDefaultExpiryDays", { valueAsNumber: true })}
+                  className="bg-background/50"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Default Internship Expiry (Days)</Label>
+                <Input
+                  type="number"
+                  {...register("internshipDefaultExpiryDays", { valueAsNumber: true })}
+                  className="bg-background/50"
+                />
+              </div>
+              <Toggle name="allowCompaniesToChooseExpiry" label="Allow companies to choose expiry date" />
             </div>
-          </div>
-        </GlassCard>
+          </GlassCard>
 
-        {/* SECTION 2: Expiry Configuration */}
-        <GlassCard className="p-8">
-          <SectionTitle icon={Clock} title="Expiry Configuration" />
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <Label>Default Job Expiry (Days)</Label>
-              <Input
-                type="number"
-                {...register("jobDefaultExpiryDays", { valueAsNumber: true })}
-                className="bg-background/50"
-              />
+          {/* SECTION 3: Platform Visibility */}
+          <GlassCard className="p-8">
+            <SectionTitle icon={Eye} title="Platform Visibility" />
+            <div className="space-y-4">
+              <Toggle name="showCompaniesPublicly" label="Show Companies Publicly" />
+              <Toggle name="showJobsPublicly" label="Show Job Listings" />
+              <Toggle name="showInternshipsPublicly" label="Show Internship Listings" />
             </div>
-            <div className="space-y-2">
-              <Label>Default Internship Expiry (Days)</Label>
-              <Input
-                type="number"
-                {...register("internshipDefaultExpiryDays", { valueAsNumber: true })}
-                className="bg-background/50"
-              />
+          </GlassCard>
+
+          {/* SECTION 4: Expired Post Handling */}
+          <GlassCard className="p-8">
+            <SectionTitle icon={Trash2} title="Expired Post Handling" />
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground mb-4">
+                Control how the platform handles posts that have passed their expiry date.
+              </p>
+              <Toggle name="autoDeleteExpiredPosts" label="Automatically delete expired posts" />
             </div>
-            <Toggle name="allowCompaniesToChooseExpiry" label="Allow companies to choose expiry date" />
-          </div>
-        </GlassCard>
+          </GlassCard>
+        </div>
 
-        {/* SECTION 3: Platform Visibility */}
-        <GlassCard className="p-8">
-          <SectionTitle icon={Eye} title="Platform Visibility" />
-          <div className="space-y-4">
-            <Toggle name="showCompaniesPublicly" label="Show Companies Publicly" />
-            <Toggle name="showJobsPublicly" label="Show Job Listings" />
-            <Toggle name="showInternshipsPublicly" label="Show Internship Listings" />
-          </div>
-        </GlassCard>
+        <div className="flex justify-end pt-4">
+          <GradientButton type="submit" disabled={isSubmitting} className="px-8">
+            <Save className="w-4 h-4 mr-2" />
+            {isSubmitting ? "Saving..." : "Save Settings"}
+          </GradientButton>
+        </div>
+      </form>
 
-        {/* SECTION 4: Expired Post Handling */}
-        <GlassCard className="p-8">
-          <SectionTitle icon={Trash2} title="Expired Post Handling" />
-          <div className="space-y-4">
-            <p className="text-sm text-muted-foreground mb-4">
-              Control how the platform handles posts that have passed their expiry date.
-            </p>
-            <Toggle name="autoDeleteExpiredPosts" label="Automatically delete expired posts" />
+      {/* SECTION 5: Company Restrictions */}
+      <GlassCard className="p-8">
+        <div className="flex items-center gap-2 mb-6">
+          <div className="p-2 rounded-lg bg-black/5 dark:bg-white/10 text-[#111827] dark:text-white">
+            <Building2 className="w-5 h-5" />
           </div>
-        </GlassCard>
-      </div>
+          <div>
+            <h3 className="text-lg font-bold text-[var(--text-main)]">Company Restrictions</h3>
+            <p className="text-xs text-muted-foreground">Override global settings for a specific company. Blank fields fall back to global values.</p>
+          </div>
+        </div>
+        <CompanyRestrictionsForm companies={companies} />
+      </GlassCard>
 
-      <div className="flex justify-end pt-4">
-        <GradientButton type="submit" disabled={isSubmitting} className="px-8">
-          <Save className="w-4 h-4 mr-2" />
-          {isSubmitting ? "Saving..." : "Save Settings"}
-        </GradientButton>
-      </div>
-    </form>
+      {/* SECTION 6: Admin Management */}
+      <GlassCard className="p-8">
+        <div className="flex items-center gap-2 mb-6">
+          <div className="p-2 rounded-lg bg-black/5 dark:bg-white/10 text-[#111827] dark:text-white">
+            <Users className="w-5 h-5" />
+          </div>
+          <div>
+            <h3 className="text-lg font-bold text-[var(--text-main)]">Admin Management</h3>
+            <p className="text-xs text-muted-foreground">Assign and manage admin permissions for platform users using their Clerk user ID.</p>
+          </div>
+        </div>
+        <AdminManagementForm />
+      </GlassCard>
+    </>
   );
 }

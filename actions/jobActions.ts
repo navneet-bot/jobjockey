@@ -6,7 +6,7 @@ import { jobFormSchema } from "@/lib/validators";
 import { auth } from "@clerk/nextjs/server";
 import { and, desc, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { userProfilesTable, companyEnquiriesTable, platformSettingsTable } from "@/lib/schema";
+import { userProfilesTable, companyEnquiriesTable, platformSettingsTable, companySettingsTable } from "@/lib/schema";
 import { addDays } from "date-fns";
 
 type JobFormData = {
@@ -105,25 +105,45 @@ export async function createJob(jobData: JobFormData) {
 
     const { jobCategory, ...jobDataRest } = validation.data;
 
-    // 2. Fetch platform settings
+    // 2. Fetch platform settings (global)
     const [settings] = await db.select().from(platformSettingsTable).limit(1);
-    const maxJobs = settings?.maxJobPostsPerCompany ?? 10;
-    const defaultExpiryDays = settings?.jobDefaultExpiryDays ?? 30;
 
-    // 3. Check current job count for this company
-    const currentJobs = await db
+    // 3. Fetch company-specific settings (override)
+    const [companySettings] = await db
       .select()
-      .from(jobsTable)
-      .where(eq(jobsTable.postedBy, userId));
+      .from(companySettingsTable)
+      .where(eq(companySettingsTable.companyId, enquiry.id))
+      .limit(1);
 
-    if (currentJobs.length >= maxJobs) {
+    // 4. Check if job posting is disabled for this company
+    if (companySettings?.disableJobPosting) {
       return {
         success: false,
-        error: `Maximum job posting limit reached (${maxJobs}). Please remove existing posts to add more.`,
+        error: "Job posting has been disabled for your company by the administrator.",
       };
     }
 
-    // 4. Calculate expiry date
+    // 5. Determine effective limits (company overrides global)
+    const unlimitedPosting = companySettings?.unlimitedPosting ?? false;
+    const maxJobs = companySettings?.maxJobPosts ?? settings?.maxJobPostsPerCompany ?? 10;
+    const defaultExpiryDays = companySettings?.jobExpiryDays ?? settings?.jobDefaultExpiryDays ?? 30;
+
+    // 6. Check current job count (unless unlimited)
+    if (!unlimitedPosting) {
+      const currentJobs = await db
+        .select()
+        .from(jobsTable)
+        .where(eq(jobsTable.postedBy, userId));
+
+      if (currentJobs.length >= maxJobs) {
+        return {
+          success: false,
+          error: `Job posting limit reached (${maxJobs}). Please remove existing posts to add more.`,
+        };
+      }
+    }
+
+    // 7. Calculate expiry date
     const expiryDate = addDays(new Date(), defaultExpiryDays);
 
     await db.insert(jobsTable).values({
@@ -187,6 +207,22 @@ export async function deleteJob(id: string) {
   } catch (error) {
     console.log(error);
     return { sucess: false, error: "Failed to delete the job." };
+  }
+}
+
+/** Admin-only: delete any job regardless of who posted it. */
+export async function adminDeleteJob(id: string) {
+  const { userId } = await auth();
+  if (!userId) return { success: false, error: "Unauthorized" };
+
+  try {
+    await db.delete(jobsTable).where(eq(jobsTable.id, id));
+    revalidatePath("/admin/jobs");
+    revalidatePath("/");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to admin-delete job:", error);
+    return { success: false, error: "Failed to delete the job." };
   }
 }
 

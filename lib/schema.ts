@@ -259,6 +259,44 @@ export const platformSettingsTable = pgTable("platform_settings", {
 export type NewPlatformSetting = typeof platformSettingsTable.$inferInsert;
 export type PlatformSetting = typeof platformSettingsTable.$inferSelect;
 
+// Company-specific restriction overrides
+export const companySettingsTable = pgTable("company_settings", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  companyId: uuid("company_id")
+    .references(() => companyEnquiriesTable.id, { onDelete: "cascade" })
+    .notNull()
+    .unique(),
+  maxJobPosts: integer("max_job_posts"), // null = fall back to global
+  maxInternshipPosts: integer("max_internship_posts"), // null = fall back to global
+  jobExpiryDays: integer("job_expiry_days"), // null = fall back to global
+  internshipExpiryDays: integer("internship_expiry_days"), // null = fall back to global
+  disableJobPosting: boolean("disable_job_posting").default(false).notNull(),
+  disableInternshipPosting: boolean("disable_internship_posting").default(false).notNull(),
+  hideCompany: boolean("hide_company").default(false).notNull(),
+  allowCustomExpiry: boolean("allow_custom_expiry").default(false).notNull(),
+  unlimitedPosting: boolean("unlimited_posting").default(false).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+export type NewCompanySetting = typeof companySettingsTable.$inferInsert;
+export type CompanySetting = typeof companySettingsTable.$inferSelect;
+
+// Granular admin permission roles
+export const adminRolesTable = pgTable("admin_roles", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: varchar("user_id", { length: 255 }).notNull().unique(), // Clerk userId
+  role: varchar("role", { length: 100 }).notNull().default("admin"),
+  canManageCompanies: boolean("can_manage_companies").default(true).notNull(),
+  canManageJobs: boolean("can_manage_jobs").default(true).notNull(),
+  canManageSettings: boolean("can_manage_settings").default(false).notNull(),
+  canViewApplications: boolean("can_view_applications").default(true).notNull(),
+  canManageChat: boolean("can_manage_chat").default(true).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+export type NewAdminRole = typeof adminRolesTable.$inferInsert;
+export type AdminRole = typeof adminRolesTable.$inferSelect;
 
 export type NewJob = typeof jobsTable.$inferInsert;
 export type Job = typeof jobsTable.$inferSelect;

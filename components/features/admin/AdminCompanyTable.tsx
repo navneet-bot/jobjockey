@@ -6,9 +6,10 @@ import { CompanyEnquiry } from "@/lib/schema";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "sonner";
-import { Check, X, Eye, Trash2, Loader2 } from "lucide-react";
+import { Check, X, Eye, Trash2, Loader2, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { GlassModal, GlassModalContent, GlassModalHeader, GlassModalTitle, GlassModalDescription } from "@/components/ui/GlassModal";
+import { CompanyRestrictionsModal } from "@/components/features/admin/CompanyRestrictionsModal";
 
 export function AdminCompanyTable({ statusFilter }: { statusFilter?: "pending" | "approved" | "rejected" }) {
     const [enquiries, setEnquiries] = useState<any[]>([]);
@@ -16,6 +17,7 @@ export function AdminCompanyTable({ statusFilter }: { statusFilter?: "pending" |
     const [totalJobs, setTotalJobs] = useState<Record<string, number>>({});
     const [deletingId, setDeletingId] = useState<string | null>(null);
     const [companyToDelete, setCompanyToDelete] = useState<CompanyEnquiry | null>(null);
+    const [restrictionTarget, setRestrictionTarget] = useState<{ id: string; companyName: string | null } | null>(null);
 
     async function loadData() {
         setLoading(true);
@@ -133,14 +135,23 @@ export function AdminCompanyTable({ statusFilter }: { statusFilter?: "pending" |
                                                     </>
                                                 )}
                                                 {statusFilter === 'approved' && (
-                                                    <button
-                                                        onClick={() => setCompanyToDelete(enq)}
-                                                        title="Remove Company"
-                                                        disabled={deletingId === enq.id}
-                                                        className="p-2 rounded-full bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors disabled:opacity-50"
-                                                    >
-                                                        {deletingId === enq.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-                                                    </button>
+                                                    <>
+                                                        <button
+                                                            onClick={() => setRestrictionTarget({ id: enq.id, companyName: enq.companyName })}
+                                                            title="Manage Restrictions"
+                                                            className="p-2 rounded-full bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 transition-colors"
+                                                        >
+                                                            <ShieldAlert className="w-4 h-4" />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => setCompanyToDelete(enq)}
+                                                            title="Remove Company"
+                                                            disabled={deletingId === enq.id}
+                                                            className="p-2 rounded-full bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors disabled:opacity-50"
+                                                        >
+                                                            {deletingId === enq.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                                                        </button>
+                                                    </>
                                                 )}
                                             </div>
                                         </td>
@@ -188,6 +199,14 @@ export function AdminCompanyTable({ statusFilter }: { statusFilter?: "pending" |
                     </div>
                 </GlassModalContent>
             </GlassModal>
+
+            {restrictionTarget && (
+                <CompanyRestrictionsModal
+                    open={!!restrictionTarget}
+                    onOpenChange={(open) => !open && setRestrictionTarget(null)}
+                    company={restrictionTarget}
+                />
+            )}
         </>
     );
 }

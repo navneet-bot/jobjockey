@@ -27,7 +27,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
     return (
         <div className="flex flex-col min-h-screen">
-            <main className="flex-1 w-full flex pt-10 px-4 md:px-8 max-w-[1400px] mx-auto gap-8 pb-20">
+            <main className="flex-1 w-full flex pt-10 px-4 md:px-8 max-w-[1600px] mx-auto gap-8 pb-20">
                 <AdminSidebar />
 
                 {/* Admin Content Area */}

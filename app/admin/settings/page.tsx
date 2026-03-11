@@ -1,11 +1,15 @@
 import { GradientHeader } from "@/components/ui/GradientHeader";
 import { getPlatformSettings } from "@/actions/adminSettingsActions";
+import { getApprovedCompanies } from "@/actions/companySettingsActions";
 import { SettingsForm } from "./SettingsForm";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { Info } from "lucide-react";
 
 export default async function AdminSettingsPage() {
-    const settings = await getPlatformSettings();
+    const [settings, companies] = await Promise.all([
+        getPlatformSettings(),
+        getApprovedCompanies(),
+    ]);
 
     if (!settings) {
         return (
@@ -43,7 +47,7 @@ export default async function AdminSettingsPage() {
                 </div>
             </div>
 
-            <SettingsForm initialData={settings} />
+            <SettingsForm initialData={settings} companies={companies} />
         </div>
     );
 }

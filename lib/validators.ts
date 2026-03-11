@@ -106,3 +106,30 @@ export const platformSettingsSchema = z.object({
 });
 
 export type PlatformSettingsFormValues = z.infer<typeof platformSettingsSchema>;
+
+export const companySettingsSchema = z.object({
+  companyId: z.string().min(1, "Company is required"),
+  maxJobPosts: z.number().min(0).nullish(),
+  maxInternshipPosts: z.number().min(0).nullish(),
+  jobExpiryDays: z.number().min(1).nullish(),
+  internshipExpiryDays: z.number().min(1).nullish(),
+  disableJobPosting: z.boolean(),
+  disableInternshipPosting: z.boolean(),
+  hideCompany: z.boolean(),
+  allowCustomExpiry: z.boolean(),
+  unlimitedPosting: z.boolean(),
+});
+
+export type CompanySettingsFormValues = z.infer<typeof companySettingsSchema>;
+
+export const adminRoleSchema = z.object({
+  userId: z.string().min(1, "Clerk User ID is required"),
+  role: z.string().min(1, "Role name is required"),
+  canManageCompanies: z.boolean(),
+  canManageJobs: z.boolean(),
+  canManageSettings: z.boolean(),
+  canViewApplications: z.boolean(),
+  canManageChat: z.boolean(),
+});
+
+export type AdminRoleFormValues = z.infer<typeof adminRoleSchema>;

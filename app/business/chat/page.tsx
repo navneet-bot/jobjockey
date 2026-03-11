@@ -108,7 +108,7 @@ export default function BusinessChatPage() {
     }
 
     return (
-        <div className="flex flex-col gap-8 py-12 px-6 container mx-auto h-screen max-h-[900px]">
+        <div className="flex flex-col gap-8 py-12 px-6 w-full max-w-7xl mx-auto h-screen max-h-[1000px]">
             <div className="relative flex items-center justify-center min-h-[80px]">
                 <Link href="/business/dashboard" className="absolute left-0">
                     <Button variant="ghost" className="flex items-center gap-2">
@@ -116,12 +116,15 @@ export default function BusinessChatPage() {
                         <span className="hidden sm:inline">Back to Dashboard</span>
                     </Button>
                 </Link>
-                <div className="mb-8">
-                    <h1 className="text-3xl font-bold">Employer Chat</h1>
+                <div className="flex flex-col items-center justify-center mb-8">
+                    <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[var(--text-main)] to-[var(--text-dim)]">Chat with Admin</h1>
+                    <p className="text-[var(--text-dim)] mt-2 text-center max-w-md">
+                        Get direct support, ask questions about your account, or report issues to our administrator.
+                    </p>
                 </div>
             </div>
 
-            <div className="max-w-4xl mx-auto h-[700px] flex flex-col bg-white/5 border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+            <div className="w-full max-w-6xl mx-auto flex-1 flex flex-col bg-white/5 border border-white/10 rounded-2xl overflow-hidden shadow-2xl mb-8">
                 {/* Messages Area */}
                 <div 
                     ref={scrollRef}

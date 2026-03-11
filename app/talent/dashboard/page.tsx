@@ -61,6 +61,24 @@ export default function TalentDashboardPage() {
             setAppsLoading(false);
         });
     }, []);
+    const calculateCompletion = () => {
+        if (!profile) return 0;
+        const fields = [
+            profile.name,
+            profile.email,
+            profile.phone,
+            profile.education,
+            profile.experience,
+            profile.skills,
+            profile.resumeUrl,
+            profile.preferredJobType,
+            profile.preferredDomain
+        ];
+        const completedFields = fields.filter(field => field && field.length > 0).length;
+        return Math.round((completedFields / fields.length) * 100);
+    };
+
+    const completionPercentage = calculateCompletion();
 
     return (
         <div className="flex flex-col gap-8 py-12 px-6 container mx-auto min-h-screen">
@@ -128,7 +146,6 @@ export default function TalentDashboardPage() {
                                                 <div className="w-12 h-12 rounded-xl bg-[var(--glass-bg)] border border-[var(--glass-border)] flex items-center justify-center shrink-0">
                                                     <Briefcase className="w-6 h-6 text-[#111827] dark:text-white dark:group-hover:text-[var(--primary)] transition-colors" />
                                                 </div>
-                                                <span className="text-xs font-bold text-green-500 bg-green-500/10 px-2 py-1 rounded-full border border-green-500/20">90% Match</span>
                                             </div>
                                             <div>
                                                 <h4 className="text-lg font-bold text-[var(--text-main)] dark:group-hover:text-[var(--primary)] transition-colors line-clamp-1">{job.title}</h4>
@@ -332,25 +349,32 @@ export default function TalentDashboardPage() {
 
                         <div className="flex flex-col gap-6">
                             <GlassCard className="p-6 flex flex-col gap-4">
-                                <h4 className="font-bold text-[var(--text-main)] flex items-center gap-2"><CheckCircle className="w-5 h-5 text-green-500" /> Profile Completion</h4>
-                                <div className="h-2 w-full bg-[var(--glass-bg)] rounded-full overflow-hidden">
-                                    <div className="h-full bg-green-500 w-[85%]"></div>
+                                <div className="flex justify-between items-center">
+                                    <h4 className="font-bold text-[var(--text-main)] flex items-center gap-2"><CheckCircle className="w-5 h-5 text-green-500" /> Profile Completion</h4>
+                                    <span className="text-sm font-bold text-green-500">{completionPercentage}%</span>
                                 </div>
-                                <p className="text-xs text-[var(--text-dim)]">Your profile is looking great! Add your portfolio to reach 100%.</p>
+                                <div className="h-2 w-full bg-[var(--glass-bg)] rounded-full overflow-hidden">
+                                    <div className="h-full bg-green-500 transition-all duration-500" style={{ width: `${completionPercentage}%` }}></div>
+                                </div>
+                                <p className="text-xs text-[var(--text-dim)]">
+                                    {completionPercentage === 100 
+                                        ? "Your profile is fully complete! You're ready to apply."
+                                        : "Your profile is looking great! Complete all fields to reach 100%."}
+                                </p>
                             </GlassCard>
 
                             <GlassCard className="p-6 flex flex-col gap-4">
                                 <h4 className="font-bold text-[var(--text-main)] flex items-center gap-2"><FileText className="w-5 h-5" /> Resume</h4>
-                                <div className="p-4 rounded-xl bg-[var(--glass-bg)] border border-[var(--glass-border)] flex justify-between items-center group hover:border-[var(--primary)]/50 transition-colors">
+                                <div className="p-4 rounded-xl bg-[var(--glass-bg)] border border-[var(--glass-border)] flex justify-between items-center gap-3 group hover:border-[var(--primary)]/50 transition-colors">
                                     <div 
-                                        className={`flex items-center gap-3 ${profile?.resumeUrl ? 'cursor-pointer' : ''}`}
+                                        className={`flex items-center gap-3 min-w-0 ${profile?.resumeUrl ? 'cursor-pointer' : ''}`}
                                         onClick={() => profile?.resumeUrl && window.open(profile.resumeUrl, "_blank")}
                                     >
                                         <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center shrink-0">
                                             <span className="text-xs font-bold text-red-500">PDF</span>
                                         </div>
-                                        <div className="flex flex-col overflow-hidden">
-                                            <span className="text-sm font-medium text-[var(--text-main)] dark:group-hover:text-[var(--primary)] transition-colors truncate max-w-[200px] md:max-w-xs">
+                                        <div className="flex flex-col min-w-0">
+                                            <span className="text-sm font-medium text-[var(--text-main)] dark:group-hover:text-[var(--primary)] transition-colors truncate">
                                                 {loading ? "Loading..." : profile?.resumeUrl ? profile.resumeUrl.split('/').pop() : "No resume uploaded"}
                                             </span>
                                             <span className="text-xs text-[var(--text-dim)]">
@@ -358,7 +382,7 @@ export default function TalentDashboardPage() {
                                             </span>
                                         </div>
                                     </div>
-                                    <Link href="/talent/create-profile">
+                                    <Link href="/talent/create-profile" className="shrink-0">
                                         <Button variant="ghost" size="sm" className="rounded-full">Update</Button>
                                     </Link>
                                 </div>

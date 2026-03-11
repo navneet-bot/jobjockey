@@ -43,6 +43,13 @@
       "when": 1772981620736,
       "tag": "0005_busy_gwen_stacy",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1773239731398,
+      "tag": "0006_chief_genesis",
+      "breakpoints": true
     }
   ]
 }

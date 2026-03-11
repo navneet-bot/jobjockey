@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { internshipsTable, NewInternship, companyEnquiriesTable } from "@/lib/schema";
+import { internshipsTable, NewInternship, companyEnquiriesTable, companySettingsTable } from "@/lib/schema";
 import { internshipFormSchema, InternshipFormValues } from "@/lib/validators";
 import { auth } from "@clerk/nextjs/server";
 import { and, desc, eq } from "drizzle-orm";
@@ -74,25 +74,45 @@ export async function createInternship(internshipData: InternshipFormValues) {
 
     const { jobCategory, ...internshipDataRest } = validation.data;
 
-    // 2. Fetch platform settings
+    // 2. Fetch platform settings (global)
     const [settings] = await db.select().from(platformSettingsTable).limit(1);
-    const maxInternships = settings?.maxInternshipPostsPerCompany ?? 10;
-    const defaultExpiryDays = settings?.internshipDefaultExpiryDays ?? 30;
 
-    // 3. Check current internship count for this company
-    const currentInternships = await db
+    // 3. Fetch company-specific settings (override)
+    const [companySettings] = await db
       .select()
-      .from(internshipsTable)
-      .where(eq(internshipsTable.postedBy, userId));
+      .from(companySettingsTable)
+      .where(eq(companySettingsTable.companyId, enquiry.id))
+      .limit(1);
 
-    if (currentInternships.length >= maxInternships) {
+    // 4. Check if internship posting is disabled for this company
+    if (companySettings?.disableInternshipPosting) {
       return {
         success: false,
-        error: `Maximum internship posting limit reached (${maxInternships}). Please remove existing posts to add more.`,
+        error: "Internship posting has been disabled for your company by the administrator.",
       };
     }
 
-    // 4. Calculate expiry date
+    // 5. Determine effective limits (company overrides global)
+    const unlimitedPosting = companySettings?.unlimitedPosting ?? false;
+    const maxInternships = companySettings?.maxInternshipPosts ?? settings?.maxInternshipPostsPerCompany ?? 10;
+    const defaultExpiryDays = companySettings?.internshipExpiryDays ?? settings?.internshipDefaultExpiryDays ?? 30;
+
+    // 6. Check current internship count (unless unlimited)
+    if (!unlimitedPosting) {
+      const currentInternships = await db
+        .select()
+        .from(internshipsTable)
+        .where(eq(internshipsTable.postedBy, userId));
+
+      if (currentInternships.length >= maxInternships) {
+        return {
+          success: false,
+          error: `Internship posting limit reached (${maxInternships}). Please remove existing posts to add more.`,
+        };
+      }
+    }
+
+    // 7. Calculate expiry date
     const expiryDate = addDays(new Date(), defaultExpiryDays);
 
     await db.insert(internshipsTable).values({
@@ -153,6 +173,22 @@ export async function deleteInternship(id: string) {
     return { success: true };
   } catch (error) {
     console.log(error);
+    return { success: false, error: "Failed to delete the internship." };
+  }
+}
+
+/** Admin-only: delete any internship regardless of who posted it. */
+export async function adminDeleteInternship(id: string) {
+  const { userId } = await auth();
+  if (!userId) return { success: false, error: "Unauthorized" };
+
+  try {
+    await db.delete(internshipsTable).where(eq(internshipsTable.id, id));
+    revalidatePath("/admin/jobs");
+    revalidatePath("/");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to admin-delete internship:", error);
     return { success: false, error: "Failed to delete the internship." };
   }
 }
