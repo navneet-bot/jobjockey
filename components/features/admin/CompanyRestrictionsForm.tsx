@@ -87,7 +87,7 @@ export function CompanyRestrictionsForm({ companies, lockedCompanyId }: CompanyR
           onClick={() => setValue(name, !value as any)}
           className={cn(
             "relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-            value ? "bg-[#111827] dark:bg-white" : "bg-muted"
+            value ? "bg-[#111827] dark:bg-white" : "bg-black/20 dark:bg-white/10"
           )}
         >
           <span
@@ -142,6 +142,7 @@ export function CompanyRestrictionsForm({ companies, lockedCompanyId }: CompanyR
               <Label>Max Job Posts <span className="text-muted-foreground text-xs">(blank = use global)</span></Label>
               <Input
                 type="number"
+                min={0}
                 placeholder="Global default"
                 {...register("maxJobPosts", { setValueAs: (v) => (v === "" ? null : Number(v)) })}
                 className="bg-background/50"
@@ -151,6 +152,7 @@ export function CompanyRestrictionsForm({ companies, lockedCompanyId }: CompanyR
               <Label>Max Internship Posts <span className="text-muted-foreground text-xs">(blank = use global)</span></Label>
               <Input
                 type="number"
+                min={0}
                 placeholder="Global default"
                 {...register("maxInternshipPosts", { setValueAs: (v) => (v === "" ? null : Number(v)) })}
                 className="bg-background/50"
@@ -160,6 +162,7 @@ export function CompanyRestrictionsForm({ companies, lockedCompanyId }: CompanyR
               <Label>Job Expiry Days <span className="text-muted-foreground text-xs">(blank = use global)</span></Label>
               <Input
                 type="number"
+                min={0}
                 placeholder="Global default"
                 {...register("jobExpiryDays", { setValueAs: (v) => (v === "" ? null : Number(v)) })}
                 className="bg-background/50"
@@ -169,6 +172,7 @@ export function CompanyRestrictionsForm({ companies, lockedCompanyId }: CompanyR
               <Label>Internship Expiry Days <span className="text-muted-foreground text-xs">(blank = use global)</span></Label>
               <Input
                 type="number"
+                min={0}
                 placeholder="Global default"
                 {...register("internshipExpiryDays", { setValueAs: (v) => (v === "" ? null : Number(v)) })}
                 className="bg-background/50"

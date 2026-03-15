@@ -50,7 +50,7 @@ export function SettingsForm({ initialData, companies }: SettingsFormProps) {
           onClick={() => setValue(name, !value as any)}
           className={cn(
             "relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-            value ? "bg-[#111827] dark:bg-white" : "bg-muted"
+            value ? "bg-[#111827] dark:bg-white" : "bg-black/20 dark:bg-white/10"
           )}
         >
           <span
@@ -85,6 +85,7 @@ export function SettingsForm({ initialData, companies }: SettingsFormProps) {
                 <Label>Max Job Posts per Company</Label>
                 <Input
                   type="number"
+                  min={0}
                   {...register("maxJobPostsPerCompany", { valueAsNumber: true })}
                   className="bg-background/50"
                 />
@@ -94,6 +95,7 @@ export function SettingsForm({ initialData, companies }: SettingsFormProps) {
                 <Label>Max Internship Posts per Company</Label>
                 <Input
                   type="number"
+                  min={0}
                   {...register("maxInternshipPostsPerCompany", { valueAsNumber: true })}
                   className="bg-background/50"
                 />
@@ -110,6 +112,7 @@ export function SettingsForm({ initialData, companies }: SettingsFormProps) {
                 <Label>Default Job Expiry (Days)</Label>
                 <Input
                   type="number"
+                  min={0}
                   {...register("jobDefaultExpiryDays", { valueAsNumber: true })}
                   className="bg-background/50"
                 />
@@ -118,6 +121,7 @@ export function SettingsForm({ initialData, companies }: SettingsFormProps) {
                 <Label>Default Internship Expiry (Days)</Label>
                 <Input
                   type="number"
+                  min={0}
                   {...register("internshipDefaultExpiryDays", { valueAsNumber: true })}
                   className="bg-background/50"
                 />

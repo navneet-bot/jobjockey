@@ -371,7 +371,7 @@ export default function PostJobForm({ jobId, initialData }: PostJobFormProps) {
                           render={({ field }) => (
                             <Field>
                               <FieldLabel>Min Exp (Years)</FieldLabel>
-                              <Input {...field} placeholder="0" />
+                              <Input {...field} type="number" min={0} placeholder="0" />
                             </Field>
                           )}
                         />
@@ -381,7 +381,7 @@ export default function PostJobForm({ jobId, initialData }: PostJobFormProps) {
                           render={({ field }) => (
                             <Field>
                               <FieldLabel>Max Exp (Years)</FieldLabel>
-                              <Input {...field} placeholder="5" />
+                              <Input {...field} type="number" min={0} placeholder="5" />
                             </Field>
                           )}
                         />
@@ -485,7 +485,7 @@ export default function PostJobForm({ jobId, initialData }: PostJobFormProps) {
                           render={({ field }) => (
                             <Field>
                               <FieldLabel>No. of Rounds</FieldLabel>
-                              <Input {...field} type="number" />
+                              <Input {...field} type="number" min={0} />
                             </Field>
                           )}
                         />
@@ -537,7 +537,7 @@ export default function PostJobForm({ jobId, initialData }: PostJobFormProps) {
                         render={({ field }) => (
                           <Field>
                             <FieldLabel>Number of Open Positions</FieldLabel>
-                            <Input {...field} type="number" />
+                            <Input {...field} type="number" min={0} />
                           </Field>
                         )}
                       />
@@ -922,7 +922,7 @@ export default function PostJobForm({ jobId, initialData }: PostJobFormProps) {
                               render={({ field }) => (
                                 <Field>
                                   <FieldLabel>Number of Interns Required</FieldLabel>
-                                  <Input {...field} type="number" />
+                                  <Input {...field} type="number" min={0} />
                                 </Field>
                               )}
                             />
