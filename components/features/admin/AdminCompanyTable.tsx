@@ -168,7 +168,7 @@ export function AdminCompanyTable({ statusFilter }: { statusFilter?: "pending" |
                     <GlassModalHeader>
                         <GlassModalTitle>Remove Company</GlassModalTitle>
                         <GlassModalDescription>
-                            Are you sure you want to remove the company <span className="text-white font-medium">{companyToDelete?.companyName}</span>? This will also permanently delete all jobs associated with this company. This action cannot be undone.
+                            Are you sure you want to remove the company <span className="text-[var(--text-main)] font-medium">{companyToDelete?.companyName}</span>? This will also permanently delete all jobs associated with this company. This action cannot be undone.
                         </GlassModalDescription>
                     </GlassModalHeader>
                     <div className="flex justify-end gap-3 mt-6">
