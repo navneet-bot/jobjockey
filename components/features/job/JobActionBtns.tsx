@@ -13,16 +13,19 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useAuth } from "@clerk/nextjs";
-import { Trash } from "lucide-react";
+import { Trash, Pencil } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import Link from "next/link";
 
 export default function JobActionBtns({
   jobId,
   ownerId,
+  jobCategory = 'job'
 }: {
   jobId: string;
   ownerId: string;
+  jobCategory?: 'job' | 'internship';
 }) {
   const [isDeleting, setIsDeleting] = useState(false);
   const { isSignedIn, userId } = useAuth();
@@ -54,11 +57,18 @@ export default function JobActionBtns({
   return (
     <div className="absolute z-10 right-2 top-2">
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
-          <Button variant="outline" className="cursor-pointer" size={"icon"}>
-            <Trash className="w-5 h-5" />
-          </Button>
-        </DialogTrigger>
+        <div className="flex gap-2">
+          <Link href={`/business/post-job?${jobCategory === 'internship' ? 'internshipId' : 'jobId'}=${jobId}`}>
+            <Button variant="outline" className="cursor-pointer" size={"icon"}>
+              <Pencil className="w-4 h-4" />
+            </Button>
+          </Link>
+          <DialogTrigger asChild>
+            <Button variant="outline" className="cursor-pointer" size={"icon"}>
+              <Trash className="w-5 h-5 text-red-500" />
+            </Button>
+          </DialogTrigger>
+        </div>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Are you absolutely sure?</DialogTitle>

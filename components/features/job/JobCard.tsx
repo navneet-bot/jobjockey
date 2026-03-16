@@ -6,7 +6,7 @@ import Link from "next/link";
 import JobActionBtns from "./JobActionBtns";
 
 interface JobCardProps {
-  job: Job;
+  job: Job & { jobCategory?: 'job' | 'internship' };
 }
 
 export default function JobCard({ job }: JobCardProps) {
@@ -53,7 +53,11 @@ export default function JobCard({ job }: JobCardProps) {
             </span>
           </div>
         </div>
-        <JobActionBtns jobId={job.id} ownerId={job.postedBy} />
+        <JobActionBtns 
+          jobId={job.id} 
+          ownerId={job.postedBy} 
+          jobCategory={job.jobCategory}
+        />
       </CardContent>
     </Card>
   );
