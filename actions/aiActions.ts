@@ -524,31 +524,24 @@ export async function runAIAnalysis(
         const aiUrl =
             process.env
                 .NEXT_PUBLIC_AI_API_URL
-            || "http://localhost:8000";
+            || "https://jobjockey-backend.onrender.com";
 
 
 
-        const response =
-            await fetch(
+        const response = await fetch(`${aiUrl}/start-job`, {
+            method: "POST",
+            body: formData
+        });
 
-                `${aiUrl}/start-job`,
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error(`[AI Analysis] ML Server returned error ${response.status}: ${errorText}`);
+            return { success: false, error: `ML Server Error: ${response.status}` };
+        }
 
-                {
-
-                    method: "POST",
-
-                    body: formData
-
-                }
-
-            );
-
-
-
-        const result =
-            await response.json();
-
-
+        const result = await response.json();
+        const candidates = result.candidates || [];
+        console.log(`[AI Analysis] Received ${candidates.length} candidates from ML server`);
 
         /*
         ------------------------------------------
@@ -556,39 +549,37 @@ export async function runAIAnalysis(
         ------------------------------------------
         */
 
-        for (const c of result.candidates || []) {
+        for (const c of candidates) {
+            console.log(`[AI Analysis] Full candidate data:`, JSON.stringify(c));
 
-            const id =
-                c.file_name
-                    ?.match(/applicant_(.*).pdf/)?.[1];
+            const fileName = c.file_name || "";
+            // Robust extraction: get everything between 'applicant_' and '.pdf'
+            const idMatch = fileName.match(/applicant_(.*)\.pdf/);
+            const id = idMatch ? idMatch[1] : null;
 
+            console.log(`[AI Analysis] Filename: ${fileName}, Extracted ID: ${id}`);
 
-            if (!id) continue;
+            if (!id) {
+                console.warn(`[AI Analysis] Could not extract ID from filename: ${fileName}`);
+                continue;
+            }
 
+            try {
+                await db
+                    .update(applicationsTable)
+                    .set({
+                        aiScore: String(c.score || 0),
+                        aiSummary: c.summary || "No summary provided",
+                        aiClassification: c.classification || "Weak",
+                        aiAnalyzed: true,
+                        aiAnalyzedAt: new Date()
+                    })
+                    .where(eq(applicationsTable.id, id));
 
-
-            await db
-
-                .update(applicationsTable)
-
-                .set({
-
-                    aiScore: String(c.score),
-
-                    aiSummary: c.summary,
-
-                    aiClassification:
-                        c.classification,
-
-                    aiAnalyzed: true,
-
-                    aiAnalyzedAt:
-                        new Date()
-
-                })
-
-                .where(eq(applicationsTable.id, id));
-
+                console.log(`[AI Analysis] Database update executed for ID: ${id}`);
+            } catch (dbErr: any) {
+                console.error(`[AI Analysis] Database update failed for ID ${id}:`, dbErr.message);
+            }
         }
 
 
