@@ -13,6 +13,7 @@ const adminNav = [
     { text: "Pending Enquiries", href: "/admin/enquiries", icon: Briefcase },
     { text: "Approved Companies", href: "/admin/companies", icon: Building },
     { text: "Applications", href: "/admin/applications", icon: Users },
+    { text: "Applicants", href: "/admin/applicants", icon: Users },
     { text: "Chat", href: "/admin/chat", icon: MessageSquare },
     { text: "Settings", href: "/admin/settings", icon: Settings },
 ];

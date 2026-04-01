@@ -51,7 +51,7 @@ export function InlineApplyButton({ jobId, category, initialResumeUrl, initialHa
         return (
             <GradientButton 
                 disabled 
-                className="w-full md:w-fit px-12 py-6 text-lg rounded-xl shadow-lg opacity-100 cursor-default bg-green-500/20 text-green-500 border border-green-500/30 flex items-center gap-2"
+                className="w-full px-12 py-3.5 text-base rounded-full shadow-lg opacity-100 cursor-default bg-green-500/20 text-green-500 border border-green-500/30 flex items-center justify-center gap-2"
             >
                 <CheckCircle2 className="w-5 h-5" />
                 Applied
@@ -62,7 +62,7 @@ export function InlineApplyButton({ jobId, category, initialResumeUrl, initialHa
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <GradientButton className="w-full md:w-fit px-12 py-6 text-lg rounded-xl shadow-lg hover:shadow-[0_0_20px_rgba(var(--primary-rgb),0.3)] transition-all">
+                <GradientButton className="w-full px-12 py-4 text-lg rounded-full shadow-lg hover:shadow-[0_0_30px_rgba(var(--primary-rgb),0.4)] transition-all font-bold uppercase tracking-wide">
                     Apply Now
                 </GradientButton>
             </DialogTrigger>

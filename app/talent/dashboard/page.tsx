@@ -117,16 +117,24 @@ export default function TalentDashboardPage() {
                     <div className="flex flex-col gap-8">
                         <div className="flex justify-between items-center">
                             <h3 className="text-2xl font-bold text-[var(--text-main)]">Recommended for You</h3>
-                            <div className="flex gap-2 bg-[var(--glass-bg)] p-1 rounded-full border border-[var(--glass-border)]">
+                            <div className="flex gap-2 bg-black/5 dark:bg-white/5 p-1 rounded-full border border-black/10 dark:border-white/10 shadow-inner">
                                 <button 
                                     onClick={() => setJobFilter("job")}
-                                    className={`px-4 py-1.5 rounded-full font-medium text-sm transition-all ${jobFilter === "job" ? "bg-[var(--primary)] text-black" : "text-[var(--text-dim)] hover:text-[var(--text-main)]"}`}
+                                    className={`px-4 py-1.5 rounded-full font-medium text-sm transition-all duration-200 ${
+                                        jobFilter === "job" 
+                                            ? "bg-[#111827] text-white dark:bg-white dark:text-black shadow-md" 
+                                            : "text-gray-500 dark:text-gray-400 hover:text-[#111827] dark:hover:text-white"
+                                    }`}
                                 >
                                     Jobs
                                 </button>
                                 <button 
                                     onClick={() => setJobFilter("internship")}
-                                    className={`px-4 py-1.5 rounded-full font-medium text-sm transition-all ${jobFilter === "internship" ? "bg-[var(--primary)] text-black" : "text-[var(--text-dim)] hover:text-[var(--text-main)]"}`}
+                                    className={`px-4 py-1.5 rounded-full font-medium text-sm transition-all duration-200 ${
+                                        jobFilter === "internship" 
+                                            ? "bg-[#111827] text-white dark:bg-white dark:text-black shadow-md" 
+                                            : "text-gray-500 dark:text-gray-400 hover:text-[#111827] dark:hover:text-white"
+                                    }`}
                                 >
                                     Internships
                                 </button>
@@ -152,8 +160,12 @@ export default function TalentDashboardPage() {
                                                 <p className="text-[var(--text-dim)] text-sm">{job.company}</p>
                                             </div>
                                             <div className="flex gap-2 mt-auto">
-                                                <span className="text-xs text-[var(--text-dim)] bg-[var(--glass-bg)] px-2 py-1 rounded-md border border-[var(--glass-border)]">{job.jobType}</span>
-                                                <span className="text-xs text-[var(--text-dim)] bg-[var(--glass-bg)] px-2 py-1 rounded-md border border-[var(--glass-border)] line-clamp-1">{job.location}</span>
+                                                {job.jobType && (
+                                                    <span className="text-xs text-[var(--text-dim)] bg-[var(--glass-bg)] px-2 py-1 rounded-md border border-[var(--glass-border)]">{job.jobType}</span>
+                                                )}
+                                                {job.location && (
+                                                    <span className="text-xs text-[var(--text-dim)] bg-[var(--glass-bg)] px-2 py-1 rounded-md border border-[var(--glass-border)] line-clamp-1">{job.location}</span>
+                                                )}
                                             </div>
                                             <Button className="w-full mt-2 rounded-full bg-[var(--bg-secondary)] text-[var(--text-main)] hover:bg-[var(--primary)] hover:text-black transition-colors border border-[var(--glass-border)] group-hover:border-[var(--primary)]/50">View Details</Button>
                                         </GlassCard>

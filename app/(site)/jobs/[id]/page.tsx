@@ -261,7 +261,7 @@ export default async function JobPage({ params }: JobPageProps) {
 
                     {/* Apply Button (Talent Only) */}
                     {isTalent && (
-                        <div className="mt-8 flex justify-center md:justify-start">
+                        <div className="mt-8 flex justify-center">
                             <InlineApplyButton 
                                 jobId={job.id} 
                                 category="job" 
@@ -273,16 +273,7 @@ export default async function JobPage({ params }: JobPageProps) {
                 </section>
             </div>
 
-            {/* Sticky Apply Bar (Mobile & Desktop Floating) */}
-            {isTalent && (
-                <StickyApplyBar 
-                    jobId={job.id} 
-                    category="job" 
-                    salary={job.salary} 
-                    initialResumeUrl={profile?.resumeUrl}
-                    initialHasApplied={hasApplied}
-                />
-            )}
+            {/* Sticky Apply Bar removed as per user request */}
         </div>
     );
 }

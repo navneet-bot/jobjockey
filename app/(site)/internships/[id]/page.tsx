@@ -185,7 +185,7 @@ export default async function InternshipPage({ params }: InternshipPageProps) {
 
                     {/* Apply Button (Talent Only) */}
                     {isTalent && (
-                        <div className="mt-8 flex justify-center md:justify-start">
+                        <div className="mt-8 flex justify-center">
                             <InlineApplyButton 
                                 jobId={internship.id} 
                                 category="internship" 
@@ -197,16 +197,7 @@ export default async function InternshipPage({ params }: InternshipPageProps) {
                 </section>
             </div>
 
-            {/* Sticky Apply Bar */}
-            {isTalent && (
-                <StickyApplyBar 
-                    jobId={internship.id} 
-                    category="internship" 
-                    salary={internship.stipend} 
-                    initialResumeUrl={profile?.resumeUrl}
-                    initialHasApplied={hasApplied}
-                />
-            )}
+            {/* Sticky Apply Bar removed as per user request */}
         </div>
     );
 }

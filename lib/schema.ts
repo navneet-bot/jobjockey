@@ -7,6 +7,7 @@ import {
   timestamp,
   uuid,
   varchar,
+  numeric,
 } from "drizzle-orm/pg-core";
 
 export const jobTypeEnum = pgEnum("job_type", [
@@ -199,6 +200,12 @@ export const applicationsTable = pgTable("applications", {
   userId: varchar("user_id", { length: 255 }).notNull(), // Clerk user ID of applicant
   resumeUrl: varchar("resume_url", { length: 1024 }),
   status: applicationStatusEnum("status").default("pending").notNull(),
+  aiScore: numeric("ai_score"), // 0 to 100 or matching real value
+  aiClassification: varchar("ai_classification", { length: 255 }),
+  aiSummary: text("ai_summary"),
+  aiSkillsMatched: text("ai_skills_matched"),
+  aiAnalyzed: boolean("ai_analyzed").default(false),
+  aiAnalyzedAt: timestamp("ai_analyzed_at", { withTimezone: true }),
   appliedAt: timestamp("applied_at", { withTimezone: true })
     .defaultNow()
     .notNull(),

@@ -14,8 +14,49 @@ const manrope = Manrope({ subsets: ["latin"], variable: "--font-manrope" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit" });
 
 export const metadata: Metadata = {
-  title: "JobJockey",
-  description: "Job Jockey helps companies hire trained candidates and helps students start their careers.",
+  metadataBase: new URL("https://jobjockey.in"),
+
+  title: {
+    default: "JobJockey - Hire Skilled Talent | Remote Jobs & Internships",
+    template: "%s | JobJockey",
+  },
+
+  description:
+    "JobJockey helps companies hire job-ready candidates and helps students find remote jobs, internships, and career opportunities.",
+
+  keywords: [
+    "remote jobs india",
+    "hire trained candidates",
+    "fresher jobs",
+    "remote internships india",
+    "entry level jobs",
+    "hire developers india",
+    "job ready candidates",
+    "IT jobs india",
+    "remote work opportunities",
+    "AI hiring platform"
+  ],
+
+  verification: {
+    google: "7ZAIgmfQzWJcRcWXxfgRnZJFjL5o9T9h2043junopmA",
+  },
+
+  openGraph: {
+    title: "JobJockey - Hire Skilled Talent",
+    description:
+      "Hire job-ready candidates or start your remote career with JobJockey.",
+    url: "https://jobjockey.in",
+    siteName: "JobJockey",
+    locale: "en_IN",
+    type: "website",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "JobJockey",
+    description:
+      "Hire trained candidates or start your remote career.",
+  },
 };
 
 export default function RootLayout({

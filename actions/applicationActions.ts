@@ -1,8 +1,8 @@
 "use server";
 import { db } from "@/lib/db";
-import { applicationsTable, internshipsTable, jobsTable, userProfilesTable } from "@/lib/schema";
+import { applicationsTable, companyEnquiriesTable, internshipsTable, jobsTable, userProfilesTable } from "@/lib/schema";
 import { auth, currentUser, clerkClient } from "@clerk/nextjs/server";
-import { eq, desc, and, ne, or } from "drizzle-orm";
+import { eq, desc, and, ne, or, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { createNotification } from "./notificationActions";
 
@@ -253,6 +253,59 @@ export async function getCompanyJobsForAdmin(companyId: string) {
         .from(jobsTable)
         .where(eq(jobsTable.companyId, companyId))
         .orderBy(desc(jobsTable.postedAt));
+}
+
+export async function getGlobalApplicantsForAdmin() {
+    const user = await currentUser();
+    if (!user || user.publicMetadata?.role !== "admin") return [];
+
+    try {
+        const data = await db.select({
+            application: applicationsTable,
+            job: jobsTable,
+            internship: internshipsTable,
+            profile: userProfilesTable,
+            company: companyEnquiriesTable
+        })
+            .from(applicationsTable)
+            .leftJoin(jobsTable, eq(applicationsTable.jobId, jobsTable.id))
+            .leftJoin(internshipsTable, eq(applicationsTable.internshipId, internshipsTable.id))
+            .leftJoin(userProfilesTable, eq(applicationsTable.userId, userProfilesTable.userId))
+            .leftJoin(companyEnquiriesTable, sql`${companyEnquiriesTable.id} = COALESCE(${jobsTable.companyId}, ${internshipsTable.companyId})`)
+            .orderBy(desc(applicationsTable.appliedAt));
+
+        const client = await clerkClient();
+        return await Promise.all(data.map(async (row) => {
+            let name = row.profile?.name;
+            let email = row.profile?.email;
+
+            if (!name || !email) {
+                try {
+                    const clerkUser = await client.users.getUser(row.application.userId);
+                    name = name || `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || 'Unknown';
+                    email = email || clerkUser.emailAddresses[0]?.emailAddress || 'Unknown';
+                } catch (e) {
+                    // console.error("Failed to fetch Clerk user", e);
+                }
+            }
+
+            return {
+                id: row.application.id,
+                candidateName: name || 'Unknown',
+                email: email || 'Unknown',
+                jobTitle: row.job?.title || row.internship?.title || 'Unknown Position',
+                companyName: row.company?.companyName || row.job?.company || row.internship?.company || 'Unknown Company',
+                companyDomain: row.company?.companyUrl || '',
+                category: row.job ? 'JOB' : 'INTERNSHIP',
+                resumeUrl: row.application.resumeUrl,
+                status: row.application.status,
+                appliedAt: row.application.appliedAt
+            };
+        }));
+    } catch (err) {
+        console.error("Failed to fetch global applicants:", err);
+        return [];
+    }
 }
 
 export async function updateApplicationStatus(id: string, status: "pending" | "shortlisted" | "interview" | "selected" | "rejected") {
