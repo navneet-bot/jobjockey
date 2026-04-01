@@ -1,280 +1,618 @@
 "use server";
 
 import { db } from "@/lib/db";
+
 import {
     applicationsTable,
     jobsTable,
     internshipsTable,
+    companyEnquiriesTable,
     userProfilesTable
 } from "@/lib/schema";
 
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, sql } from "drizzle-orm";
+
 import { currentUser } from "@clerk/nextjs/server";
+
 import { revalidatePath } from "next/cache";
+
 
 /*
 ====================================================
-GET APPLICANTS WITH AI SCORE
+1. GET ALL COMPANIES WITH JOB COUNT + APPLICANTS
 ====================================================
 */
 
-export async function getApplicantsWithScore(
+export async function getCompaniesWithStats() {
+
+    const user = await currentUser();
+
+    if (!user || user.publicMetadata?.role !== "admin")
+        return [];
+
+    const jobs =
+        await db.select({
+            id: jobsTable.id,
+            companyId: jobsTable.companyId
+        }).from(jobsTable);
+
+
+    const internships =
+        await db.select({
+            id: internshipsTable.id,
+            companyId: internshipsTable.companyId
+        }).from(internshipsTable);
+
+
+    const applications =
+        await db.select({
+            jobId: applicationsTable.jobId,
+            internshipId: applicationsTable.internshipId
+        }).from(applicationsTable);
+
+
+    const companies =
+        await db.select({
+            id: companyEnquiriesTable.id,
+            name: companyEnquiriesTable.companyName,
+            email: companyEnquiriesTable.email
+        }).from(companyEnquiriesTable);
+
+
+
+    const statsMap:
+        Record<string, any> = {};
+
+
+
+    companies.forEach(c => {
+
+        statsMap[c.id] = {
+
+            id: c.id,
+
+            name: c.name,
+
+            email: c.email,
+
+            totalJobs: 0,
+
+            totalApplicants: 0
+
+        };
+
+    });
+
+
+
+    const jobCompanyMap:
+        Record<string, string> = {};
+
+
+
+    jobs.forEach(j => {
+
+        if (j.companyId) {
+
+            jobCompanyMap[j.id] = j.companyId;
+
+            statsMap[j.companyId].totalJobs++;
+
+        }
+
+    });
+
+
+
+    internships.forEach(i => {
+
+        if (i.companyId) {
+
+            jobCompanyMap[i.id] = i.companyId;
+
+            statsMap[i.companyId].totalJobs++;
+
+        }
+
+    });
+
+
+
+    applications.forEach(a => {
+
+        const companyId =
+            a.jobId
+                ? jobCompanyMap[a.jobId]
+                : jobCompanyMap[a.internshipId!];
+
+
+        if (companyId)
+
+            statsMap[companyId].totalApplicants++;
+
+    });
+
+
+
+    return Object.values(statsMap)
+
+        .filter(c => c.totalJobs > 0);
+
+}
+
+
+
+/*
+====================================================
+2. GET JOBS OF COMPANY
+====================================================
+*/
+
+export async function getCompanyJobsStats(companyId: string) {
+
+    const user = await currentUser();
+
+    if (!user || user.publicMetadata?.role !== "admin")
+        return [];
+
+
+
+    const jobs =
+        await db.select({
+
+            id: jobsTable.id,
+
+            title: jobsTable.title,
+
+            createdAt: jobsTable.postedAt,
+
+            category: sql<string>`'Job'`
+
+        })
+
+            .from(jobsTable)
+
+            .where(eq(jobsTable.companyId, companyId));
+
+
+
+    const internships =
+        await db.select({
+
+            id: internshipsTable.id,
+
+            title: internshipsTable.title,
+
+            createdAt: internshipsTable.postedAt,
+
+            category: sql<string>`'Internship'`
+
+        })
+
+            .from(internshipsTable)
+
+            .where(eq(internshipsTable.companyId, companyId));
+
+
+
+    const applications =
+        await db.select({
+
+            jobId: applicationsTable.jobId,
+
+            internshipId: applicationsTable.internshipId
+
+        }).from(applicationsTable);
+
+
+
+    const merged =
+        [...jobs, ...internships]
+
+            .sort(
+
+                (a, b) =>
+                    new Date(b.createdAt || 0).getTime()
+                    -
+                    new Date(a.createdAt || 0).getTime()
+
+            );
+
+
+
+    return merged.map(item => {
+
+        const count =
+            applications.filter(a =>
+
+                item.category === "Job"
+
+                    ? a.jobId === item.id
+
+                    : a.internshipId === item.id
+
+            ).length;
+
+
+
+        return {
+
+            ...item,
+
+            totalApplicants: count
+
+        };
+
+    });
+
+}
+
+
+
+/*
+====================================================
+3. GET APPLICANTS
+====================================================
+*/
+
+export async function getJobApplicants(
     jobId: string,
-    isInternship = false
+    isInternship: boolean = false
 ) {
 
     const user = await currentUser();
 
-    if (!user || user.publicMetadata?.role !== "admin") {
+    if (!user || user.publicMetadata?.role !== "admin")
         return [];
-    }
 
-    const applicants = await db
-        .select({
+
+
+    const data =
+        await db.select({
+
             application: applicationsTable,
-            profile: userProfilesTable
-        })
-        .from(applicationsTable)
-        .leftJoin(
-            userProfilesTable,
-            eq(applicationsTable.userId, userProfilesTable.userId)
-        )
-        .where(
-            isInternship
-                ? eq(applicationsTable.internshipId, jobId)
-                : eq(applicationsTable.jobId, jobId)
-        )
-        .orderBy(
-            desc(applicationsTable.aiScore),
-            desc(applicationsTable.appliedAt)
-        );
 
-    return applicants.map(a => ({
-        ...a.application,
-        candidateName: a.profile?.name || "Unknown",
-        email: a.profile?.email || "",
-        aiScore: a.application.aiScore || null,
-        aiSummary: a.application.aiSummary || null,
-        aiAnalyzed: a.application.aiAnalyzed || false
+            profile: userProfilesTable
+
+        })
+
+            .from(applicationsTable)
+
+            .leftJoin(
+
+                userProfilesTable,
+
+                eq(
+                    applicationsTable.userId,
+                    userProfilesTable.userId
+                )
+
+            )
+
+            .where(
+
+                isInternship
+
+                    ? eq(applicationsTable.internshipId, jobId)
+
+                    : eq(applicationsTable.jobId, jobId)
+
+            )
+
+            .orderBy(
+
+                desc(applicationsTable.aiScore),
+
+                desc(applicationsTable.appliedAt)
+
+            );
+
+
+
+    return data.map(d => ({
+
+        ...d.application,
+
+        candidateName:
+            d.profile?.name || "Unknown",
+
+        email:
+            d.profile?.email || "Unknown"
+
     }));
+
 }
+
+
 
 /*
 ====================================================
-RUN AI ANALYSIS
+4. RUN AI ANALYSIS
 ====================================================
 */
 
 export async function runAIAnalysis(
     jobId: string,
-    isInternship = false
+    isInternship: boolean = false
 ) {
 
     const user = await currentUser();
 
-    if (!user || user.publicMetadata?.role !== "admin") {
+    if (!user || user.publicMetadata?.role !== "admin")
+
         return {
+
             success: false,
+
             error: "Unauthorized"
+
         };
-    }
+
+
 
     try {
 
         /*
-        ======================
+        ------------------------------------------
         GET JD
-        ======================
+        ------------------------------------------
         */
 
-        let jobDescription = "";
+        let jd = "";
+
 
         if (isInternship) {
 
-            const [intern] = await db
-                .select({
-                    description: internshipsTable.description
+            const [intern] =
+                await db.select({
+
+                    description:
+                        internshipsTable.description
+
                 })
-                .from(internshipsTable)
-                .where(eq(internshipsTable.id, jobId))
-                .limit(1);
 
-            jobDescription = intern?.description || "";
+                    .from(internshipsTable)
 
-        } else {
+                    .where(
 
-            const [job] = await db
-                .select({
-                    description: jobsTable.description
-                })
-                .from(jobsTable)
-                .where(eq(jobsTable.id, jobId))
-                .limit(1);
+                        eq(
+                            internshipsTable.id,
+                            jobId
+                        )
 
-            jobDescription = job?.description || "";
+                    )
+
+                    .limit(1);
+
+
+            jd = intern?.description || "";
+
         }
 
-        if (!jobDescription) {
+        else {
+
+            const [job] =
+                await db.select({
+
+                    description:
+                        jobsTable.description
+
+                })
+
+                    .from(jobsTable)
+
+                    .where(
+
+                        eq(
+                            jobsTable.id,
+                            jobId
+                        )
+
+                    )
+
+                    .limit(1);
+
+
+            jd = job?.description || "";
+
+        }
+
+
+
+        if (!jd)
 
             return {
+
                 success: false,
-                error: "Job description not found"
+
+                error: "No job description"
+
             };
 
-        }
+
 
         /*
-        ======================
+        ------------------------------------------
         GET RESUMES
-        ======================
+        ------------------------------------------
         */
 
-        const applicants = await db
-            .select({
+        const applicants =
+            await db.select({
+
                 id: applicationsTable.id,
-                resumeUrl: applicationsTable.resumeUrl
+
+                resumeUrl:
+                    applicationsTable.resumeUrl
+
             })
-            .from(applicationsTable)
-            .where(
-                isInternship
-                    ? eq(applicationsTable.internshipId, jobId)
-                    : eq(applicationsTable.jobId, jobId)
+
+                .from(applicationsTable)
+
+                .where(
+
+                    isInternship
+
+                        ? eq(
+                            applicationsTable.internshipId,
+                            jobId
+                        )
+
+                        : eq(
+                            applicationsTable.jobId,
+                            jobId
+                        )
+
+                );
+
+
+
+        const valid =
+            applicants.filter(a => a.resumeUrl);
+
+
+
+        if (!valid.length)
+
+            return {
+
+                success: false,
+
+                error: "No resumes"
+
+            };
+
+
+
+        /*
+        ------------------------------------------
+        SEND TO ML SERVER
+        ------------------------------------------
+        */
+
+        const formData =
+            new FormData();
+
+
+        formData.append("jd", jd);
+
+
+
+        for (const a of valid) {
+
+            const file =
+                await fetch(a.resumeUrl!);
+
+            const blob =
+                await file.blob();
+
+
+            formData.append(
+
+                "files",
+
+                blob,
+
+                `applicant_${a.id}.pdf`
+
             );
 
-        const validApplicants = applicants.filter(a => a.resumeUrl);
-
-        if (validApplicants.length === 0) {
-
-            return {
-                success: false,
-                error: "No resumes found"
-            };
-
         }
+
+
+
+        const aiUrl =
+            process.env
+                .NEXT_PUBLIC_AI_API_URL
+            || "http://localhost:8000";
+
+
+
+        const response =
+            await fetch(
+
+                `${aiUrl}/start-job`,
+
+                {
+
+                    method: "POST",
+
+                    body: formData
+
+                }
+
+            );
+
+
+
+        const result =
+            await response.json();
+
+
 
         /*
-        ======================
-        SEND TO ML SERVER
-        ======================
+        ------------------------------------------
+        SAVE SCORE
+        ------------------------------------------
         */
 
-        const formData = new FormData();
+        for (const c of result.candidates || []) {
 
-        formData.append("jd", jobDescription);
+            const id =
+                c.file_name
+                    ?.match(/applicant_(.*).pdf/)?.[1];
 
-        for (const applicant of validApplicants) {
 
-            try {
+            if (!id) continue;
 
-                const fileRes = await fetch(applicant.resumeUrl!);
 
-                const blob = await fileRes.blob();
 
-                formData.append(
-                    "files",
-                    blob,
-                    `applicant_${applicant.id}.pdf`
-                );
+            await db
 
-            } catch (err) {
+                .update(applicationsTable)
 
-                console.log(
-                    "resume fetch failed",
-                    applicant.id
-                );
+                .set({
 
-            }
+                    aiScore: String(c.score),
 
-        }
+                    aiSummary: c.summary,
 
-        const API_URL =
-            process.env.NEXT_PUBLIC_AI_API_URL ||
-            "http://127.0.0.1:8000";
+                    aiClassification:
+                        c.classification,
 
-        const response = await fetch(
-            `${API_URL}/start-job`,
-            {
-                method: "POST",
-                body: formData
-            }
-        );
+                    aiAnalyzed: true,
 
-        if (!response.ok) {
+                    aiAnalyzedAt:
+                        new Date()
 
-            const txt = await response.text();
+                })
 
-            throw new Error(txt);
+                .where(eq(applicationsTable.id, id));
 
         }
 
-        const data = await response.json();
 
-        /*
-        ======================
-        SAVE SCORES
-        ======================
-        */
-
-        if (data.candidates) {
-
-            for (const candidate of data.candidates) {
-
-                const fileName =
-                    candidate.file_name || "";
-
-                const match =
-                    fileName.match(
-                        /applicant_(.*?)\.pdf/
-                    );
-
-                if (!match) continue;
-
-                const applicationId = match[1];
-
-                await db
-                    .update(applicationsTable)
-                    .set({
-
-                        aiScore: String(
-                            candidate.score || 0
-                        ),
-
-                        aiClassification:
-                            candidate.classification ||
-                            "Unknown",
-
-                        aiSummary:
-                            candidate.summary || "",
-
-                        aiAnalyzed: true,
-
-                        aiAnalyzedAt: new Date()
-
-                    })
-                    .where(
-                        eq(
-                            applicationsTable.id,
-                            applicationId
-                        )
-                    );
-
-            }
-
-        }
 
         revalidatePath("/admin/applications");
 
+
+
         return {
+
             success: true
+
         };
 
-    } catch (err: any) {
+    }
 
-        console.log(err);
+    catch (err: any) {
 
         return {
+
             success: false,
+
             error: err.message
+
         };
 
     }
