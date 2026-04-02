@@ -6,6 +6,8 @@ import { auth, clerkClient } from "@clerk/nextjs/server";
 import { eq, desc, count } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { createNotification } from "./notificationActions";
+import { sendEmail } from "@/lib/email";
+import { companyApprovalTemplate } from "@/lib/emailTemplates";
 
 export async function submitCompanyEnquiry(data: CompanyEnquiryFormValues) {
     const validation = companyEnquirySchema.safeParse(data);
@@ -119,6 +121,19 @@ export async function updateEnquiryStatus(id: string, status: "approved" | "reje
                     type: "company_approved",
                     link: "/business/dashboard"
                 });
+
+                // -- Email: notify company of approval --
+                if (updated.email) {
+                    await sendEmail({
+                        to: updated.email,
+                        subject: "Your Company has been Approved on JobJockey!",
+                        html: companyApprovalTemplate({
+                            name: updated.contactPerson || "there",
+                            companyName: updated.companyName || "your company",
+                            dashboardLink: "https://jobjockey.in/business/dashboard",
+                        }),
+                    });
+                }
             }
         } else if (status === "rejected" && updated) {
             if (updated.userId) {

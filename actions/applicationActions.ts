@@ -5,6 +5,14 @@ import { auth, currentUser, clerkClient } from "@clerk/nextjs/server";
 import { eq, desc, and, ne, or, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { createNotification } from "./notificationActions";
+import { sendEmail } from "@/lib/email";
+import {
+    applicationReceivedTemplate,
+    newApplicantTemplate,
+    shortlistedTemplate,
+    rejectedTemplate,
+    interviewInviteTemplate,
+} from "@/lib/emailTemplates";
 
 export async function checkApplicationStatus(id: string, category: "job" | "internship") {
     const { userId } = await auth();
@@ -59,8 +67,8 @@ export async function applyForJob(id: string, category: "job" | "internship", re
 
         // Notify Business
         const [targetPos] = category === "job" 
-            ? await db.select({ title: jobsTable.title, postedBy: jobsTable.postedBy }).from(jobsTable).where(eq(jobsTable.id, id)).limit(1)
-            : await db.select({ title: internshipsTable.title, postedBy: internshipsTable.postedBy }).from(internshipsTable).where(eq(internshipsTable.id, id)).limit(1);
+            ? await db.select({ title: jobsTable.title, postedBy: jobsTable.postedBy, company: jobsTable.company }).from(jobsTable).where(eq(jobsTable.id, id)).limit(1)
+            : await db.select({ title: internshipsTable.title, postedBy: internshipsTable.postedBy, company: internshipsTable.company }).from(internshipsTable).where(eq(internshipsTable.id, id)).limit(1);
 
         if (targetPos) {
             const user = await currentUser();
@@ -73,6 +81,44 @@ export async function applyForJob(id: string, category: "job" | "internship", re
                 type: "application_received",
                 link: role === "admin" ? "/admin/applications" : "/business/dashboard"
             });
+
+            // -- Email: notify candidate their application was received --
+            const [candidateProfile] = await db
+                .select({ name: userProfilesTable.name, email: userProfilesTable.email })
+                .from(userProfilesTable)
+                .where(eq(userProfilesTable.userId, userId))
+                .limit(1);
+
+            if (candidateProfile?.email) {
+                await sendEmail({
+                    to: candidateProfile.email,
+                    subject: "Application Received - JobJockey",
+                    html: applicationReceivedTemplate({
+                        name: candidateProfile.name,
+                        jobTitle: targetPos.title,
+                        companyName: targetPos.company,
+                    }),
+                });
+            }
+
+            // -- Email: notify company/employer about new applicant --
+            const [companyEnquiry] = await db
+                .select({ email: companyEnquiriesTable.email, contactPerson: companyEnquiriesTable.contactPerson })
+                .from(companyEnquiriesTable)
+                .where(eq(companyEnquiriesTable.userId, targetPos.postedBy))
+                .limit(1);
+
+            if (companyEnquiry?.email) {
+                await sendEmail({
+                    to: companyEnquiry.email,
+                    subject: `New Applicant for ${targetPos.title} - JobJockey`,
+                    html: newApplicantTemplate({
+                        jobTitle: targetPos.title,
+                        companyName: targetPos.company,
+                        dashboardLink: "https://jobjockey.in/business/dashboard",
+                    }),
+                });
+            }
         }
 
         return { success: true };
@@ -366,9 +412,9 @@ export async function updateApplicationStatus(id: string, status: "pending" | "s
 
             if (application) {
                 const [pos] = application.jobId
-                    ? await db.select({ title: jobsTable.title }).from(jobsTable).where(eq(jobsTable.id, application.jobId)).limit(1)
+                    ? await db.select({ title: jobsTable.title, company: jobsTable.company }).from(jobsTable).where(eq(jobsTable.id, application.jobId)).limit(1)
                     : application.internshipId 
-                        ? await db.select({ title: internshipsTable.title }).from(internshipsTable).where(eq(internshipsTable.id, application.internshipId)).limit(1)
+                        ? await db.select({ title: internshipsTable.title, company: internshipsTable.company }).from(internshipsTable).where(eq(internshipsTable.id, application.internshipId)).limit(1)
                         : [];
 
                 await createNotification({
@@ -378,6 +424,41 @@ export async function updateApplicationStatus(id: string, status: "pending" | "s
                     type: "application_status_updated",
                     link: "/applications"
                 });
+
+                // -- Email: send status-specific email to candidate --
+                const [candidateProfile] = await db
+                    .select({ name: userProfilesTable.name, email: userProfilesTable.email })
+                    .from(userProfilesTable)
+                    .where(eq(userProfilesTable.userId, application.userId))
+                    .limit(1);
+
+                if (candidateProfile?.email) {
+                    const emailParams = {
+                        name: candidateProfile.name,
+                        jobTitle: pos?.title || "the position",
+                        companyName: pos && "company" in pos ? pos.company : "the company",
+                    };
+
+                    if (status === "shortlisted") {
+                        await sendEmail({
+                            to: candidateProfile.email,
+                            subject: "You are Shortlisted! 🎉 - JobJockey",
+                            html: shortlistedTemplate(emailParams),
+                        });
+                    } else if (status === "rejected") {
+                        await sendEmail({
+                            to: candidateProfile.email,
+                            subject: "Application Update - JobJockey",
+                            html: rejectedTemplate(emailParams),
+                        });
+                    } else if (status === "interview" || status === "selected") {
+                        await sendEmail({
+                            to: candidateProfile.email,
+                            subject: "Interview Invitation - JobJockey",
+                            html: interviewInviteTemplate(emailParams),
+                        });
+                    }
+                }
             }
         } else {
             return { success: false, error: "Insufficient permissions" };

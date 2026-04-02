@@ -8,6 +8,8 @@ import { and, desc, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { userProfilesTable, companyEnquiriesTable, platformSettingsTable, companySettingsTable } from "@/lib/schema";
 import { addDays } from "date-fns";
+import { sendEmail } from "@/lib/email";
+import { jobPostedTemplate } from "@/lib/emailTemplates";
 
 type JobFormData = {
   title: string;
@@ -154,6 +156,19 @@ export async function createJob(jobData: JobFormData) {
       isApproved: true,
       expiryDate,
     });
+
+    // -- Email: notify company their job is now live --
+    if (enquiry.email) {
+      await sendEmail({
+        to: enquiry.email,
+        subject: `Job Posted Successfully - ${jobDataRest.title}`,
+        html: jobPostedTemplate({
+          jobTitle: jobDataRest.title,
+          companyName: enquiry.companyName || "your company",
+          dashboardLink: "https://jobjockey.in/business/dashboard",
+        }),
+      });
+    }
 
     revalidatePath("/");
     revalidatePath("/admin/jobs");

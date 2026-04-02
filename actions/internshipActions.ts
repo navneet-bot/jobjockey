@@ -8,6 +8,8 @@ import { and, desc, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { platformSettingsTable } from "@/lib/schema";
 import { addDays } from "date-fns";
+import { sendEmail } from "@/lib/email";
+import { jobPostedTemplate } from "@/lib/emailTemplates";
 
 export async function getInternships() {
   try {
@@ -123,6 +125,19 @@ export async function createInternship(internshipData: InternshipFormValues) {
       isApproved: true,
       expiryDate,
     });
+
+    // -- Email: notify company their internship is now live --
+    if (enquiry.email) {
+      await sendEmail({
+        to: enquiry.email,
+        subject: `Internship Posted Successfully - ${internshipDataRest.title}`,
+        html: jobPostedTemplate({
+          jobTitle: internshipDataRest.title,
+          companyName: enquiry.companyName || "your company",
+          dashboardLink: "https://jobjockey.in/business/dashboard",
+        }),
+      });
+    }
 
     revalidatePath("/");
     revalidatePath("/admin/internships");
