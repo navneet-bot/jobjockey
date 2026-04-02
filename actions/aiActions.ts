@@ -251,7 +251,7 @@ export async function getCompanyJobsStats(companyId: string) {
 
 /*
 ====================================================
-3. GET APPLICANTS
+3. GET APPLICANTS (with enriched AI fields)
 ====================================================
 */
 
@@ -317,7 +317,12 @@ export async function getJobApplicants(
             d.profile?.name || "Unknown",
 
         email:
-            d.profile?.email || "Unknown"
+            d.profile?.email || "Unknown",
+
+        // Candidate profile URLs for display
+        github: d.profile?.github || null,
+        portfolioUrl: d.profile?.portfolioUrl || null,
+        linkedin: d.profile?.linkedin || null,
 
     }));
 
@@ -327,7 +332,7 @@ export async function getJobApplicants(
 
 /*
 ====================================================
-4. RUN AI ANALYSIS
+4. RUN AI ANALYSIS (Multi-Source Intelligence)
 ====================================================
 */
 
@@ -354,66 +359,57 @@ export async function runAIAnalysis(
 
         /*
         ------------------------------------------
-        GET JD
+        GET ENRICHED JD + JOB CONTEXT
         ------------------------------------------
         */
 
         let jd = "";
+        let jobTitle = "";
+        let requiredSkills = "";
+        let experienceLevel = "";
 
 
         if (isInternship) {
 
             const [intern] =
                 await db.select({
-
-                    description:
-                        internshipsTable.description
-
+                    description: internshipsTable.description,
+                    title: internshipsTable.title,
+                    requiredSkills: internshipsTable.requiredSkills,
+                    toolsAndTechnologies: internshipsTable.toolsAndTechnologies,
                 })
-
                     .from(internshipsTable)
-
-                    .where(
-
-                        eq(
-                            internshipsTable.id,
-                            jobId
-                        )
-
-                    )
-
+                    .where(eq(internshipsTable.id, jobId))
                     .limit(1);
 
-
             jd = intern?.description || "";
+            jobTitle = intern?.title || "";
+            requiredSkills = [
+                intern?.requiredSkills || "",
+                intern?.toolsAndTechnologies || ""
+            ].filter(Boolean).join(", ");
 
-        }
-
-        else {
+        } else {
 
             const [job] =
                 await db.select({
-
-                    description:
-                        jobsTable.description
-
+                    description: jobsTable.description,
+                    title: jobsTable.title,
+                    requiredSkills: jobsTable.requiredSkills,
+                    toolsAndTechnologies: jobsTable.toolsAndTechnologies,
+                    experienceLevel: jobsTable.experienceLevel,
                 })
-
                     .from(jobsTable)
-
-                    .where(
-
-                        eq(
-                            jobsTable.id,
-                            jobId
-                        )
-
-                    )
-
+                    .where(eq(jobsTable.id, jobId))
                     .limit(1);
 
-
             jd = job?.description || "";
+            jobTitle = job?.title || "";
+            requiredSkills = [
+                job?.requiredSkills || "",
+                job?.toolsAndTechnologies || ""
+            ].filter(Boolean).join(", ");
+            experienceLevel = job?.experienceLevel || "";
 
         }
 
@@ -433,43 +429,25 @@ export async function runAIAnalysis(
 
         /*
         ------------------------------------------
-        GET RESUMES
+        GET RESUMES + CANDIDATE PROFILE DATA
         ------------------------------------------
         */
 
         const applicants =
             await db.select({
-
                 id: applicationsTable.id,
-
-                resumeUrl:
-                    applicationsTable.resumeUrl
-
+                resumeUrl: applicationsTable.resumeUrl,
+                userId: applicationsTable.userId,
             })
-
                 .from(applicationsTable)
-
                 .where(
-
                     isInternship
-
-                        ? eq(
-                            applicationsTable.internshipId,
-                            jobId
-                        )
-
-                        : eq(
-                            applicationsTable.jobId,
-                            jobId
-                        )
-
+                        ? eq(applicationsTable.internshipId, jobId)
+                        : eq(applicationsTable.jobId, jobId)
                 );
 
 
-
-        const valid =
-            applicants.filter(a => a.resumeUrl);
-
+        const valid = applicants.filter(a => a.resumeUrl);
 
 
         if (!valid.length)
@@ -483,42 +461,71 @@ export async function runAIAnalysis(
             };
 
 
+        // Fetch candidate profile data for enrichment
+        const userIds = valid.map(a => a.userId);
+        const profiles = await db.select({
+            userId: userProfilesTable.userId,
+            github: userProfilesTable.github,
+            portfolioUrl: userProfilesTable.portfolioUrl,
+            linkedin: userProfilesTable.linkedin,
+            skills: userProfilesTable.skills,
+            experience: userProfilesTable.experience,
+        }).from(userProfilesTable);
+
+        const profileMap: Record<string, any> = {};
+        profiles.forEach(p => {
+            profileMap[p.userId] = p;
+        });
+
 
         /*
         ------------------------------------------
-        SEND TO ML SERVER
+        SEND TO ML SERVER (with enriched data)
         ------------------------------------------
         */
 
-        const formData =
-            new FormData();
-
+        const formData = new FormData();
 
         formData.append("jd", jd);
 
+        // Job context
+        if (jobTitle) formData.append("job_title", jobTitle);
+        if (requiredSkills) formData.append("required_skills", requiredSkills);
+        if (experienceLevel) formData.append("experience_level", experienceLevel);
 
+        // Build per-candidate arrays
+        const githubUrls: string[] = [];
+        const portfolioUrls: string[] = [];
+        const linkedinUrls: string[] = [];
+        const candidateMetadata: any[] = [];
 
         for (const a of valid) {
 
-            const file =
-                await fetch(a.resumeUrl!);
-
-            const blob =
-                await file.blob();
-
+            const file = await fetch(a.resumeUrl!);
+            const blob = await file.blob();
 
             formData.append(
-
                 "files",
-
                 blob,
-
                 `applicant_${a.id}.pdf`
-
             );
 
+            // Get profile data for this candidate
+            const profile = profileMap[a.userId] || {};
+            githubUrls.push(profile.github || "");
+            portfolioUrls.push(profile.portfolioUrl || "");
+            linkedinUrls.push(profile.linkedin || "");
+            candidateMetadata.push({
+                skills: profile.skills || "",
+                experience: profile.experience || "",
+            });
         }
 
+        // Append enrichment arrays as JSON strings
+        formData.append("github_urls", JSON.stringify(githubUrls));
+        formData.append("portfolio_urls", JSON.stringify(portfolioUrls));
+        formData.append("linkedin_urls", JSON.stringify(linkedinUrls));
+        formData.append("candidate_metadata", JSON.stringify(candidateMetadata));
 
 
         const aiUrl =
@@ -545,19 +552,16 @@ export async function runAIAnalysis(
 
         /*
         ------------------------------------------
-        SAVE SCORE
+        SAVE ENRICHED SCORE
         ------------------------------------------
         */
 
         for (const c of candidates) {
-            console.log(`[AI Analysis] Full candidate data:`, JSON.stringify(c));
+            console.log(`[AI Analysis] Candidate: ${c.name}, Score: ${c.score}, Classification: ${c.classification}`);
 
             const fileName = c.file_name || "";
-            // Robust extraction: get everything between 'applicant_' and '.pdf'
             const idMatch = fileName.match(/applicant_(.*)\.pdf/);
             const id = idMatch ? idMatch[1] : null;
-
-            console.log(`[AI Analysis] Filename: ${fileName}, Extracted ID: ${id}`);
 
             if (!id) {
                 console.warn(`[AI Analysis] Could not extract ID from filename: ${fileName}`);
@@ -571,6 +575,9 @@ export async function runAIAnalysis(
                         aiScore: String(c.score || 0),
                         aiSummary: c.summary || "No summary provided",
                         aiClassification: c.classification || "Weak",
+                        aiStrengths: JSON.stringify(c.strengths || []),
+                        aiGaps: JSON.stringify(c.gaps || []),
+                        aiSkillMatch: String(c.skill_match_percent || 0),
                         aiAnalyzed: true,
                         aiAnalyzedAt: new Date()
                     })

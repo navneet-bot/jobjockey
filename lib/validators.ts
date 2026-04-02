@@ -89,6 +89,8 @@ export const userProfileSchema = z.object({
   portfolioUrl: z.string().url("Must be a valid url").optional().or(z.literal('')),
   linkedin: z.string().url("Must be a valid url").optional().or(z.literal('')),
   github: z.string().url("Must be a valid url").optional().or(z.literal('')),
+  bio: z.string().optional().or(z.literal('')),
+  projects: z.string().optional().or(z.literal('')),
 });
 
 export type UserProfileFormValues = z.infer<typeof userProfileSchema>;

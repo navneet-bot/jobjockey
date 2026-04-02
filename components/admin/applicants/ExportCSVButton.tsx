@@ -9,17 +9,22 @@ interface ExportCSVButtonProps {
     filename?: string;
 }
 
-export function ExportCSVButton({ data, filename = "applicants_export.csv" }: ExportCSVButtonProps) {
+export function ExportCSVButton({ data, filename = "talent_directory_export.csv" }: ExportCSVButtonProps) {
     const exportToCSV = () => {
         try {
             const fields = [
-                { label: "Candidate Name", value: "candidateName" },
+                { label: "Full Name", value: "name" },
                 { label: "Email", value: "email" },
-                { label: "Company", value: "companyName" },
-                { label: "Job Title", value: "jobTitle" },
-                { label: "Category", value: "category" },
-                { label: "Status", value: "status" },
-                { label: "Applied Date", value: "appliedAt" }
+                { label: "Phone", value: "phone" },
+                { label: "Skills", value: "skills" },
+                { label: "Experience", value: "experience" },
+                { label: "Education", value: "education" },
+                { label: "Preferred Domain", value: "preferredDomain" },
+                { label: "Portfolio URL", value: "portfolioUrl" },
+                { label: "GitHub", value: "github" },
+                { label: "LinkedIn", value: "linkedin" },
+                { label: "Created At", value: "createdAt" },
+                { label: "Completion (%)", value: "completionPercent" }
             ];
             const parser = new Parser({ fields });
             const csv = parser.parse(data);

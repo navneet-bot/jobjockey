@@ -135,7 +135,7 @@ export default function AdminApplicationsPage() {
         <div className="flex flex-col gap-10">
             <GradientHeader
                 align="left"
-                title="AI Resume Analyzer"
+                title="Candidate Applications"
                 subtitle={
                     level === 1 ? "Select a company to view their posted jobs and manage applicants." :
                     level === 2 ? `Viewing jobs posted by ${selectedCompanyName}. Select a job to run AI analysis.` :

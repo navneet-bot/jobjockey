@@ -204,6 +204,9 @@ export const applicationsTable = pgTable("applications", {
   aiClassification: varchar("ai_classification", { length: 255 }),
   aiSummary: text("ai_summary"),
   aiSkillsMatched: text("ai_skills_matched"),
+  aiStrengths: text("ai_strengths"),            // JSON array of strength strings
+  aiGaps: text("ai_gaps"),                       // JSON array of gap strings
+  aiSkillMatch: numeric("ai_skill_match"),       // 0-100 skill match percentage
   aiAnalyzed: boolean("ai_analyzed").default(false),
   aiAnalyzedAt: timestamp("ai_analyzed_at", { withTimezone: true }),
   appliedAt: timestamp("applied_at", { withTimezone: true })

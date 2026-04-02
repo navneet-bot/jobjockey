@@ -1,19 +1,22 @@
 import { DashboardStat } from "@/components/ui/DashboardStat";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GradientHeader } from "@/components/ui/GradientHeader";
-import { Building, Briefcase, FileText } from "lucide-react";
-import { db } from "@/lib/db";
-import { companyEnquiriesTable, jobsTable, applicationsTable } from "@/lib/schema";
+import { companyEnquiriesTable, jobsTable, internshipsTable, applicationsTable } from "@/lib/schema";
 import { count, eq } from "drizzle-orm";
+import { Building, Briefcase, FileText, GraduationCap } from "lucide-react";
+import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboardPage() {
 
     // Fetch some quick stats
-    const [companies] = await db.select({ value: count() }).from(companyEnquiriesTable).where(eq(companyEnquiriesTable.status, "pending"));
-    const [jobs] = await db.select({ value: count() }).from(jobsTable).where(eq(jobsTable.isApproved, true));
-    const [applications] = await db.select({ value: count() }).from(applicationsTable).where(eq(applicationsTable.status, "pending"));
+    const [[companies], [jobs], [internships], [applications]] = await Promise.all([
+        db.select({ value: count() }).from(companyEnquiriesTable).where(eq(companyEnquiriesTable.status, "pending")),
+        db.select({ value: count() }).from(jobsTable).where(eq(jobsTable.isApproved, true)),
+        db.select({ value: count() }).from(internshipsTable).where(eq(internshipsTable.isApproved, true)),
+        db.select({ value: count() }).from(applicationsTable).where(eq(applicationsTable.status, "pending"))
+    ]);
 
     return (
         <div className="flex flex-col gap-10">
@@ -23,7 +26,7 @@ export default async function AdminDashboardPage() {
                 subtitle="Manage the platform's companies, job postings, and user applications."
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <DashboardStat
                     title="Pending Companies"
                     value={companies.value}
@@ -35,6 +38,12 @@ export default async function AdminDashboardPage() {
                     value={jobs.value}
                     icon={<Briefcase className="w-7 h-7" />}
                     href="/admin/jobs"
+                />
+                <DashboardStat
+                    title="Active Internships"
+                    value={internships.value}
+                    icon={<GraduationCap className="w-7 h-7" />}
+                    href="/admin/internships"
                 />
                 <DashboardStat
                     title="Pending Applications"

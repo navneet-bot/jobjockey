@@ -109,6 +109,7 @@ export function ApplicantList({
                                 <tr>
                                     <th className="px-6 py-4 font-medium">Candidate Name</th>
                                     <th className="px-6 py-4 font-medium">AI Score</th>
+                                    <th className="px-6 py-4 font-medium">Skill Match</th>
                                     <th className="px-6 py-4 font-medium">Applied Date</th>
                                     <th className="px-6 py-4 font-medium">Resume List</th>
                                     <th className="px-6 py-4 font-medium">Status</th>
@@ -135,6 +136,26 @@ export function ApplicantList({
                                         </td>
                                         <td className="px-6 py-4">
                                             <AIScoreBadge score={app.aiScore ? Number(app.aiScore) : null} classification={app.aiClassification} />
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            {app.aiSkillMatch ? (
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-16 h-2 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden">
+                                                        <div 
+                                                            className={`h-full rounded-full transition-all duration-500 ${
+                                                                Number(app.aiSkillMatch) >= 75 ? 'bg-green-500' :
+                                                                Number(app.aiSkillMatch) >= 50 ? 'bg-blue-500' :
+                                                                Number(app.aiSkillMatch) >= 25 ? 'bg-yellow-500' :
+                                                                'bg-red-500'
+                                                            }`}
+                                                            style={{ width: `${Math.min(100, Number(app.aiSkillMatch))}%` }}
+                                                        />
+                                                    </div>
+                                                    <span className="text-xs font-semibold text-muted-foreground">{Number(app.aiSkillMatch).toFixed(0)}%</span>
+                                                </div>
+                                            ) : (
+                                                <span className="text-muted-foreground italic text-xs">--</span>
+                                            )}
                                         </td>
                                         <td className="px-6 py-4 text-muted-foreground">
                                             {formatDistanceToNow(new Date(app.appliedAt))} ago
