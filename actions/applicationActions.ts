@@ -284,22 +284,80 @@ export async function getJobApplications(jobId: string) {
         };
     }));
 }
+export async function getInternshipApplications(internshipId: string) {
+    const user = await currentUser();
+    if (!user || user.publicMetadata?.role !== "admin") return [];
+
+    const data = await db.select({
+        application: applicationsTable,
+        internship: internshipsTable,
+        profile: userProfilesTable
+    })
+        .from(applicationsTable)
+        .leftJoin(internshipsTable, eq(applicationsTable.internshipId, internshipsTable.id))
+        .leftJoin(userProfilesTable, eq(applicationsTable.userId, userProfilesTable.userId))
+        .where(eq(applicationsTable.internshipId, internshipId))
+        .orderBy(desc(applicationsTable.appliedAt));
+
+    const client = await clerkClient();
+    return await Promise.all(data.map(async (row) => {
+        let name = row.profile?.name;
+        let email = row.profile?.email;
+
+        if (!name || !email) {
+            try {
+                const clerkUser = await client.users.getUser(row.application.userId);
+                name = name || `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || 'Unknown';
+                email = email || clerkUser.emailAddresses[0]?.emailAddress || 'Unknown';
+            } catch (e) {
+                console.error("Failed to fetch Clerk user", e);
+            }
+        }
+
+        return {
+            ...row,
+            profile: {
+                ...row.profile,
+                name: name || 'Unknown',
+                email: email || 'Unknown'
+            }
+        };
+    }));
+}
 
 export async function getCompanyJobsForAdmin(companyId: string) {
     const user = await currentUser();
     if (!user || user.publicMetadata?.role !== "admin") return [];
 
-    return await db.select({
+    const jobs = await db.select({
         id: jobsTable.id,
         title: jobsTable.title,
         jobType: jobsTable.jobType,
         postedAt: jobsTable.postedAt,
+        category: sql<string>`'JOB'`,
         applicationCount: db.$count(applicationsTable, eq(applicationsTable.jobId, jobsTable.id))
     })
         .from(jobsTable)
         .where(eq(jobsTable.companyId, companyId))
         .orderBy(desc(jobsTable.postedAt));
+
+    const internships = await db.select({
+        id: internshipsTable.id,
+        title: internshipsTable.title,
+        jobType: sql<string>`'Internship'`,
+        postedAt: internshipsTable.postedAt,
+        category: sql<string>`'INTERNSHIP'`,
+        applicationCount: db.$count(applicationsTable, eq(applicationsTable.internshipId, internshipsTable.id))
+    })
+        .from(internshipsTable)
+        .where(eq(internshipsTable.companyId, companyId))
+        .orderBy(desc(internshipsTable.postedAt));
+
+    return [...jobs, ...internships].sort((a, b) => 
+        new Date(b.postedAt).getTime() - new Date(a.postedAt).getTime()
+    );
 }
+
 
 export async function getGlobalApplicantsForAdmin() {
     const user = await currentUser();
