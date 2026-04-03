@@ -115,6 +115,7 @@ function layoutWrapper(content: string): string {
 <body>
   <div class="wrapper">
     <div class="header">
+      <img src="${BASE_URL}/icon.png" alt="JobJockey Logo" style="height: 60px; width: auto; margin-bottom: 16px; border-radius: 12px;" />
       <h1>Job<span>Jockey</span></h1>
     </div>
     <div class="body">

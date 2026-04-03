@@ -79,7 +79,7 @@ export function StickyApplyBar({ jobId, category, salary, initialResumeUrl, init
                                 Apply Now
                             </GradientButton>
                         </DialogTrigger>
-                        <DialogContent className="sm:max-w-md bg-[#0A0A0A] border-[var(--glass-border)] text-white">
+                        <DialogContent className="sm:max-w-md bg-background border-border text-foreground">
                             <DialogHeader>
                                 <DialogTitle className="text-xl">Submit Application</DialogTitle>
                                 <DialogDescription className="text-muted-foreground">
@@ -92,20 +92,20 @@ export function StickyApplyBar({ jobId, category, salary, initialResumeUrl, init
                                     <div className="flex flex-col gap-3">
                                         <div className="flex items-center gap-3 p-4 bg-[var(--glass-bg)] border border-[var(--primary)]/30 rounded-xl relative overflow-hidden">
                                             <div className="absolute inset-0 bg-gradient-to-r from-[var(--primary)]/10 to-transparent pointer-events-none" />
-                                            <div className="w-10 h-10 rounded-full bg-[var(--primary)]/20 flex items-center justify-center shrink-0">
-                                                <FileText className="w-5 h-5 text-[var(--primary)]" />
+                                            <div className="w-10 h-10 rounded-full bg-secondary/80 flex items-center justify-center shrink-0">
+                                                <FileText className="w-5 h-5 text-foreground/70" />
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-medium text-white truncate">Resume Attached</p>
-                                                <a href={resumeUrl} target="_blank" rel="noreferrer" className="text-xs text-[var(--primary)] hover:underline truncate block">
+                                                <p className="text-sm font-medium text-foreground truncate">Resume Attached</p>
+                                                <a href={resumeUrl} target="_blank" rel="noreferrer" className="text-xs text-foreground/60 hover:text-foreground hover:underline truncate block transition-colors">
                                                     View Document
                                                 </a>
                                             </div>
-                                            <CheckCircle2 className="w-5 h-5 text-[var(--primary)] shrink-0" />
+                                            <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
                                         </div>
                                         <button
                                             onClick={() => setResumeUrl(null)}
-                                            className="text-xs text-muted-foreground hover:text-white transition-colors self-start"
+                                            className="text-[10px] uppercase tracking-[0.15em] font-bold bg-transparent hover:bg-secondary text-foreground px-8 py-2.5 rounded-full transition-all mx-auto border border-border/60 shadow-sm"
                                         >
                                             Upload a different file
                                         </button>
@@ -122,7 +122,6 @@ export function StickyApplyBar({ jobId, category, salary, initialResumeUrl, init
                                             endpoint="resumeUploader"
                                             onUploadBegin={() => setIsUploadingResume(true)}
                                             onClientUploadComplete={(res) => {
-                                                console.log("Resume upload complete:", res);
                                                 setIsUploadingResume(false);
                                                 if (res?.[0]?.url) {
                                                     setResumeUrl(res[0].url);
@@ -133,10 +132,14 @@ export function StickyApplyBar({ jobId, category, salary, initialResumeUrl, init
                                             }}
                                             onUploadError={(error: Error) => {
                                                 setIsUploadingResume(false);
-                                                console.error("Resume upload error:", error);
                                                 toast.error(`Upload failed: ${error.message}`);
                                             }}
-                                            className="ut-label:text-[var(--primary)] ut-button:bg-[var(--primary)] ut-button:text-black"
+                                            appearance={{
+                                                button: "ut-ready:bg-secondary ut-ready:!text-black dark:ut-ready:!text-white bg-secondary/50 !text-black dark:!text-white font-bold rounded-xl px-10 py-3.5 transition-all hover:bg-secondary/80 mt-4 shadow-sm h-auto",
+                                                label: "!text-black dark:!text-white font-bold bg-transparent px-8 py-2.5 rounded-full border border-border/60 mb-6 hover:bg-secondary transition-colors cursor-pointer uppercase text-[10px] tracking-[0.15em]",
+                                                container: "border-none p-0 bg-transparent flex flex-col items-center justify-center min-h-[200px]",
+                                                allowedContent: "text-muted-foreground text-[10px] mt-2 font-medium"
+                                            }}
                                         />
                                     </div>
                                 )}
