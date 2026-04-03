@@ -22,9 +22,9 @@ export default function CoursesPage() {
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ duration: 0.5, ease: "easeOut" }}
-                    className="w-24 h-24 rounded-full bg-[var(--primary)]/10 flex items-center justify-center mb-8 border border-[var(--primary)]/20 shadow-[0_0_40px_rgba(var(--primary-rgb),0.2)]"
+                    className="w-24 h-24 rounded-full bg-secondary/50 flex items-center justify-center mb-8 border border-border shadow-xl"
                 >
-                    <BookOpen className="w-12 h-12 text-[var(--primary)]" />
+                    <BookOpen className="w-12 h-12 text-foreground" />
                 </motion.div>
                 
                 <h1 className="text-5xl md:text-7xl font-display font-bold text-[var(--text-main)] tracking-tight mb-8">

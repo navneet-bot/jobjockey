@@ -51,11 +51,11 @@ export default function NotificationList() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                     <Select value={filter} onValueChange={(v: any) => setFilter(v)}>
-                        <SelectTrigger className="w-[180px] bg-white/5 border-white/10 rounded-xl">
+                        <SelectTrigger className="w-[180px] bg-secondary/50 border-border text-foreground rounded-xl">
                             <Filter className="w-4 h-4 mr-2" />
                             <SelectValue placeholder="Filter" />
                         </SelectTrigger>
-                        <SelectContent className="bg-[#0A0A0A] border-white/10">
+                        <SelectContent className="bg-popover border-border">
                             <SelectItem value="all">All Notifications</SelectItem>
                             <SelectItem value="unread">Unread Only</SelectItem>
                         </SelectContent>
@@ -66,7 +66,7 @@ export default function NotificationList() {
                     variant="outline" 
                     onClick={handleMarkAllAsRead}
                     disabled={notifications.every(n => n.isRead)}
-                    className="rounded-xl border-white/10 hover:bg-white/5 text-xs"
+                    className="rounded-xl border-border hover:bg-accent text-xs"
                 >
                     <Check className="w-4 h-4 mr-2" />
                     Mark all as read
@@ -76,7 +76,7 @@ export default function NotificationList() {
             {loading ? (
                 <div className="flex flex-col gap-4">
                     {[1, 2, 3].map(i => (
-                        <div key={i} className="h-24 bg-white/5 rounded-2xl animate-pulse" />
+                        <div key={i} className="h-24 bg-secondary/30 rounded-2xl animate-pulse" />
                     ))}
                 </div>
             ) : filteredNotifications.length > 0 ? (
@@ -90,22 +90,22 @@ export default function NotificationList() {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.95 }}
                             >
-                                <GlassCard className={`p-5 flex items-start gap-4 transition-all border-l-4 ${!notif.isRead ? "border-l-[var(--primary)] bg-white/[0.03]" : "border-l-transparent bg-transparent"}`}>
-                                    <div className={`p-3 rounded-xl ${!notif.isRead ? "bg-[var(--primary)]/10 text-[var(--primary)]" : "bg-white/5 text-white/30"}`}>
+                                <GlassCard className={`p-5 flex items-start gap-4 transition-all border-l-4 ${!notif.isRead ? "border-l-[var(--primary)] bg-secondary/20" : "border-l-transparent bg-transparent"}`}>
+                                    <div className={`p-3 rounded-xl ${!notif.isRead ? "bg-[var(--primary)]/10 text-[var(--primary)]" : "bg-secondary text-muted-foreground"}`}>
                                         <Bell className="w-5 h-5" />
                                     </div>
                                     
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center justify-between gap-2 mb-1">
-                                            <h4 className={`font-bold transition-colors ${!notif.isRead ? "text-white" : "text-white/60"}`}>
+                                            <h4 className={`font-bold transition-colors ${!notif.isRead ? "text-foreground" : "text-muted-foreground/60"}`}>
                                                 {notif.title}
                                             </h4>
-                                            <span className="text-[10px] text-white/30 whitespace-nowrap flex items-center gap-1">
+                                            <span className="text-[10px] text-muted-foreground/40 whitespace-nowrap flex items-center gap-1">
                                                 <Calendar className="w-3 h-3" />
                                                 {format(new Date(notif.createdAt), "MMM d, yyyy • h:mm a")}
                                             </span>
                                         </div>
-                                        <p className="text-sm text-white/50 leading-relaxed mb-4">
+                                        <p className="text-sm text-muted-foreground leading-relaxed mb-4">
                                             {notif.message}
                                         </p>
                                         
@@ -127,7 +127,7 @@ export default function NotificationList() {
                                                     variant="ghost" 
                                                     size="sm" 
                                                     onClick={() => handleMarkAsRead(notif.id)}
-                                                    className="h-8 text-xs text-white/40 hover:text-white rounded-xl"
+                                                    className="h-8 text-xs text-muted-foreground hover:text-foreground rounded-xl"
                                                 >
                                                     Mark as read
                                                 </Button>
@@ -141,12 +141,12 @@ export default function NotificationList() {
                 </div>
             ) : (
                 <div className="py-20 text-center flex flex-col items-center gap-4">
-                    <div className="p-6 rounded-full bg-white/5 text-white/10">
+                    <div className="p-6 rounded-full bg-secondary text-muted-foreground/20">
                         <Bell className="w-12 h-12" />
                     </div>
                     <div>
-                        <h3 className="text-xl font-bold text-white mb-2">No notifications found</h3>
-                        <p className="text-white/40">You're all caught up! Check back later for updates.</p>
+                        <h3 className="text-xl font-bold text-foreground mb-2">No notifications found</h3>
+                        <p className="text-muted-foreground">You're all caught up! Check back later for updates.</p>
                     </div>
                     {filter === "unread" && (
                         <Button variant="link" onClick={() => setFilter("all")} className="text-[var(--primary)]">
