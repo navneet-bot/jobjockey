@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/ui/Header";
 import { Footer } from "@/components/ui/Footer";
 import PageTransition from "@/components/ui/PageTransition";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const manrope = Manrope({ subsets: ["latin"], variable: "--font-manrope" });
@@ -94,6 +95,7 @@ export default function RootLayout({
 
             <Toaster theme="dark" position="bottom-right" richColors />
           </ThemeProvider>
+          <Analytics />
         </body>
       </html>
     </ClerkProvider>
